@@ -1,0 +1,145 @@
+<!doctype html>
+<html lang="ro">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Neural Face</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/style.css" />
+  <script type="importmap">
+    {
+      "imports": {
+        "three": "https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js",
+        "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/"
+      }
+    }
+  </script>
+</head>
+<body>
+  <canvas id="scene"></canvas>
+
+  <div class="frame" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+  <svg class="leader" id="leader" aria-hidden="true"><polyline points="" /><circle r="3" /></svg>
+
+  <div id="loader">
+    <div class="loader-core">
+      <div class="loader-mark"><span></span><span></span><span></span></div>
+      <div class="loader-label">Se încarcă modelul</div>
+      <div class="loader-bar"><i></i></div>
+      <div class="loader-pct">000%</div>
+    </div>
+  </div>
+
+  <header class="brand">
+    <svg class="brand-mark" viewBox="0 0 40 40" aria-hidden="true">
+      <circle cx="20" cy="20" r="18.5" />
+      <path d="M20 6 L31 14 L31 27 L20 34 L9 27 L9 14 Z" />
+      <path d="M20 6 L20 34 M9 14 L31 27 M31 14 L9 27" />
+      <circle class="n" cx="20" cy="20" r="2.2" />
+    </svg>
+    <div>
+      <h1>Neural<span>Face</span></h1>
+      <p>Topologie neuronală facială · 3D</p>
+    </div>
+  </header>
+
+  <div class="status"><span class="dot"></span>LIVE<span class="sep"></span><span id="fps">--</span>&nbsp;FPS</div>
+
+  <section class="stats">
+    <div class="stat"><b data-stat="nodes">0</b><span>Noduri</span></div>
+    <div class="stat"><b data-stat="edges">0</b><span>Sinapse</span></div>
+    <div class="stat"><b data-stat="layers">0</b><span>Straturi</span></div>
+    <div class="stat"><b data-stat="regions">0</b><span>Regiuni</span></div>
+  </section>
+
+  <aside class="panel">
+    <div class="group">
+      <div class="label">Sursă</div>
+      <div class="seg" data-seg="source">
+        <button data-value="scan" class="on">Scan 3D</button>
+        <button data-value="camera"><span class="rec"></span>Cameră live</button>
+      </div>
+      <button class="toggle" data-toggle="preview" aria-pressed="false" hidden><span>Previzualizare cameră</span><i></i></button>
+    </div>
+
+    <div class="group" id="liveParams" hidden>
+      <div class="label">Parametri live <em id="liveCount">478 puncte · 52 expresii · 3 rotații</em></div>
+      <div class="pose">
+        <div><span>Yaw</span><b data-pose="yaw">0°</b></div>
+        <div><span>Pitch</span><b data-pose="pitch">0°</b></div>
+        <div><span>Roll</span><b data-pose="roll">0°</b></div>
+      </div>
+      <ul class="blend" id="blend"></ul>
+      <button class="toggle" data-toggle="mirror" aria-pressed="true"><span>Mod oglindă</span><i></i></button>
+      <button class="ghost" id="recalib">Recalibrare față neutră</button>
+    </div>
+
+    <div class="group">
+      <div class="label">Vizualizare</div>
+      <div class="seg" data-seg="preset">
+        <button data-value="skin" class="on">Piele</button>
+        <button data-value="hybrid">Hibrid</button>
+        <button data-value="network">Rețea</button>
+      </div>
+      <div class="slider">
+        <span>Opacitate piele</span>
+        <input id="skin" type="range" min="0" max="100" value="100" />
+        <output id="skinVal">100</output>
+      </div>
+    </div>
+
+    <div class="group">
+      <div class="label">Straturi</div>
+      <div class="layers" id="layers"></div>
+    </div>
+
+    <div class="group">
+      <div class="label">Colorare</div>
+      <div class="seg" data-seg="color">
+        <button data-value="layer" class="on">Strat</button>
+        <button data-value="region">Regiune</button>
+      </div>
+      <ul class="legend" id="legend"></ul>
+    </div>
+
+    <div class="group">
+      <div class="label">Cameră</div>
+      <div class="seg" data-seg="view">
+        <button data-value="front">Frontal</button>
+        <button data-value="three">¾</button>
+        <button data-value="profile">Profil</button>
+      </div>
+      <button class="toggle" data-toggle="autorotate" aria-pressed="true"><span>Rotire automată</span><i></i></button>
+      <button class="toggle" data-toggle="pulse" aria-pressed="true"><span>Impulsuri sinaptice</span><i></i></button>
+    </div>
+
+    <button class="export" id="export">
+      <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 2v8m0 0L5 7m3 3 3-3M3 12.5h10" /></svg>
+      Exportă topologia (.json)
+    </button>
+  </aside>
+
+  <div class="cam-pill" id="camPill" hidden><span class="spin"></span><b>Pornesc camera…</b></div>
+  <figure class="cam-preview off" id="camPreview">
+    <video id="camVideo" playsinline muted></video>
+    <figcaption>INPUT · WEBCAM</figcaption>
+  </figure>
+
+  <div class="hint">Trage pentru rotire · Scroll pentru zoom · Click pe un nod pentru inspecție</div>
+
+  <div class="inspector" id="inspector" hidden>
+    <div class="ins-head"><span class="ins-dot"></span><b data-f="id">N-0000</b><em data-f="layer">Suprafață</em></div>
+    <dl>
+      <dt>Regiune</dt><dd data-f="region">—</dd>
+      <dt>X</dt><dd data-f="x">0</dd>
+      <dt>Y</dt><dd data-f="y">0</dd>
+      <dt>Z</dt><dd data-f="z">0</dd>
+      <dt>Conexiuni</dt><dd data-f="degree">0</dd>
+    </dl>
+  </div>
+
+  <script type="module" src="js/main.js"></script>
+</body>
+</html>

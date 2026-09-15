@@ -1,0 +1,8 @@
+node_modules
+dist
+.DS_Store
+
+# Obsidian per-user UI state
+vault/.obsidian/workspace*.json
+vault/.obsidian/cache
+vault/.trash/

@@ -1,0 +1,236 @@
+{
+  "nodes": [
+    {
+      "id": "home",
+      "type": "file",
+      "file": "🏠 Home.md",
+      "x": -180,
+      "y": -60,
+      "width": 520,
+      "height": 300,
+      "color": "5"
+    },
+    {
+      "id": "flow",
+      "type": "text",
+      "x": 340,
+      "y": -60,
+      "width": 420,
+      "height": 300,
+      "color": "4",
+      "text": "## Fluxul Neural Face\n\n**Captură** (webcam · MediaPipe)\n↓\n**Date** (serii de timp, fără video)\n↓\n**Modele** (AU · V/A · temporale)\n↓\n**Ieșiri** → avatar · insight"
+    },
+    {
+      "id": "principle",
+      "type": "text",
+      "x": -180,
+      "y": 700,
+      "width": 1040,
+      "height": 120,
+      "color": "6",
+      "text": "**Principiu**: măsurăm comportamentul facial, nu „citim emoții”. Documentăm tot — posibil și imposibil."
+    },
+    {
+      "id": "moc0",
+      "type": "file",
+      "file": "01 MOC/MOC Proiect.md",
+      "x": -700,
+      "y": -420,
+      "width": 460,
+      "height": 260
+    },
+    {
+      "id": "moc1",
+      "type": "file",
+      "file": "01 MOC/MOC Tehnologie.md",
+      "x": -180,
+      "y": -420,
+      "width": 460,
+      "height": 260
+    },
+    {
+      "id": "moc2",
+      "type": "file",
+      "file": "01 MOC/MOC Cercetare.md",
+      "x": 340,
+      "y": -420,
+      "width": 460,
+      "height": 260
+    },
+    {
+      "id": "moc3",
+      "type": "file",
+      "file": "01 MOC/MOC Date și Modele.md",
+      "x": 860,
+      "y": -420,
+      "width": 460,
+      "height": 260
+    },
+    {
+      "id": "moc4",
+      "type": "file",
+      "file": "01 MOC/MOC Domenii de aplicare.md",
+      "x": 860,
+      "y": 80,
+      "width": 460,
+      "height": 260
+    },
+    {
+      "id": "moc5",
+      "type": "file",
+      "file": "01 MOC/MOC Etică și Reglementare.md",
+      "x": 340,
+      "y": 380,
+      "width": 460,
+      "height": 260
+    },
+    {
+      "id": "moc6",
+      "type": "file",
+      "file": "01 MOC/MOC Idei.md",
+      "x": -180,
+      "y": 380,
+      "width": 460,
+      "height": 260
+    },
+    {
+      "id": "moc7",
+      "type": "file",
+      "file": "01 MOC/MOC Experimente.md",
+      "x": -700,
+      "y": 380,
+      "width": 460,
+      "height": 260
+    },
+    {
+      "id": "moc8",
+      "type": "file",
+      "file": "01 MOC/MOC Roadmap.md",
+      "x": -700,
+      "y": 80,
+      "width": 460,
+      "height": 260
+    }
+  ],
+  "edges": [
+    {
+      "id": "e0",
+      "fromNode": "home",
+      "toNode": "moc0",
+      "fromSide": "top",
+      "toSide": "bottom"
+    },
+    {
+      "id": "e1",
+      "fromNode": "home",
+      "toNode": "moc1",
+      "fromSide": "top",
+      "toSide": "bottom"
+    },
+    {
+      "id": "e2",
+      "fromNode": "home",
+      "toNode": "moc2",
+      "fromSide": "top",
+      "toSide": "bottom"
+    },
+    {
+      "id": "e3",
+      "fromNode": "home",
+      "toNode": "moc3",
+      "fromSide": "top",
+      "toSide": "bottom"
+    },
+    {
+      "id": "e4",
+      "fromNode": "home",
+      "toNode": "moc4",
+      "fromSide": "bottom",
+      "toSide": "top"
+    },
+    {
+      "id": "e5",
+      "fromNode": "home",
+      "toNode": "moc5",
+      "fromSide": "bottom",
+      "toSide": "top"
+    },
+    {
+      "id": "e6",
+      "fromNode": "home",
+      "toNode": "moc6",
+      "fromSide": "bottom",
+      "toSide": "top"
+    },
+    {
+      "id": "e7",
+      "fromNode": "home",
+      "toNode": "moc7",
+      "fromSide": "bottom",
+      "toSide": "top"
+    },
+    {
+      "id": "e8",
+      "fromNode": "home",
+      "toNode": "moc8",
+      "fromSide": "bottom",
+      "toSide": "top"
+    },
+    {
+      "id": "c0",
+      "fromNode": "moc1",
+      "toNode": "moc3",
+      "label": "date",
+      "color": "4"
+    },
+    {
+      "id": "c1",
+      "fromNode": "moc3",
+      "toNode": "moc4",
+      "label": "insight",
+      "color": "4"
+    },
+    {
+      "id": "c2",
+      "fromNode": "moc2",
+      "toNode": "moc3",
+      "label": "fundament",
+      "color": "4"
+    },
+    {
+      "id": "c3",
+      "fromNode": "moc4",
+      "toNode": "moc5",
+      "label": "limite",
+      "color": "4"
+    },
+    {
+      "id": "c4",
+      "fromNode": "moc6",
+      "toNode": "moc7",
+      "label": "testăm",
+      "color": "4"
+    },
+    {
+      "id": "c5",
+      "fromNode": "moc7",
+      "toNode": "moc8",
+      "label": "livrăm",
+      "color": "4"
+    },
+    {
+      "id": "c6",
+      "fromNode": "moc0",
+      "toNode": "moc8",
+      "label": "planificăm",
+      "color": "4"
+    },
+    {
+      "id": "flow-e",
+      "fromNode": "home",
+      "toNode": "flow",
+      "fromSide": "right",
+      "toSide": "left"
+    }
+  ]
+}

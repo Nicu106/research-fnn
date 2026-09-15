@@ -1,0 +1,114 @@
+{
+  "collapse-filter": false,
+  "search": "-path:\"99 Templates\"",
+  "showTags": false,
+  "showAttachments": false,
+  "hideUnresolved": false,
+  "showOrphans": true,
+  "collapse-color-groups": false,
+  "colorGroups": [
+    {
+      "query": "path:\"00 Inbox\"",
+      "color": {
+        "a": 1,
+        "rgb": 11579568
+      }
+    },
+    {
+      "query": "path:\"01 MOC\"",
+      "color": {
+        "a": 1,
+        "rgb": 16766073
+      }
+    },
+    {
+      "query": "path:\"02 Proiect\"",
+      "color": {
+        "a": 1,
+        "rgb": 10482687
+      }
+    },
+    {
+      "query": "path:\"03 Tehnologie\"",
+      "color": {
+        "a": 1,
+        "rgb": 5999871
+      }
+    },
+    {
+      "query": "path:\"04 Cercetare\"",
+      "color": {
+        "a": 1,
+        "rgb": 13073919
+      }
+    },
+    {
+      "query": "path:\"05 Domenii\"",
+      "color": {
+        "a": 1,
+        "rgb": 6484168
+      }
+    },
+    {
+      "query": "path:\"06 Idei\"",
+      "color": {
+        "a": 1,
+        "rgb": 16743080
+      }
+    },
+    {
+      "query": "path:\"07 Experimente\"",
+      "color": {
+        "a": 1,
+        "rgb": 16756839
+      }
+    },
+    {
+      "query": "path:\"08 Date & Modele\"",
+      "color": {
+        "a": 1,
+        "rgb": 8378623
+      }
+    },
+    {
+      "query": "path:\"09 Etică & Reglementare\"",
+      "color": {
+        "a": 1,
+        "rgb": 16735603
+      }
+    },
+    {
+      "query": "path:\"10 Glosar\"",
+      "color": {
+        "a": 1,
+        "rgb": 9214891
+      }
+    },
+    {
+      "query": "path:\"11 Roadmap\"",
+      "color": {
+        "a": 1,
+        "rgb": 10783999
+      }
+    },
+    {
+      "query": "path:\"Jurnal\"",
+      "color": {
+        "a": 1,
+        "rgb": 4173984
+      }
+    }
+  ],
+  "collapse-display": false,
+  "showArrow": false,
+  "textFadeMultiplier": 0,
+  "nodeSizeMultiplier": 1,
+  "lineSizeMultiplier": 1,
+  "collapse-forces": true,
+  "centerStrength": 0.5,
+  "repelStrength": 10,
+  "linkStrength": 1,
+  "linkDistance": 250,
+  "scale": 1,
+  "close": false
+}

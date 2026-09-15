@@ -1,0 +1,698 @@
+<title>Dosarul Neural Face</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans+Condensed:wght@500;600;700&family=Literata:ital,opsz,wght@0,7..72,400;0,7..72,600;1,7..72,400&display=swap">
+<style>
+  :root {
+    --ground: #edf2f1;
+    --surface: #f8fbfa;
+    --ink: #142120;
+    --muted: #566866;
+    --rule: #c7d3d1;
+    --accent: #0c7479;
+    --accent-soft: #d4e8e7;
+    --marker: #a8326f;
+    --ok: #2f7a4a;
+    --warn: #9a6a12;
+    --stop: #a8322f;
+    --display: "IBM Plex Sans Condensed", "Arial Narrow", system-ui, sans-serif;
+    --body: "Literata", Georgia, "Times New Roman", serif;
+    --mono: "IBM Plex Mono", ui-monospace, Menlo, monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --ground: #0a1112;
+      --surface: #111b1c;
+      --ink: #e1ebe9;
+      --muted: #8ea29f;
+      --rule: #263637;
+      --accent: #4fc2bf;
+      --accent-soft: #15302f;
+      --marker: #e27cb6;
+      --ok: #6cc28c;
+      --warn: #e0b35a;
+      --stop: #ec7b76;
+    }
+  }
+  :root[data-theme="dark"] {
+    --ground: #0a1112;
+    --surface: #111b1c;
+    --ink: #e1ebe9;
+    --muted: #8ea29f;
+    --rule: #263637;
+    --accent: #4fc2bf;
+    --accent-soft: #15302f;
+    --marker: #e27cb6;
+    --ok: #6cc28c;
+    --warn: #e0b35a;
+    --stop: #ec7b76;
+  }
+
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+  body {
+    margin: 0;
+    background: var(--ground);
+    color: var(--ink);
+    font: 400 17px/1.65 var(--body);
+    padding-inline: 24px;
+    -webkit-font-smoothing: antialiased;
+  }
+  a { color: var(--accent); text-underline-offset: 3px; }
+  a:focus-visible, button:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 2px; }
+
+  .shell {
+    max-width: 1180px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 210px minmax(0, 1fr);
+    gap: 64px;
+    padding-block: 48px 96px;
+  }
+
+  /* index rail */
+  .rail { position: sticky; top: 32px; align-self: start; display: grid; gap: 20px; }
+  .rail .file-id { font: 500 11px/1.4 var(--mono); letter-spacing: .08em; color: var(--muted); text-transform: uppercase; }
+  .rail nav { display: grid; gap: 2px; border-left: 1px solid var(--rule); }
+  .rail nav a {
+    display: grid; grid-template-columns: 2.4em 1fr; align-items: baseline;
+    padding: 5px 0 5px 12px; margin-left: -1px; border-left: 2px solid transparent;
+    font: 500 14px/1.3 var(--display); color: var(--muted); text-decoration: none; letter-spacing: .01em;
+  }
+  .rail nav a span { font: 400 11px var(--mono); color: var(--muted); }
+  .rail nav a:hover { color: var(--ink); border-left-color: var(--accent); }
+
+  main { min-width: 0; display: grid; gap: 88px; }
+
+  /* type scale: 13 / 17 / 22 / 30 / 48 */
+  h1, h2, h3 { font-family: var(--display); font-weight: 600; text-wrap: balance; margin: 0; letter-spacing: -.005em; }
+  h1 { font-size: clamp(38px, 6vw, 56px); line-height: 1.02; font-weight: 700; }
+  h2 { font-size: 30px; line-height: 1.15; }
+  h3 { font-size: 22px; line-height: 1.25; }
+  p { margin: 0; max-width: 66ch; }
+  .eyebrow { font: 500 12px/1.4 var(--mono); letter-spacing: .12em; text-transform: uppercase; color: var(--accent); }
+  .lede { font-size: 20px; line-height: 1.55; color: var(--ink); max-width: 58ch; }
+  .muted { color: var(--muted); }
+  .stack { display: grid; gap: 18px; }
+  section { display: grid; gap: 28px; scroll-margin-top: 24px; }
+  .section-head { display: grid; gap: 10px; padding-top: 22px; border-top: 1px solid var(--rule); }
+
+  code, kbd, .mono { font-family: var(--mono); font-size: .86em; }
+  code { background: var(--accent-soft); padding: 1px 5px; border-radius: 3px; }
+  kbd { border: 1px solid var(--rule); border-bottom-width: 2px; padding: 1px 6px; border-radius: 4px; background: var(--surface); }
+
+  /* header */
+  .masthead { display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr); gap: 40px; align-items: center; }
+  .masthead .stack { gap: 22px; }
+  .specimen { position: relative; aspect-ratio: 1 / 1; max-width: 100%; }
+  .specimen canvas { width: 100%; height: 100%; display: block; }
+  .specimen figcaption { position: absolute; left: 0; bottom: 0; font: 400 11px/1.4 var(--mono); color: var(--muted); letter-spacing: .04em; }
+
+  .spec {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    border-top: 1px solid var(--ink); border-bottom: 1px solid var(--rule);
+  }
+  .spec div { padding: 14px 16px 14px 0; display: grid; gap: 2px; }
+  .spec dt { font: 500 11px/1.3 var(--mono); letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+  .spec dd { margin: 0; font: 600 26px/1.1 var(--display); font-variant-numeric: tabular-nums; }
+  .spec dd small { font: 400 13px var(--mono); color: var(--muted); margin-left: 4px; }
+
+  .note {
+    border-left: 3px solid var(--marker); padding: 4px 0 4px 18px; max-width: 66ch;
+    font-style: italic;
+  }
+
+  /* pipeline */
+  .trace { list-style: none; margin: 0; padding: 0; display: grid; }
+  .trace li {
+    display: grid; grid-template-columns: 64px minmax(0, 1fr); gap: 20px;
+    padding-bottom: 34px; position: relative;
+  }
+  .trace li::before {
+    content: ""; position: absolute; left: 21px; top: 44px; bottom: 0; width: 1px; background: var(--rule);
+  }
+  .trace li:last-child::before { display: none; }
+  .trace .idx {
+    width: 44px; height: 44px; border-radius: 50%;
+    display: grid; place-items: center;
+    border: 1px solid var(--accent); color: var(--accent); background: var(--ground);
+    font: 500 14px var(--mono); font-variant-numeric: tabular-nums;
+  }
+  .trace li.now .idx { border-color: var(--marker); color: var(--marker); border-style: dashed; }
+  .trace .body { display: grid; gap: 8px; padding-top: 8px; }
+  .trace .facts { display: flex; flex-wrap: wrap; gap: 6px 14px; font: 400 13px/1.5 var(--mono); color: var(--muted); }
+  .trace .facts b { color: var(--ink); font-weight: 500; }
+  .tag {
+    display: inline-block; font: 500 11px/1 var(--mono); letter-spacing: .06em; text-transform: uppercase;
+    padding: 4px 7px; border-radius: 3px; border: 1px solid currentColor; vertical-align: 3px; margin-left: 8px;
+  }
+  .tag.done { color: var(--ok); }
+  .tag.wip { color: var(--marker); }
+  .tag.plan { color: var(--muted); }
+
+  /* diagram */
+  .scroll-x { overflow-x: auto; }
+  .diagram { min-width: 720px; width: 100%; height: auto; display: block; }
+  .diagram .box { fill: var(--surface); stroke: var(--rule); stroke-width: 1; }
+  .diagram .box.key { stroke: var(--accent); stroke-width: 1.5; }
+  .diagram .title { fill: var(--ink); font: 600 17px var(--display); }
+  .diagram .sub { fill: var(--muted); font: 400 11.5px var(--mono); }
+  .diagram .edge { stroke: var(--accent); stroke-width: 1.5; fill: none; }
+  .diagram .head { fill: var(--accent); }
+  .diagram .band { fill: var(--accent-soft); }
+  .diagram .band-label { fill: var(--accent); font: 500 11px var(--mono); letter-spacing: .1em; }
+
+  /* incidents */
+  .incidents { display: grid; gap: 0; border-top: 1px solid var(--rule); }
+  .incident { display: grid; grid-template-columns: 180px minmax(0, 1fr); gap: 24px; padding-block: 20px; border-bottom: 1px solid var(--rule); }
+  .incident h3 { font-size: 18px; }
+  .incident dl { margin: 0; display: grid; grid-template-columns: 110px minmax(0, 1fr); gap: 6px 16px; }
+  .incident dt { font: 500 11px/1.9 var(--mono); letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+  .incident dd { margin: 0; }
+
+  /* tables */
+  table { border-collapse: collapse; width: 100%; min-width: 620px; font-size: 15.5px; }
+  th { text-align: left; font: 500 11px/1.3 var(--mono); letter-spacing: .08em; text-transform: uppercase; color: var(--muted); padding: 0 16px 10px 0; border-bottom: 1px solid var(--ink); }
+  td { padding: 13px 16px 13px 0; border-bottom: 1px solid var(--rule); vertical-align: top; }
+  td:first-child { font-family: var(--display); font-weight: 600; font-size: 17px; }
+  .level { font: 500 12px/1 var(--mono); white-space: nowrap; display: inline-flex; align-items: center; gap: 8px; }
+  .level i { width: 9px; height: 9px; border-radius: 50%; display: inline-block; }
+  .level.solid i { background: var(--ok); }
+  .level.promising i { background: var(--warn); }
+  .level.avoid i { background: var(--stop); }
+  tr.wedge td { background: var(--accent-soft); }
+  tr.wedge td:first-child { box-shadow: inset 3px 0 0 var(--accent); padding-left: 12px; }
+
+  /* regulation / roadmap */
+  .cols { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 28px; }
+  .cols article { display: grid; gap: 8px; align-content: start; padding-top: 14px; border-top: 2px solid var(--ink); }
+  .cols article .mono { color: var(--muted); font-size: 12px; letter-spacing: .06em; text-transform: uppercase; }
+
+  .phases { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 0; border-top: 1px solid var(--rule); }
+  .phases li { padding: 16px 16px 0 0; display: grid; gap: 8px; align-content: start; }
+  .phases li + li { padding-left: 16px; border-left: 1px solid var(--rule); }
+  .phases .ph { font: 500 12px var(--mono); color: var(--muted); letter-spacing: .06em; }
+  .phases h3 { font-size: 18px; }
+  .phases p { font-size: 15px; line-height: 1.5; }
+  .phases .tag { margin-left: 0; justify-self: start; }
+
+  .questions { counter-reset: q; list-style: none; padding: 0; margin: 0; display: grid; gap: 14px; }
+  .questions li { display: grid; grid-template-columns: 34px minmax(0, 1fr); gap: 10px; max-width: 70ch; }
+  .questions li::before { counter-increment: q; content: "Q" counter(q); font: 500 13px/1.9 var(--mono); color: var(--marker); }
+
+  /* run */
+  .run { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 36px; align-items: start; }
+  pre {
+    margin: 0; background: var(--surface); border: 1px solid var(--rule); border-radius: 4px;
+    padding: 16px 18px; overflow-x: auto; font: 400 13.5px/1.65 var(--mono); color: var(--ink);
+  }
+  pre .c { color: var(--muted); }
+  pre .d { color: var(--accent); }
+  .keys { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 10px 16px; margin: 0; align-items: baseline; }
+  .keys dt { white-space: nowrap; }
+  .keys dd { margin: 0; }
+
+  footer { font: 400 12px/1.6 var(--mono); color: var(--muted); border-top: 1px solid var(--rule); padding-top: 18px; display: flex; flex-wrap: wrap; gap: 8px 24px; }
+
+  @media (max-width: 980px) {
+    .shell { grid-template-columns: minmax(0, 1fr); gap: 32px; padding-block: 28px 72px; }
+    .rail { position: static; }
+    .rail nav { display: flex; overflow-x: auto; border-left: 0; border-bottom: 1px solid var(--rule); gap: 4px; padding-bottom: 4px; }
+    .rail nav a { display: flex; gap: 6px; white-space: nowrap; border-left: 0; padding: 6px 10px 6px 0; }
+    .masthead { grid-template-columns: minmax(0, 1fr); }
+    .specimen { max-width: 420px; }
+    .cols { grid-template-columns: minmax(0, 1fr); }
+    .phases { grid-template-columns: minmax(0, 1fr); }
+    .phases li + li { padding-left: 0; border-left: 0; border-top: 1px solid var(--rule); }
+    .run { grid-template-columns: minmax(0, 1fr); }
+    .incident { grid-template-columns: minmax(0, 1fr); gap: 10px; }
+  }
+  @media (max-width: 520px) {
+    body { padding-inline: 16px; font-size: 16px; }
+    .lede { font-size: 18px; }
+    main { gap: 64px; }
+    .trace li { grid-template-columns: 52px minmax(0, 1fr); gap: 12px; }
+    .trace li::before { left: 21px; }
+    .incident dl { grid-template-columns: minmax(0, 1fr); gap: 2px; }
+    .incident dd { margin-bottom: 8px; }
+  }
+</style>
+
+<div class="shell">
+  <aside class="rail">
+    <div class="file-id">Dosar · NF-001<br>actualizat 15.09.2026</div>
+    <nav aria-label="Cuprins">
+      <a href="#viziune"><span>§1</span>Viziunea</a>
+      <a href="#proces"><span>§2</span>Procesul</a>
+      <a href="#arhitectura"><span>§3</span>Arhitectura</a>
+      <a href="#incidente"><span>§4</span>Incidente</a>
+      <a href="#domenii"><span>§5</span>Domenii</a>
+      <a href="#reglementare"><span>§6</span>Reglementare</a>
+      <a href="#roadmap"><span>§7</span>Roadmap</a>
+      <a href="#rulare"><span>§8</span>Rulare & fișiere</a>
+    </nav>
+  </aside>
+
+  <main>
+    <header class="masthead">
+      <div class="stack">
+        <div class="eyebrow">Dosar de proces · Neural Face</div>
+        <h1>O față care poate fi măsurată, nu doar privită.</h1>
+        <p class="lede">Am pornit de la o față 3D acoperită de o rețea neuronală densă. Acum webcamul controlează un avatar fotorealist. Următorul pas e analiza comportamentului facial pentru medicină și alte domenii.</p>
+        <dl class="spec">
+          <div><dt>Noduri</dt><dd>1.517</dd></div>
+          <div><dt>Sinapse</dt><dd>4.792</dd></div>
+          <div><dt>Landmark-uri</dt><dd>478</dd></div>
+          <div><dt>Expresii</dt><dd>52</dd></div>
+          <div><dt>Rig / cadru</dt><dd>5,75<small>ms</small></dd></div>
+        </dl>
+      </div>
+      <figure class="specimen" aria-label="Schemă a unei topologii faciale simetrice">
+        <canvas id="specimen" width="720" height="720"></canvas>
+        <figcaption>specimen · topologie simetrică, seed 1337</figcaption>
+      </figure>
+    </header>
+
+    <section id="viziune">
+      <div class="section-head">
+        <div class="eyebrow">§1 · Viziunea</div>
+        <h2>De la o demonstrație vizuală la un instrument de măsurare</h2>
+      </div>
+      <div class="stack">
+        <p>Proiectul a crescut în trei trepte. Prima: o față fotorealistă cu sute de puncte conectate în 3D, gândită pentru prezentare și pentru teste ulterioare pe puncte. A doua: fața ta, văzută prin webcam, controlează avatarul în timp real. A treia, obiectivul pe termen lung: aceleași măsurători devin <em>insight</em> pentru medicină, recuperare, cercetare UX sau animație.</p>
+        <p>Ieșirea sistemului are două fețe care folosesc aceleași date: <strong>avatarul</strong>, care trebuie să se miște natural, și <strong>analiza</strong>, care trebuie să fie corectă și verificabilă.</p>
+      </div>
+      <p class="note">Un model nu simte emoții, iar expresia nu e același lucru cu emoția: un zâmbet nu dovedește bucurie. De aceea măsurăm comportamentul facial (mișcare, simetrie, amplitudine, viteză, frecvență) raportat la fața neutră a fiecărei persoane, și nu promitem „detectarea emoțiilor”.</p>
+    </section>
+
+    <section id="proces">
+      <div class="section-head">
+        <div class="eyebrow">§2 · Procesul, în ordinea în care l-am construit</div>
+        <h2>Zece pași, de la o pagină goală la un avatar care te urmărește</h2>
+      </div>
+      <ol class="trace">
+        <li>
+          <div class="idx">01</div>
+          <div class="body">
+            <h3>Stack fără instalări <span class="tag done">gata</span></h3>
+            <p>Laptopul nu avea spațiu pentru dependențe, așa că nu există <code>node_modules</code> și nici pas de build. Three.js se încarcă de pe CDN, iar serverul local e scris doar cu biblioteca standard Python.</p>
+            <div class="facts"><span>Three.js <b>r170</b></span><span>module ES + importmap</span><span>server <b>serve.py</b></span></div>
+          </div>
+        </li>
+        <li>
+          <div class="idx">02</div>
+          <div class="body">
+            <h3>Cap scanat fotorealist <span class="tag done">gata</span></h3>
+            <p>Un scan public al unui cap real, cu texturi de culoare, normal și specular. Pielea folosește un material fizic cu sheen, iar harta speculară e inversată în rugozitate.</p>
+            <div class="facts"><span>model <b>Lee Perry-Smith</b></span><span>licență <b>CC BY 3.0</b></span><span><b>9.279</b> vârfuri</span></div>
+          </div>
+        </li>
+        <li>
+          <div class="idx">03</div>
+          <div class="body">
+            <h3>Rețea neuronală deterministă în 3 straturi <span class="tag done">gata</span></h3>
+            <p>Nodurile sunt eșantionate pe suprafață cu Poisson-disc, mai dens pe ochi, nas și gură. Straturile interne sunt proiectate spre axa capului, iar conexiunile vin din vecinii cei mai apropiați (kNN). Același seed produce mereu aceleași ID-uri, deci un test se poate referi la un nod anume între rulări.</p>
+            <div class="facts"><span>seed <b>1337</b></span><span><b>1.517</b> noduri</span><span><b>4.792</b> sinapse</span><span><b>3</b> straturi</span><span><b>10</b> regiuni</span></div>
+          </div>
+        </li>
+        <li>
+          <div class="idx">04</div>
+          <div class="body">
+            <h3>Randare <span class="tag done">gata</span></h3>
+            <p>Noduri și sinapse desenate prin shadere proprii, cu impulsuri care circulă pe conexiuni. Peste ele: un shell holografic, bloom, vignetă, grain și un intro în care rețeaua se scanează de sus în jos înainte să apară pielea.</p>
+            <div class="facts"><span>moduri <b>Piele · Hibrid · Rețea</b></span><span>colorare pe strat sau regiune</span></div>
+          </div>
+        </li>
+        <li>
+          <div class="idx">05</div>
+          <div class="body">
+            <h3>Webcam și MediaPipe Face Landmarker <span class="tag done">gata</span></h3>
+            <p>Detecția rulează local, în browser, fără ca imaginea să plece de pe dispozitiv. Pentru fiecare cadru primim punctele feței, coeficienții de expresie și transformarea capului.</p>
+            <div class="facts"><span><b>478</b> landmark-uri 3D</span><span><b>52</b> blendshapes</span><span>matrice 4×4 a capului</span><span>tasks-vision <b>0.10.14</b></span></div>
+          </div>
+        </li>
+        <li>
+          <div class="idx">06</div>
+          <div class="body">
+            <h3>Ancore pe scan <span class="tag done">gata</span></h3>
+            <p>Am randat scanul din față și am rulat MediaPipe pe imagine. Fiecare landmark găsit a fost proiectat pe mesh printr-un raycast, rezultând harta care leagă punctele MediaPipe de pielea avatarului.</p>
+            <div class="facts"><span><b>476 / 478</b> pe mesh</span><span>ratate: landmark <b>58</b> și <b>172</b> (conturul feței)</span><span><code>assets/head/anchors.json</code></span></div>
+          </div>
+        </li>
+        <li>
+          <div class="idx">07</div>
+          <div class="body">
+            <h3>Rig-ul avatarului <span class="tag done">gata</span></h3>
+            <p>La fiecare cadru, poza capului e separată de expresie cu ajutorul unui reper rigid din partea de sus a feței. Expresia e comparată cu fața ta neutră, calibrată la pornire, și transferată pe vârfurile din jur cu ponderi gaussiene. Buzele și pleoapele sunt ținute separat, iar capul se rotește din gât în timp ce umerii rămân pe loc. Rețeaua neuronală folosește aceleași ponderi, deci rămâne lipită de față.</p>
+            <div class="facts"><span>calibrare <b>24</b> cadre</span><span>K = <b>8</b> ancore / vârf</span><span>mod oglindă</span><span>test sintetic: <b>8.700 / 9.279</b> vârfuri mișcate</span><span><b>5,75 ms</b> / cadru</span></div>
+          </div>
+        </li>
+        <li>
+          <div class="idx">08</div>
+          <div class="body">
+            <h3>Test live <span class="tag done">gata</span></h3>
+            <p>Pe camera reală a laptopului, avatarul a urmărit rotația și înclinarea capului, iar panoul a afișat în timp real cele 52 de expresii.</p>
+            <div class="facts"><span>FaceTime HD <b>1280×720</b></span><span>yaw, pitch, roll urmărite</span></div>
+          </div>
+        </li>
+        <li>
+          <div class="idx">09</div>
+          <div class="body">
+            <h3>Documentare și cercetare <span class="tag done">gata</span></h3>
+            <p>Acest dosar descrie procesul. Notițele de cercetare, ideile (posibile și încă imposibile), experimentele și deciziile stau într-un vault Obsidian, în folderul <code>vault/</code> al proiectului.</p>
+          </div>
+        </li>
+        <li class="now">
+          <div class="idx">10</div>
+          <div class="body">
+            <h3>Ochi și gură care se deschid cu adevărat <span class="tag wip">în lucru</span></h3>
+            <p>Scanul are ochii închiși și buzele lipite, așa că o simplă deformare întinde pielea. Pasul curent adaugă globi oculari și interiorul gurii, ca pleoapele să se deschidă și avatarul să clipească atunci când clipești tu.</p>
+          </div>
+        </li>
+      </ol>
+    </section>
+
+    <section id="arhitectura">
+      <div class="section-head">
+        <div class="eyebrow">§3 · Arhitectura</div>
+        <h2>Un singur flux de date, două ieșiri</h2>
+        <p class="muted">Salvăm serii de valori în timp, nu video: e mai sigur pentru confidențialitate și mult mai ușor de analizat.</p>
+      </div>
+      <div class="scroll-x">
+        <svg class="diagram" viewBox="0 0 960 300" role="img" aria-labelledby="diag-title">
+          <title id="diag-title">Captură, date, modele, apoi două ieșiri: avatar și insight</title>
+          <defs>
+            <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+              <path class="head" d="M0,0 L10,5 L0,10 z"></path>
+            </marker>
+          </defs>
+          <rect class="band" x="10" y="20" width="440" height="24" rx="2"></rect>
+          <text class="band-label" x="22" y="36">PE DISPOZITIV · BROWSER</text>
+          <rect class="band" x="470" y="20" width="480" height="24" rx="2"></rect>
+          <text class="band-label" x="482" y="36">ANALIZĂ · PYTHON (ETAPA 2)</text>
+
+          <rect class="box key" x="10" y="90" width="200" height="120" rx="4"></rect>
+          <text class="title" x="26" y="122">Captură</text>
+          <text class="sub" x="26" y="148">webcam · MediaPipe</text>
+          <text class="sub" x="26" y="168">478 puncte · 52 expresii</text>
+          <text class="sub" x="26" y="188">poza capului</text>
+
+          <rect class="box key" x="250" y="90" width="200" height="120" rx="4"></rect>
+          <text class="title" x="266" y="122">Date</text>
+          <text class="sub" x="266" y="148">serii de timp</text>
+          <text class="sub" x="266" y="168">raportate la fața neutră</text>
+          <text class="sub" x="266" y="188">fără video</text>
+
+          <rect class="box" x="490" y="90" width="200" height="120" rx="4"></rect>
+          <text class="title" x="506" y="122">Modele</text>
+          <text class="sub" x="506" y="148">Action Units</text>
+          <text class="sub" x="506" y="168">simetrie · mobilitate</text>
+          <text class="sub" x="506" y="188">valență / activare</text>
+
+          <rect class="box key" x="750" y="62" width="200" height="84" rx="4"></rect>
+          <text class="title" x="766" y="94">Avatar</text>
+          <text class="sub" x="766" y="120">rig fotorealist live</text>
+
+          <rect class="box" x="750" y="176" width="200" height="84" rx="4"></rect>
+          <text class="title" x="766" y="208">Insight</text>
+          <text class="sub" x="766" y="234">rapoarte pentru specialiști</text>
+
+          <path class="edge" d="M210,150 L246,150" marker-end="url(#arrow)"></path>
+          <path class="edge" d="M450,150 L486,150" marker-end="url(#arrow)"></path>
+          <path class="edge" d="M690,150 C720,150 720,104 746,104" marker-end="url(#arrow)"></path>
+          <path class="edge" d="M690,150 C720,150 720,218 746,218" marker-end="url(#arrow)"></path>
+          <path class="edge" d="M450,120 C600,60 640,90 746,96" marker-end="url(#arrow)" stroke-dasharray="4 4"></path>
+          <text class="sub" x="540" y="276">Azi, avatarul primește datele direct, fără etapa de modele.</text>
+        </svg>
+      </div>
+    </section>
+
+    <section id="incidente">
+      <div class="section-head">
+        <div class="eyebrow">§4 · Incidente și lecții</div>
+        <h2>Ce s-a stricat pe drum și ce am învățat</h2>
+      </div>
+      <div class="incidents">
+        <article class="incident">
+          <h3>Cod vechi din cache</h3>
+          <dl>
+            <dt>Simptom</dt><dd>Butonul camerei dădea eroare: pagina nouă folosea un modul vechi.</dd>
+            <dt>Cauză</dt><dd>Serverul implicit Python lăsa browserul să păstreze fișierele JS.</dd>
+            <dt>Remediere</dt><dd><code>serve.py</code> trimite <code>Cache-Control: no-store</code>.</dd>
+          </dl>
+        </article>
+        <article class="incident">
+          <h3>Blocaj la 86%</h3>
+          <dl>
+            <dt>Simptom</dt><dd>Încărcarea rămânea la „Construire topologie” într-un tab din fundal.</dd>
+            <dt>Cauză</dt><dd>Așteptarea folosea <code>requestAnimationFrame</code>, pe care browserul nu îl rulează în taburi ascunse.</dd>
+            <dt>Remediere</dt><dd>Un timer simplu în locul cadrului de animație.</dd>
+          </dl>
+        </article>
+        <article class="incident">
+          <h3>Camera se oprea imediat</h3>
+          <dl>
+            <dt>Simptom</dt><dd>Avatarul rămânea la „Caut fața…”; video de 2×2 pixeli, fără cadre.</dd>
+            <dt>Cauză</dt><dd>Codul care elibera camera când permisiunea venea prea târziu rula înainte ca stream-ul să fie salvat și îl oprea.</dd>
+            <dt>Remediere</dt><dd>Stream-ul se oprește doar după un timeout real; pornirea așteaptă cadre reale și arată pe ce pas s-a blocat.</dd>
+          </dl>
+        </article>
+        <article class="incident">
+          <h3>Server oprit de sistem</h3>
+          <dl>
+            <dt>Simptom</dt><dd>Pagina nu se mai încărca după câteva minute de test cu camera.</dd>
+            <dt>Cauză</dt><dd>macOS a oprit serverul pornit din sesiunea de lucru, pe fond de memorie puțină.</dd>
+            <dt>Remediere</dt><dd>Serverul rulează ca proces separat; <code>start.command</code> îl repornește oricând.</dd>
+          </dl>
+        </article>
+      </div>
+    </section>
+
+    <section id="domenii">
+      <div class="section-head">
+        <div class="eyebrow">§5 · Domenii de aplicare</div>
+        <h2>Unde are sens și cât de solidă e baza</h2>
+      </div>
+      <div class="scroll-x">
+        <table>
+          <thead>
+            <tr><th>Domeniu</th><th>Ce măsurăm</th><th>Nivel</th></tr>
+          </thead>
+          <tbody>
+            <tr class="wedge"><td>Paralizie facială</td><td>Asimetrie și mobilitate, comparate cu scalele House-Brackmann și Sunnybrook. <strong>Primul pas recomandat:</strong> perechile stânga-dreapta și calibrarea neutră există deja.</td><td><span class="level solid"><i></i>solid</span></td></tr>
+            <tr><td>AVC</td><td>Slăbiciune facială unilaterală, urmărită în timp.</td><td><span class="level solid"><i></i>solid</span></td></tr>
+            <tr><td>Parkinson</td><td>Hipomimie: reducerea expresivității, cuantificată.</td><td><span class="level solid"><i></i>solid</span></td></tr>
+            <tr><td>Durere non-verbală</td><td>Scoruri pe bază de Action Units (PSPI) la nou-născuți sau pacienți cu demență.</td><td><span class="level solid"><i></i>solid</span></td></tr>
+            <tr><td>Recuperare facială</td><td>Exerciții făcute acasă, cu progres măsurat.</td><td><span class="level solid"><i></i>solid</span></td></tr>
+            <tr><td>Oboseală</td><td>Rata de clipire și semne de somnolență.</td><td><span class="level promising"><i></i>promițător</span></td></tr>
+            <tr><td>Telepreze, animație, UX, accesibilitate</td><td>Avatare controlate de față, reacții la interfețe, control alternativ.</td><td><span class="level promising"><i></i>promițător</span></td></tr>
+            <tr><td>Zone de evitat</td><td>Diagnostic de depresie sau autism fără studii clinice, sindroame genetice, detectarea minciunii, emoții la locul de muncă sau în școli.</td><td><span class="level avoid"><i></i>evitat</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section id="reglementare">
+      <div class="section-head">
+        <div class="eyebrow">§6 · Reglementare · UE și România</div>
+        <h2>Regulile care modelează produsul de la început</h2>
+      </div>
+      <div class="cols">
+        <article>
+          <div class="mono">GDPR</div>
+          <h3>Date biometrice</h3>
+          <p>Datele faciale sunt o categorie specială. E nevoie de consimțământ explicit. Procesarea locală, cum facem acum, reduce riscul.</p>
+        </article>
+        <article>
+          <div class="mono">EU AI Act</div>
+          <h3>Emoții, interzise în unele contexte</h3>
+          <p>Recunoașterea emoțiilor la locul de muncă și în educație e interzisă din 2025. Sistemele trebuie testate pentru bias pe tonuri de piele, vârste și lumină.</p>
+        </article>
+        <article>
+          <div class="mono">MDR</div>
+          <h3>Software medical</h3>
+          <p>Folosit pentru diagnostic, sistemul devine dispozitiv medical și are nevoie de certificare. Până atunci îl prezentăm ca unealtă de cercetare sau de recuperare.</p>
+        </article>
+      </div>
+    </section>
+
+    <section id="roadmap">
+      <div class="section-head">
+        <div class="eyebrow">§7 · Roadmap</div>
+        <h2>Fazele proiectului</h2>
+      </div>
+      <ol class="phases">
+        <li><span class="ph">Faza 0</span><h3>Demo</h3><p>Față 3D, rețea neuronală, avatar controlat de webcam.</p><span class="tag done">realizat</span></li>
+        <li><span class="ph">Faza 1</span><h3>Măsurare</h3><p>Ochi și gură reale, înregistrare de sesiuni, metrici de simetrie și mobilitate, dashboard.</p><span class="tag wip">în lucru</span></li>
+        <li><span class="ph">Faza 2</span><h3>Modele</h3><p>Action Units și valență / activare, antrenate pe seturi publice (DISFA, BP4D, AffectNet, UNBC-McMaster).</p><span class="tag plan">planificat</span></li>
+        <li><span class="ph">Faza 3</span><h3>Pilot clinic</h3><p>Studiu de validare cu un partener medical, comparat cu scalele clinice.</p><span class="tag plan">planificat</span></li>
+        <li><span class="ph">Faza 4</span><h3>Reglementare</h3><p>Pregătire pentru MDR, dacă scopul devine diagnostic.</p><span class="tag plan">planificat</span></li>
+      </ol>
+      <div class="stack">
+        <h3>Întrebări deschise</h3>
+        <ol class="questions">
+          <li>Ce domeniu prioritizăm primul: paralizia facială sau altul?</li>
+          <li>Avem acces la un medic sau o clinică pentru validare?</li>
+        </ol>
+      </div>
+    </section>
+
+    <section id="rulare">
+      <div class="section-head">
+        <div class="eyebrow">§8 · Rulare și fișiere</div>
+        <h2>Cum pornești proiectul și unde stă fiecare parte</h2>
+      </div>
+      <div class="run">
+        <div class="stack">
+          <p>Dublu-click pe <code>start.command</code> sau, în terminal:</p>
+          <pre><span class="c"># din folderul proiectului</span>
+python3 serve.py 5173
+<span class="c"># apoi deschide</span>
+<span class="d">http://localhost:5173</span></pre>
+          <dl class="keys">
+            <dt><kbd>1</kbd> <kbd>2</kbd> <kbd>3</kbd></dt><dd>comută straturile rețelei</dd>
+            <dt><kbd>C</kbd></dt><dd>pornește sau oprește camera</dd>
+            <dt><kbd>N</kbd></dt><dd>recalibrează fața neutră</dd>
+            <dt><kbd>Esc</kbd></dt><dd>deselectează nodul</dd>
+          </dl>
+        </div>
+        <pre>neuronal network face/
+├─ index.html          <span class="c">interfața</span>
+├─ css/style.css
+├─ js/
+│  ├─ main.js          <span class="c">orchestrare, cameră</span>
+│  ├─ stage.js         <span class="c">randare, lumini</span>
+│  ├─ head.js          <span class="c">cap scanat</span>
+│  ├─ network.js       <span class="c">topologia</span>
+│  ├─ networkView.js   <span class="c">shadere</span>
+│  ├─ hud.js           <span class="c">panou</span>
+│  └─ live/
+│     ├─ faceTracker.js
+│     └─ avatarRig.js
+├─ assets/head/        <span class="c">scan + anchors.json</span>
+├─ docs/proces.html    <span class="c">acest dosar</span>
+├─ vault/              <span class="c">cercetare (Obsidian)</span>
+├─ serve.py
+└─ start.command</pre>
+      </div>
+    </section>
+
+    <footer>
+      <span>Neural Face · dosar de proces</span>
+      <span>Scan: Lee Perry-Smith, Infinite-Realities, CC BY 3.0</span>
+      <span>Detecție: MediaPipe Face Landmarker</span>
+    </footer>
+  </main>
+</div>
+
+<script>
+  (function () {
+    const canvas = document.getElementById('specimen');
+    const ctx = canvas.getContext('2d');
+
+    function rng(seed) {
+      let a = seed >>> 0;
+      return function () {
+        a = (a + 0x6d2b79f5) >>> 0;
+        let t = a;
+        t = Math.imul(t ^ (t >>> 15), t | 1);
+        t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+        return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+      };
+    }
+
+    // Build the left half of a face topology, then mirror it across the midline.
+    const W = 720, CX = 360, CY = 350, RX = 230, RY = 300;
+    const rand = rng(1337);
+    const half = [];
+    const features = [];
+    for (let i = 0; i <= 18; i++) {
+      const a = Math.PI / 2 + (i / 18) * Math.PI;
+      half.push({ x: CX + Math.cos(a) * RX * (a > Math.PI ? 0.92 : 1), y: CY - Math.sin(a) * RY, f: 0 });
+    }
+    const eye = { x: CX - 92, y: CY - 50 };
+    for (let i = 0; i < 12; i++) {
+      const a = (i / 12) * Math.PI * 2;
+      features.push({ x: eye.x + Math.cos(a) * 44, y: eye.y + Math.sin(a) * 16, f: 1 });
+    }
+    for (let i = 0; i < 6; i++) features.push({ x: eye.x - 50 + i * 20, y: eye.y - 52 - Math.sin((i / 5) * Math.PI) * 12, f: 1 });
+    for (let i = 0; i < 5; i++) features.push({ x: CX - 8 - i * 7, y: CY - 20 + i * 26, f: 1 });
+    for (let i = 0; i < 7; i++) {
+      const a = Math.PI / 2 + (i / 6) * (Math.PI / 2);
+      features.push({ x: CX + Math.cos(a) * 86, y: CY + 150 + Math.sin(a) * 26 * (i % 2 ? 1 : -1) * 0.6, f: 1 });
+    }
+    const inside = (p) => ((p.x - CX) / (RX * 0.9)) ** 2 + ((p.y - CY) / (RY * 0.92)) ** 2 < 1 && p.x < CX - 6;
+    let tries = 0;
+    while (half.length + features.length < 150 && tries < 5000) {
+      tries++;
+      const p = { x: CX - rand() * RX, y: CY - RY + rand() * RY * 2, f: 0 };
+      if (!inside(p)) continue;
+      const all = half.concat(features);
+      if (all.some((q) => Math.hypot(q.x - p.x, q.y - p.y) < 34)) continue;
+      half.push(p);
+    }
+    const left = half.concat(features);
+    const pts = left.concat(left.map((p) => ({ x: 2 * CX - p.x, y: p.y, f: p.f })));
+    const mid = [];
+    for (let i = 0; i < 9; i++) mid.push({ x: CX, y: CY - RY + 20 + i * ((RY * 2 - 40) / 8), f: 2 });
+    const nodes = pts.concat(mid);
+
+    const edges = [];
+    const seen = new Set();
+    nodes.forEach((p, i) => {
+      nodes
+        .map((q, j) => [Math.hypot(q.x - p.x, q.y - p.y), j])
+        .filter(([, j]) => j !== i)
+        .sort((a, b) => a[0] - b[0])
+        .slice(0, 3)
+        .forEach(([, j]) => {
+          const k = Math.min(i, j) + ':' + Math.max(i, j);
+          if (!seen.has(k)) { seen.add(k); edges.push([i, j]); }
+        });
+    });
+
+    function draw() {
+      const s = getComputedStyle(document.documentElement);
+      const rule = s.getPropertyValue('--rule').trim();
+      const accent = s.getPropertyValue('--accent').trim();
+      const marker = s.getPropertyValue('--marker').trim();
+      const muted = s.getPropertyValue('--muted').trim();
+      ctx.clearRect(0, 0, W, W);
+
+      ctx.setLineDash([6, 8]);
+      ctx.strokeStyle = muted;
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.moveTo(CX, 16);
+      ctx.lineTo(CX, W - 40);
+      ctx.stroke();
+      ctx.setLineDash([]);
+
+      ctx.strokeStyle = rule;
+      ctx.lineWidth = 1.2;
+      ctx.beginPath();
+      edges.forEach(([i, j]) => { ctx.moveTo(nodes[i].x, nodes[i].y); ctx.lineTo(nodes[j].x, nodes[j].y); });
+      ctx.stroke();
+
+      nodes.forEach((p) => {
+        ctx.fillStyle = p.f === 1 ? marker : accent;
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.f === 1 ? 4 : 3, 0, Math.PI * 2);
+        ctx.fill();
+      });
+
+      ctx.fillStyle = muted;
+      ctx.font = '500 15px "IBM Plex Mono", monospace';
+      ctx.fillText('axă de simetrie', CX + 12, 36);
+      ctx.fillText('L', 40, CY);
+      ctx.fillText('R', W - 52, CY);
+    }
+
+    draw();
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(draw);
+    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', draw);
+    new MutationObserver(draw).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+  })();
+</script>
