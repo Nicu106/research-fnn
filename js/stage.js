@@ -14,6 +14,9 @@ const VIEWS = {
   front: { az: 0, el: 0.05 },
   three: { az: 0.72, el: 0.1 },
   profile: { az: Math.PI / 2, el: 0.04 },
+  // Emotion studio: the face, close, at eye level. Expressions live in the brows, lids and mouth,
+  // which are a few pixels tall in the full-bust framing.
+  portrait: { az: 0.1, el: 0.03, zoom: 0.72, ty: 1.28 },
 };
 
 // Cinematic finish: subtle chromatic aberration, vignette and film grain (runs after tone mapping).
@@ -211,19 +214,40 @@ export function createStage(canvas) {
     while (toAz - from.theta < -Math.PI) toAz += Math.PI * 2;
     tween = {
       t: 0,
-      from: { az: from.theta, el: Math.PI / 2 - from.phi, dist: from.radius },
-      to: { az: toAz, el: v.el, dist: fitDistance() },
+      from: { az: from.theta, el: Math.PI / 2 - from.phi, dist: from.radius, ty: controls.target.y },
+      to: { az: toAz, el: v.el, dist: fitDistance() * (v.zoom ?? 1), ty: v.ty ?? TARGET.y },
     };
     controls.enabled = false;
   }
 
+  // Lighting moods. 'stage' is the cinematic look of the network view (strong cyan rim). 'portrait'
+  // is for reading a face: the rim that makes the silhouette glow also puts a plastic, blue-white
+  // sheen on the nose and cheeks, which fights every expression. Portrait keeps the key, fills the
+  // shadows more and turns the rims down to an edge.
+  const MOODS = {
+    stage: { key: 2.5, fill: 0.55, cyan: 4.2, magenta: 0.7, env: 0.22 },
+    portrait: { key: 2.7, fill: 0.95, cyan: 0.5, magenta: 0.2, env: 0.3 },
+  };
+  let mood = MOODS.stage;
+  function setMood(name) { mood = MOODS[name] ?? MOODS.stage; }
+  function updateMood(dt) {
+    const k = 1 - Math.exp(-dt * 2.5);
+    key.intensity += (mood.key - key.intensity) * k;
+    fill.intensity += (mood.fill - fill.intensity) * k;
+    rimCyan.intensity += (mood.cyan - rimCyan.intensity) * k;
+    rimMagenta.intensity += (mood.magenta - rimMagenta.intensity) * k;
+    scene.environmentIntensity += (mood.env - scene.environmentIntensity) * k;
+  }
+
   function update(dt, time) {
+    updateMood(dt);
     dust.material.uniforms.uTime.value = time;
     finish.uniforms.uTime.value = time;
     if (tween) {
       tween.t = Math.min(1, tween.t + dt / 1.6);
       const e = easeInOutCubic(tween.t);
       const { from, to } = tween;
+      controls.target.y = from.ty + (to.ty - from.ty) * e;
       placeCamera(
         from.az + (to.az - from.az) * e,
         from.el + (to.el - from.el) * e,
@@ -249,6 +273,7 @@ export function createStage(canvas) {
     controls,
     pixelRatio,
     flyTo,
+    setMood,
     update,
     render: () => composer.render(),
   };

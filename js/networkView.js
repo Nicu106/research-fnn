@@ -8,6 +8,7 @@ const COMMON = /* glsl */ `
   uniform float uFocus;
   uniform vec3 uLayerVis;
   uniform float uPresence;
+  uniform float uActGain;
   float layerVis(float l) { return (l < 0.5 ? uLayerVis.x : (l < 1.5 ? uLayerVis.y : uLayerVis.z)) * uPresence; }
 `;
 
@@ -18,13 +19,16 @@ const POINT_VS = /* glsl */ `
   attribute float aSize;
   attribute float aSeed;
   attribute float aHi;
+  attribute float aAct;
   attribute vec3 aColorA;
   attribute vec3 aColorB;
   varying vec3 vColor;
   varying float vAlpha;
   varying float vHi;
+  varying float vAct;
   void main() {
     vec4 mv = modelViewMatrix * vec4(position, 1.0);
+    float act = aAct * uActGain;
     gl_Position = projectionMatrix * mv;
     float vis = layerVis(aLayer);
     float reveal = smoothstep(uReveal, uReveal + 0.5, position.y);
@@ -32,10 +36,13 @@ const POINT_VS = /* glsl */ `
     float twinkle = 0.72 + 0.28 * sin(uTime * (0.8 + aSeed * 2.2) + aSeed * 40.0);
     float focus = mix(1.0, mix(0.16, 1.0, step(0.01, aHi)), uFocus);
     float depth = smoothstep(26.0, 9.0, -mv.z);
-    gl_PointSize = aSize * (1.0 + aHi * 1.5 + scan * 1.8) * uPixelRatio * (46.0 / -mv.z) * vis * reveal;
+    // Activation: a node over a contracting muscle swells and burns brighter; its twinkle steadies
+    // (a firing neuron, not a flickering one).
+    gl_PointSize = aSize * (1.0 + aHi * 1.5 + scan * 1.8 + act * 1.4) * uPixelRatio * (46.0 / -mv.z) * vis * reveal;
     vColor = mix(aColorA, aColorB, uColorMix);
-    vAlpha = vis * reveal * (twinkle * focus * mix(0.5, 1.0, depth) + scan);
+    vAlpha = vis * reveal * (mix(twinkle, 1.0, act) * focus * mix(0.5, 1.0, depth) * (1.0 + act * 0.8) + scan);
     vHi = aHi;
+    vAct = act;
   }
 `;
 
@@ -43,13 +50,14 @@ const POINT_FS = /* glsl */ `
   varying vec3 vColor;
   varying float vAlpha;
   varying float vHi;
+  varying float vAct;
   void main() {
     float d = length(gl_PointCoord - 0.5) * 2.0;
     if (d > 1.0) discard;
     float core = smoothstep(0.38, 0.0, d);
     float halo = exp(-d * d * 5.0) * 0.6;
     float ring = smoothstep(0.1, 0.0, abs(d - 0.8)) * step(0.9, vHi);
-    vec3 col = vColor * (halo + core * 1.5 + ring * 2.0) + vec3(1.0) * core * core * 0.9;
+    vec3 col = vColor * (halo + core * 1.5 + ring * 2.0) * (1.0 + vAct * 1.2) + vec3(1.0) * core * core * (0.9 + vAct * 1.4);
     gl_FragColor = vec4(col, vAlpha);
   }
 `;
@@ -62,6 +70,7 @@ const LINE_VS = /* glsl */ `
   attribute float aPulse;
   attribute float aLayer;
   attribute float aHi;
+  attribute float aAct;
   attribute vec3 aColorA;
   attribute vec3 aColorB;
   varying vec3 vColor;
@@ -71,6 +80,7 @@ const LINE_VS = /* glsl */ `
   varying float vSpeed;
   varying float vPulse;
   varying float vHi;
+  varying float vAct;
   void main() {
     vec4 mv = modelViewMatrix * vec4(position, 1.0);
     gl_Position = projectionMatrix * mv;
@@ -81,6 +91,7 @@ const LINE_VS = /* glsl */ `
     vColor = mix(aColorA, aColorB, uColorMix);
     vAlpha = vis * reveal * focus * mix(0.35, 1.0, depth);
     vT = aT; vPhase = aPhase; vSpeed = aSpeed; vPulse = aPulse; vHi = aHi;
+    vAct = aAct * uActGain;
   }
 `;
 
@@ -94,12 +105,14 @@ const LINE_FS = /* glsl */ `
   varying float vSpeed;
   varying float vPulse;
   varying float vHi;
+  varying float vAct;
   void main() {
-    float head = fract(uTime * vSpeed + vPhase) * 1.6 - 0.3;
+    // Active synapses carry signal: every one pulses (not only the 30% that idle-pulse), faster.
+    float head = fract(uTime * vSpeed * (1.0 + vAct * 1.5) + vPhase) * 1.6 - 0.3;
     float dist = vT - head;
     float trail = step(dist, 0.0) * smoothstep(-0.3, 0.0, dist);
-    float pulse = trail * trail * vPulse * uPulse;
-    vec3 col = vColor * (0.34 + vHi * 1.1 + pulse * 2.6);
+    float pulse = trail * trail * max(vPulse, smoothstep(0.15, 0.6, vAct)) * uPulse;
+    vec3 col = vColor * (0.34 + vHi * 1.1 + vAct * 1.3 + pulse * (2.6 + vAct * 2.0));
     gl_FragColor = vec4(col, vAlpha);
   }
 `;
@@ -138,6 +151,7 @@ export class NetworkView {
       uPixelRatio: { value: pixelRatio },
       uPulse: { value: 1 },
       uPresence: { value: presence },
+      uActGain: { value: 1 },
     };
 
     this.#buildPoints();
@@ -162,6 +176,7 @@ export class NetworkView {
     geo.setAttribute('aSize', new THREE.BufferAttribute(size, 1));
     geo.setAttribute('aSeed', new THREE.BufferAttribute(seed, 1));
     geo.setAttribute('aHi', new THREE.BufferAttribute(new Float32Array(N), 1));
+    geo.setAttribute('aAct', new THREE.BufferAttribute(new Float32Array(N), 1));
     geo.setAttribute('aColorA', new THREE.BufferAttribute(colorArray(N, (i) => LAYERS[net.layers[i]].color), 3));
     geo.setAttribute('aColorB', new THREE.BufferAttribute(colorArray(N, (i) => REGIONS[net.regions[i]].color), 3));
     // Generous fixed bounds: positions may be animated (live camera), and raycasting needs a sphere.
@@ -222,6 +237,7 @@ export class NetworkView {
     geo.setAttribute('aPulse', new THREE.BufferAttribute(pulse, 1));
     geo.setAttribute('aLayer', new THREE.BufferAttribute(layer, 1));
     geo.setAttribute('aHi', new THREE.BufferAttribute(new Float32Array(V), 1));
+    geo.setAttribute('aAct', new THREE.BufferAttribute(new Float32Array(V), 1));
     geo.setAttribute('aColorA', new THREE.BufferAttribute(colA, 3));
     geo.setAttribute('aColorB', new THREE.BufferAttribute(colB, 3));
     geo.boundingSphere = new THREE.Sphere(new THREE.Vector3(), 50);
@@ -256,6 +272,37 @@ export class NetworkView {
     }
     lp.needsUpdate = true;
   }
+
+  /**
+   * Per-node activation from how far each node's skin has moved (rig.activation, scan units).
+   * Mapped through a soft threshold so tracking jitter and faint motion stay dark: nothing below
+   * ~0.4 mm lights up, and ~4 mm of travel is full activation.
+   * @param {Float32Array|null} disp per node displacement, or null to clear
+   * @param {number} unitsPerMM
+   */
+  setActivation(disp, unitsPerMM = 1) {
+    const pa = this.points.geometry.getAttribute('aAct');
+    const la = this.lines.geometry.getAttribute('aAct');
+    const P = pa.array, L = la.array;
+    const lo = 0.4 * unitsPerMM, hi = 4 * unitsPerMM;
+    let any = false;
+    for (let i = 0; i < P.length; i++) {
+      let a = 0;
+      if (disp) {
+        const t = Math.min(1, Math.max(0, (disp[i] - lo) / (hi - lo)));
+        a = t * t * (3 - 2 * t);
+      }
+      if (a !== P[i]) any = true;
+      P[i] = a;
+    }
+    if (!any) return;
+    const edges = this.net.edges;
+    for (let v = 0; v < edges.length; v++) L[v] = P[edges[v]];
+    pa.needsUpdate = true;
+    la.needsUpdate = true;
+  }
+
+  setActivationGain(v) { this.uniforms.uActGain.value = v; }
 
   setPresence(v) { this.presenceTarget = v; }
   setLayerVisible(i, on) { this.layerTarget[i] = on ? 1 : 0; }

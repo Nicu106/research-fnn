@@ -1,0 +1,642 @@
+{
+ "corpus": {
+  "train": 30000,
+  "test_seen": 3000,
+  "test_unseen_forms": 1500
+ },
+ "full": {
+  "seen": {
+   "clause_acc": 0.9862020905923345,
+   "word_acc": 0.9752917464977979,
+   "state_mae": 0.00808686884535953,
+   "negation_clause_acc": 0.9711375212224108,
+   "contrast_clause_acc": 0.982193958664547,
+   "ambiguous_verb_acc_no_lookahead": 0.37597911227154046,
+   "ambiguous_verb_acc_lookahead": 0.9751958224543081,
+   "flips_per_word_model": 0.16086491328472965,
+   "flips_per_word_teacher": 0.15743113787354748,
+   "jitter_model": 0.20250333205634688,
+   "jitter_teacher": 0.1970422429022874,
+   "segment_f1": 0.9844858689116055
+  },
+  "unseen_forms": {
+   "clause_acc": 0.8879518072289156,
+   "word_acc": 0.893166144200627,
+   "state_mae": 0.019499256901666207,
+   "negation_clause_acc": 0.890795631825273,
+   "contrast_clause_acc": 0.9037783375314862,
+   "ambiguous_verb_acc_no_lookahead": 0.39655172413793105,
+   "ambiguous_verb_acc_lookahead": 0.9689655172413794,
+   "flips_per_word_model": 0.15966562173458726,
+   "flips_per_word_teacher": 0.15523510971786833,
+   "jitter_model": 0.1910041237637659,
+   "jitter_teacher": 0.19464386624869492,
+   "segment_f1": 0.9791112799088493
+  },
+  "seen_gold_segments": {
+   "clause_acc": 0.9864808362369338,
+   "word_acc": 0.9755654532334719,
+   "state_mae": 0.008060522504611641,
+   "negation_clause_acc": 0.9728353140916808,
+   "contrast_clause_acc": 0.9825119236883942,
+   "ambiguous_verb_acc_no_lookahead": 0.37597911227154046,
+   "ambiguous_verb_acc_lookahead": 0.9765013054830287,
+   "flips_per_word_model": 0.16088979571524548,
+   "flips_per_word_teacher": 0.15743113787354748,
+   "jitter_model": 0.20260474260657726,
+   "jitter_teacher": 0.1970422429022874,
+   "segment_f1": 1.0
+  }
+ },
+ "params": 177451,
+ "no_pre": {
+  "seen": {
+   "clause_acc": 0.9863414634146341,
+   "word_acc": 0.9770335166339048,
+   "state_mae": 0.007741173374988382,
+   "negation_clause_acc": 0.967741935483871,
+   "contrast_clause_acc": 0.983147853736089,
+   "ambiguous_verb_acc_no_lookahead": 0.381201044386423,
+   "ambiguous_verb_acc_lookahead": 0.9778067885117493,
+   "flips_per_word_model": 0.16016820523028688,
+   "flips_per_word_teacher": 0.15743113787354748,
+   "jitter_model": 0.20407848247724877,
+   "jitter_teacher": 0.1970422429022874,
+   "segment_f1": 0.984977767095301
+  },
+  "unseen_forms": {
+   "clause_acc": 0.8773493975903615,
+   "word_acc": 0.8884430512016719,
+   "state_mae": 0.01963732764345923,
+   "negation_clause_acc": 0.8822152886115444,
+   "contrast_clause_acc": 0.8931989924433249,
+   "ambiguous_verb_acc_no_lookahead": 0.3896551724137931,
+   "ambiguous_verb_acc_lookahead": 0.9724137931034482,
+   "flips_per_word_model": 0.15582027168234064,
+   "flips_per_word_teacher": 0.15523510971786833,
+   "jitter_model": 0.1902137657584083,
+   "jitter_teacher": 0.19464386624869492,
+   "segment_f1": 0.9796771130104464
+  }
+ },
+ "no_post": {
+  "seen": {
+   "clause_acc": 0.9763066202090592,
+   "word_acc": 0.9442633556445794,
+   "state_mae": 0.0129731035767487,
+   "negation_clause_acc": 0.932937181663837,
+   "contrast_clause_acc": 0.9710651828298887,
+   "ambiguous_verb_acc_no_lookahead": 0.4164490861618799,
+   "ambiguous_verb_acc_lookahead": 0.4164490861618799,
+   "flips_per_word_model": 0.1689517032023688,
+   "flips_per_word_teacher": 0.15743113787354748,
+   "jitter_model": 0.20399877838203753,
+   "jitter_teacher": 0.1970422429022874,
+   "segment_f1": 0.9847227234452063
+  },
+  "unseen_forms": {
+   "clause_acc": 0.8722891566265061,
+   "word_acc": 0.8655381400208987,
+   "state_mae": 0.02333915306737047,
+   "negation_clause_acc": 0.8642745709828393,
+   "contrast_clause_acc": 0.8906801007556675,
+   "ambiguous_verb_acc_no_lookahead": 0.38275862068965516,
+   "ambiguous_verb_acc_lookahead": 0.38275862068965516,
+   "flips_per_word_model": 0.16217345872518285,
+   "flips_per_word_teacher": 0.15523510971786833,
+   "jitter_model": 0.19048257972246688,
+   "jitter_teacher": 0.19464386624869492,
+   "segment_f1": 0.9775750665146332
+  }
+ },
+ "no_integrator": {
+  "seen": {
+   "clause_acc": 0.9804878048780488,
+   "word_acc": 0.9671551917191271,
+   "state_mae": 0.0087986295787125,
+   "negation_clause_acc": 0.9643463497453311,
+   "contrast_clause_acc": 0.9726550079491256,
+   "ambiguous_verb_acc_no_lookahead": 0.40992167101827676,
+   "ambiguous_verb_acc_lookahead": 0.9451697127937336,
+   "flips_per_word_model": 0.16925029236855857,
+   "flips_per_word_teacher": 0.15743113787354748,
+   "jitter_model": 0.21305307115829164,
+   "jitter_teacher": 0.1970422429022874,
+   "segment_f1": 0.9843561973525873
+  },
+  "unseen_forms": {
+   "clause_acc": 0.8713253012048193,
+   "word_acc": 0.8716405433646813,
+   "state_mae": 0.02068799424484004,
+   "negation_clause_acc": 0.8673946957878315,
+   "contrast_clause_acc": 0.8947103274559194,
+   "ambiguous_verb_acc_no_lookahead": 0.3896551724137931,
+   "ambiguous_verb_acc_lookahead": 0.9275862068965517,
+   "flips_per_word_model": 0.16564263322884012,
+   "flips_per_word_teacher": 0.15523510971786833,
+   "jitter_model": 0.19582267982167034,
+   "jitter_teacher": 0.19464386624869492,
+   "segment_f1": 0.9751281564457945
+  }
+ },
+ "lexicon_baseline": {
+  "seen": 0.671219512195122,
+  "unseen_forms": 0.4568674698795181
+ },
+ "handset": {
+  "A_development": {
+   "n": 40,
+   "net_acc": 0.875,
+   "lexicon_acc": 0.7,
+   "rows": [
+    {
+     "text": "Mi-a murit pisica azi-noapte.",
+     "gold": "sad",
+     "net": "sad",
+     "lexicon": "sad"
+    },
+    {
+     "text": "Ieri a murit bunicul meu.",
+     "gold": "sad",
+     "net": "sad",
+     "lexicon": "sad"
+    },
+    {
+     "text": "Am aflat că fratele meu a murit.",
+     "gold": "sad",
+     "net": "sad",
+     "lexicon": "sad"
+    },
+    {
+     "text": "Sunt atât de fericită că ai venit!",
+     "gold": "joy",
+     "net": "joy",
+     "lexicon": "joy"
+    },
+    {
+     "text": "Am luat examenul cu nota zece!",
+     "gold": "joy",
+     "net": "joy",
+     "lexicon": "sad"
+    },
+    {
+     "text": "Ce bucurie să te văd!",
+     "gold": "joy",
+     "net": "joy",
+     "lexicon": "joy"
+    },
+    {
+     "text": "Nu sunt deloc fericit azi.",
+     "gold": "sad",
+     "net": "sad",
+     "lexicon": "joy"
+    },
+    {
+     "text": "Nu mai sunt trist, mi-a trecut.",
+     "gold": "neutral",
+     "net": "surprise",
+     "lexicon": "sad"
+    },
+    {
+     "text": "Mi-e frică să merg singur noaptea.",
+     "gold": "fear",
+     "net": "fear",
+     "lexicon": "sad"
+    },
+    {
+     "text": "Am auzit pași în casă și sunt îngrozit.",
+     "gold": "fear",
+     "net": "fear",
+     "lexicon": "fear"
+    },
+    {
+     "text": "M-a mințit din nou și sunt furios.",
+     "gold": "anger",
+     "net": "anger",
+     "lexicon": "anger"
+    },
+    {
+     "text": "Sunt supărat pe tine.",
+     "gold": "anger",
+     "net": "anger",
+     "lexicon": "anger"
+    },
+    {
+     "text": "Nu-mi vine să cred ce s-a întâmplat!",
+     "gold": "surprise",
+     "net": "surprise",
+     "lexicon": "surprise"
+    },
+    {
+     "text": "Abia aștept vacanța, sunt foarte încântat!",
+     "gold": "joy",
+     "net": "joy",
+     "lexicon": "joy"
+    },
+    {
+     "text": "Am găsit un fir de păr în supă, ce scârbos.",
+     "gold": "disgust",
+     "net": "disgust",
+     "lexicon": "disgust"
+    },
+    {
+     "text": "Mi-e greață de mirosul ăsta.",
+     "gold": "disgust",
+     "net": "disgust",
+     "lexicon": "sad"
+    },
+    {
+     "text": "Se crede mai deștept decât toți, e penibil.",
+     "gold": "contempt",
+     "net": "contempt",
+     "lexicon": "contempt"
+    },
+    {
+     "text": "Am fost la magazin și am cumpărat pâine.",
+     "gold": "neutral",
+     "net": "neutral",
+     "lexicon": "disgust"
+    },
+    {
+     "text": "Mâine merg la serviciu cu autobuzul.",
+     "gold": "neutral",
+     "net": "neutral",
+     "lexicon": "neutral"
+    },
+    {
+     "text": "Mi-e frică, dar sunt bucuros că ești aici.",
+     "gold": "joy",
+     "net": "neutral",
+     "lexicon": "joy"
+    },
+    {
+     "text": "Am câștigat concursul, dar mi-a murit câinele.",
+     "gold": "sad",
+     "net": "sad",
+     "lexicon": "sad"
+    },
+    {
+     "text": "Eram trist, însă acum sunt fericit.",
+     "gold": "joy",
+     "net": "joy",
+     "lexicon": "joy"
+    },
+    {
+     "text": "Am pierdut portofelul în autobuz.",
+     "gold": "sad",
+     "net": "sad",
+     "lexicon": "sad"
+    },
+    {
+     "text": "Am pierdut kilogramele în plus și mă simt minunat.",
+     "gold": "joy",
+     "net": "joy",
+     "lexicon": "joy"
+    },
+    {
+     "text": "Am primit o amendă uriașă.",
+     "gold": "anger",
+     "net": "anger",
+     "lexicon": "neutral"
+    },
+    {
+     "text": "Am primit o bursă la facultate!",
+     "gold": "joy",
+     "net": "joy",
+     "lexicon": "neutral"
+    },
+    {
+     "text": "M-a sunat spitalul azi-dimineață.",
+     "gold": "fear",
+     "net": "fear",
+     "lexicon": "joy"
+    },
+    {
+     "text": "Din păcate, nu am luat examenul.",
+     "gold": "sad",
+     "net": "neutral",
+     "lexicon": "sad"
+    },
+    {
+     "text": "Din fericire, totul s-a terminat cu bine.",
+     "gold": "joy",
+     "net": "neutral",
+     "lexicon": "neutral"
+    },
+    {
+     "text": "Sunt puțin îngrijorat pentru mâine.",
+     "gold": "fear",
+     "net": "neutral",
+     "lexicon": "fear"
+    },
+    {
+     "text": "Mă doare sufletul când mă gândesc la ea.",
+     "gold": "sad",
+     "net": "sad",
+     "lexicon": "sad"
+    },
+    {
+     "text": "Mi-e dor de mama.",
+     "gold": "sad",
+     "net": "sad",
+     "lexicon": "sad"
+    },
+    {
+     "text": "M-au concediat fără niciun motiv.",
+     "gold": "sad",
+     "net": "sad",
+     "lexicon": "sad"
+    },
+    {
+     "text": "Copilul nostru s-a născut azi!",
+     "gold": "joy",
+     "net": "joy",
+     "lexicon": "joy"
+    },
+    {
+     "text": "E dezgustător ce a făcut.",
+     "gold": "disgust",
+     "net": "disgust",
+     "lexicon": "disgust"
+    },
+    {
+     "text": "Sunt nervos pentru că m-au înșelat.",
+     "gold": "anger",
+     "net": "anger",
+     "lexicon": "anger"
+    },
+    {
+     "text": "A apărut un șarpe lângă cort!",
+     "gold": "fear",
+     "net": "fear",
+     "lexicon": "fear"
+    },
+    {
+     "text": "Ce zi minunată!",
+     "gold": "joy",
+     "net": "joy",
+     "lexicon": "neutral"
+    },
+    {
+     "text": "Nu mi-e frică de nimic.",
+     "gold": "neutral",
+     "net": "neutral",
+     "lexicon": "sad"
+    },
+    {
+     "text": "Sunt obosit după o zi lungă.",
+     "gold": "neutral",
+     "net": "neutral",
+     "lexicon": "neutral"
+    }
+   ]
+  },
+  "B_heldout": {
+   "n": 40,
+   "net_acc": 0.8,
+   "lexicon_acc": 0.475,
+   "rows": [
+    {
+     "text": "Bunica a murit aseară în spital.",
+     "gold": "sad",
+     "net": "sad",
+     "lexicon": "sad"
+    },
+    {
+     "text": "Mi-a scris că nu mai vrea să mă vadă.",
+     "gold": "sad",
+     "net": "neutral",
+     "lexicon": "neutral"
+    },
+    {
+     "text": "Sunt trist de când a plecat.",
+     "gold": "sad",
+     "net": "sad",
+     "lexicon": "sad"
+    },
+    {
+     "text": "Ne-a părăsit câinele după paisprezece ani.",
+     "gold": "sad",
+     "net": "sad",
+     "lexicon": "joy"
+    },
+    {
+     "text": "Am picat iar la examen.",
+     "gold": "sad",
+     "net": "sad",
+     "lexicon": "neutral"
+    },
+    {
+     "text": "Sunt foarte fericit pentru voi!",
+     "gold": "joy",
+     "net": "joy",
+     "lexicon": "joy"
+    },
+    {
+     "text": "Am primit vestea că am fost admis!",
+     "gold": "joy",
+     "net": "joy",
+     "lexicon": "neutral"
+    },
+    {
+     "text": "Ce bine că ai ajuns cu bine!",
+     "gold": "joy",
+     "net": "neutral",
+     "lexicon": "neutral"
+    },
+    {
+     "text": "Mă bucur mult că ne-am revăzut.",
+     "gold": "joy",
+     "net": "joy",
+     "lexicon": "neutral"
+    },
+    {
+     "text": "Am câștigat meciul în ultimul minut!",
+     "gold": "joy",
+     "net": "joy",
+     "lexicon": "joy"
+    },
+    {
+     "text": "Mi-e frică de câinele vecinului.",
+     "gold": "fear",
+     "net": "fear",
+     "lexicon": "sad"
+    },
+    {
+     "text": "Sunt speriat, aud zgomote afară.",
+     "gold": "fear",
+     "net": "fear",
+     "lexicon": "fear"
+    },
+    {
+     "text": "Mi-e teamă că o să pierd trenul.",
+     "gold": "fear",
+     "net": "fear",
+     "lexicon": "fear"
+    },
+    {
+     "text": "S-a stins lumina și cineva a deschis ușa.",
+     "gold": "fear",
+     "net": "sad",
+     "lexicon": "fear"
+    },
+    {
+     "text": "Sunt furios pe colegul meu.",
+     "gold": "anger",
+     "net": "anger",
+     "lexicon": "anger"
+    },
+    {
+     "text": "Iar mi-a furat cineva bicicleta!",
+     "gold": "anger",
+     "net": "anger",
+     "lexicon": "fear"
+    },
+    {
+     "text": "M-am săturat de minciunile tale.",
+     "gold": "anger",
+     "net": "anger",
+     "lexicon": "sad"
+    },
+    {
+     "text": "Mă enervează când întârzii.",
+     "gold": "anger",
+     "net": "anger",
+     "lexicon": "anger"
+    },
+    {
+     "text": "Nu-mi vine să cred că ai făcut asta!",
+     "gold": "surprise",
+     "net": "surprise",
+     "lexicon": "surprise"
+    },
+    {
+     "text": "Sunt uimit de cât de mult ai crescut.",
+     "gold": "surprise",
+     "net": "surprise",
+     "lexicon": "sad"
+    },
+    {
+     "text": "Mi-e silă de mâncarea asta.",
+     "gold": "disgust",
+     "net": "disgust",
+     "lexicon": "sad"
+    },
+    {
+     "text": "E mucegai peste tot în frigider.",
+     "gold": "disgust",
+     "net": "neutral",
+     "lexicon": "neutral"
+    },
+    {
+     "text": "Ce scârbos e aici!",
+     "gold": "disgust",
+     "net": "disgust",
+     "lexicon": "disgust"
+    },
+    {
+     "text": "E jalnic cum se laudă.",
+     "gold": "contempt",
+     "net": "contempt",
+     "lexicon": "contempt"
+    },
+    {
+     "text": "Mi se pare ridicol ce spune.",
+     "gold": "contempt",
+     "net": "fear",
+     "lexicon": "contempt"
+    },
+    {
+     "text": "Azi am mers la piață.",
+     "gold": "neutral",
+     "net": "neutral",
+     "lexicon": "neutral"
+    },
+    {
+     "text": "Diseară mă uit la un film.",
+     "gold": "neutral",
+     "net": "neutral",
+     "lexicon": "neutral"
+    },
+    {
+     "text": "Am terminat raportul la birou.",
+     "gold": "neutral",
+     "net": "neutral",
+     "lexicon": "neutral"
+    },
+    {
+     "text": "Nu sunt supărat pe tine.",
+     "gold": "neutral",
+     "net": "neutral",
+     "lexicon": "anger"
+    },
+    {
+     "text": "Nu mi-e frică de întuneric.",
+     "gold": "neutral",
+     "net": "joy",
+     "lexicon": "sad"
+    },
+    {
+     "text": "Nu sunt fericit cu rezultatul.",
+     "gold": "sad",
+     "net": "sad",
+     "lexicon": "joy"
+    },
+    {
+     "text": "Eram speriat, dar acum sunt liniștit.",
+     "gold": "joy",
+     "net": "joy",
+     "lexicon": "joy"
+    },
+    {
+     "text": "Am luat examenul, dar a murit bunicul.",
+     "gold": "sad",
+     "net": "sad",
+     "lexicon": "sad"
+    },
+    {
+     "text": "Mi-a murit telefonul pe drum.",
+     "gold": "anger",
+     "net": "sad",
+     "lexicon": "sad"
+    },
+    {
+     "text": "Am pierdut cheile de la casă.",
+     "gold": "sad",
+     "net": "sad",
+     "lexicon": "fear"
+    },
+    {
+     "text": "Am găsit ușa spartă când am ajuns acasă.",
+     "gold": "fear",
+     "net": "fear",
+     "lexicon": "joy"
+    },
+    {
+     "text": "Din păcate, s-a îmbolnăvit mama.",
+     "gold": "sad",
+     "net": "sad",
+     "lexicon": "sad"
+    },
+    {
+     "text": "Slavă domnului, s-a născut sănătos!",
+     "gold": "joy",
+     "net": "joy",
+     "lexicon": "neutral"
+    },
+    {
+     "text": "Sunt cam îngrijorat de analize.",
+     "gold": "fear",
+     "net": "neutral",
+     "lexicon": "sad"
+    },
+    {
+     "text": "M-a sunat poliția azi.",
+     "gold": "fear",
+     "net": "fear",
+     "lexicon": "joy"
+    }
+   ]
+  }
+ }
+}

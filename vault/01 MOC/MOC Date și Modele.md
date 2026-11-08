@@ -6,7 +6,7 @@ tags:
   - date
   - modele
 created: 2026-09-15
-updated: 2026-09-15
+updated: 2026-09-28
 ---
 
 # MOC Date și Modele
@@ -17,6 +17,8 @@ updated: 2026-09-15
 - [[AffectNet]] — imagini „in the wild”, categorii + valență/arousal
 - [[UNBC-McMaster Shoulder Pain]] — durere, scor PSPI
 - [[YouTube Facial Palsy]] — paralizie facială
+- [[Aff-Wild2 și ABAW]] — video in the wild, AU, emoții compuse
+- [[FaceSynthetics]] — 100k fețe sintetice (Microsoft)
 
 ## Modele
 - [[Estimare Action Units]]
@@ -27,5 +29,7 @@ updated: 2026-09-15
 ## Datele noastre
 - [[Schema datelor de sesiune]] — serii de timp, fără video
 - [[Format export JSON]] — exportul actual al aplicației
+- [[Schema etichetelor de emoție]] — formatul comun propus
+- [[Modele existente de față și emoție (2026)]] — ce modele externe se pot conecta
 
 Legat de: [[MOC Cercetare]] · [[ADR-007 Serii de trăsături în loc de video]] · [[🏠 Home]]

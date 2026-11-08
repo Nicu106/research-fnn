@@ -6,7 +6,7 @@ tags:
   - retea
   - graf
 created: 2026-09-15
-updated: 2026-09-15
+updated: 2026-09-28
 related:
   - "[[Avatar Rig]]"
   - "[[Format export JSON]]"
@@ -44,6 +44,9 @@ Total ≈ **1.517 noduri** și ≈ **4.792 sinapse** (valorile afișate în apli
 
 ## Comportament live
 Cu camera pornită, pozițiile nodurilor sunt deformate de [[Avatar Rig]] și trimise la GPU prin `NetworkView.updatePositions()`.
+
+## Activare (2026-09-28)
+Nodurile se aprind după activarea mușchilor (`setActivation`, atributul `aAct`) din [[Rețeaua neuromotorie]], atât din studio cât și din cameră.
 
 ## Idei
 [[Rețeaua ca hartă de activare pe regiuni]]

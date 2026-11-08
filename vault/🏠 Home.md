@@ -5,7 +5,7 @@ tags:
   - home
   - neural-face
 created: 2026-09-15
-updated: 2026-09-15
+updated: 2026-09-28
 ---
 
 # 🏠 Neural Face — vault de cercetare
@@ -28,13 +28,23 @@ updated: 2026-09-15
 | Etică și reglementare | [[MOC Etică și Reglementare]] |
 | Etape | [[MOC Roadmap]] |
 
+## Tab-urile aplicației (2026-09-28)
+| Tab | Notă |
+|---|---|
+| Rețea neuronală (+ rețeaua neuromotorie) | [[Rețeaua neuronală facială]] · [[Rețeaua neuromotorie]] |
+| Studio emoții | [[Studio emoții]] · [[Captură expresie din imagine]] · [[Scenarii în timp]] |
+| Harta emoțiilor | [[Harta emoțiilor]] |
+| Creierul emoțional | [[Creierul emoțional (Atlasul emoțiilor)]] |
+
+Unde suntem și ce urmează: [[Plan de integrare - formatul comun]].
+
 Hartă vizuală: `01 MOC/Harta proiectului.canvas`.
 
 ## Cum folosești vault-ul
 1. **Captură rapidă** — orice gând merge în `00 Inbox` (fișierele noi ajung acolo automat). Nu-l formata.
 2. **Triere** (zilnic sau săptămânal) — vezi [[00 Inbox/README|regulile de triere]]: fiecare notă devine idee, experiment, literatură, decizie etc. și se mută în folderul potrivit, folosind un template din `99 Templates`.
 3. **Leagă** — orice notă are cel puțin un link către un MOC și, ideal, 3+ linkuri către note înrudite.
-4. **Jurnal** — nota zilnică (`Jurnal/`) păstrează ce s-a făcut și unde s-a ajuns: [[2026-09-15]].
+4. **Jurnal** — nota zilnică (`Jurnal/`) păstrează ce s-a făcut și unde s-a ajuns: [[2026-09-15]] · [[2026-09-28]] · [[2026-10-04]].
 
 ## Convenții
 - **Frontmatter** pe fiecare notă: `type`, `status`, `tags`, `created`, `updated`, `related`. Valori `type`: moc · proiect · tehnologie · literatura · domeniu · idee · experiment · dataset · model · reglementare · glosar · roadmap · decizie · incident · jurnal · template.

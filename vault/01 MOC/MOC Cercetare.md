@@ -5,7 +5,7 @@ tags:
   - moc
   - cercetare
 created: 2026-09-15
-updated: 2026-09-15
+updated: 2026-09-28
 ---
 
 # MOC Cercetare
@@ -16,6 +16,8 @@ updated: 2026-09-15
 - [[Modele valență-arousal]] — descrierea dimensională a stării afective
 - [[Modele 3D morfabile ale feței]] — 3DMM, FLAME, DECA, EMOCA
 - [[rPPG - fotopletismografie la distanță]] — puls din video
+- [[Modele existente de față și emoție (2026)]] — LibreFace, OpenFace 3, EMOCA, SMIRK, Audio2Face, Emotion-LLaMA, ABAW
+- [[Creierul emoțional - surse]] — cele 22 de surse ale atlasului
 
 ## Întrebări deschise
 - Cât de bine se corelează blendshape-urile MediaPipe cu Action Units codate de experți? → de testat (vezi [[Estimare Action Units]])

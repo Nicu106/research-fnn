@@ -3,10 +3,11 @@
  * Per frame: 478 3D landmarks, 52 expression blendshapes, 4x4 head transform.
  */
 
+// Shared with the still-image analyser (emotion/imageCapture.js), so both use the same model.
 const VERSION = '0.10.14';
-const BUNDLE = `https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@${VERSION}/vision_bundle.mjs`;
-const WASM = `https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@${VERSION}/wasm`;
-const MODEL = 'https://storage.googleapis.com/mediapipe-models/face_landmarker/face_landmarker/float16/1/face_landmarker.task';
+export const BUNDLE = `https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@${VERSION}/vision_bundle.mjs`;
+export const WASM = `https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@${VERSION}/wasm`;
+export const MODEL = 'https://storage.googleapis.com/mediapipe-models/face_landmarker/face_landmarker/float16/1/face_landmarker.task';
 
 const named = (name) => Object.assign(new Error(name), { name });
 const withTimeout = (promise, ms, name) => {

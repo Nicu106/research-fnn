@@ -1,0 +1,174 @@
+data ready 5s
+full step     0  loss 1.9390  0s
+full step   500  loss 0.5871  12s
+full step  1000  loss 0.5760  32s
+full step  1500  loss 0.5830  64s
+full step  2000  loss 0.5742  86s
+full step  2500  loss 0.6131  106s
+full step  3000  loss 0.5503  129s
+full step  3500  loss 0.5744  150s
+full step  3999  loss 0.5798  209s
+full {
+ "seen": {
+  "clause_acc": 0.9862020905923345,
+  "word_acc": 0.9752917464977979,
+  "state_mae": 0.00808686884535953,
+  "negation_clause_acc": 0.9711375212224108,
+  "contrast_clause_acc": 0.982193958664547,
+  "ambiguous_verb_acc_no_lookahead": 0.37597911227154046,
+  "ambiguous_verb_acc_lookahead": 0.9751958224543081,
+  "flips_per_word_model": 0.16086491328472965,
+  "flips_per_word_teacher": 0.15743113787354748,
+  "jitter_model": 0.20250333205634688,
+  "jitter_teacher": 0.1970422429022874,
+  "segment_f1": 0.9844858689116055
+ },
+ "unseen_forms": {
+  "clause_acc": 0.8879518072289156,
+  "word_acc": 0.893166144200627,
+  "state_mae": 0.019499256901666207,
+  "negation_clause_acc": 0.890795631825273,
+  "contrast_clause_acc": 0.9037783375314862,
+  "ambiguous_verb_acc_no_lookahead": 0.39655172413793105,
+  "ambiguous_verb_acc_lookahead": 0.9689655172413794,
+  "flips_per_word_model": 0.15966562173458726,
+  "flips_per_word_teacher": 0.15523510971786833,
+  "jitter_model": 0.1910041237637659,
+  "jitter_teacher": 0.19464386624869492,
+  "segment_f1": 0.9791112799088493
+ },
+ "seen_gold_segments": {
+  "clause_acc": 0.9864808362369338,
+  "word_acc": 0.9755654532334719,
+  "state_mae": 0.008060522504611641,
+  "negation_clause_acc": 0.9728353140916808,
+  "contrast_clause_acc": 0.9825119236883942,
+  "ambiguous_verb_acc_no_lookahead": 0.37597911227154046,
+  "ambiguous_verb_acc_lookahead": 0.9765013054830287,
+  "flips_per_word_model": 0.16088979571524548,
+  "flips_per_word_teacher": 0.15743113787354748,
+  "jitter_model": 0.20260474260657726,
+  "jitter_teacher": 0.1970422429022874,
+  "segment_f1": 1.0
+ }
+}
+no_pre step     0  loss 1.9384  0s
+no_pre step   500  loss 0.5883  22s
+no_pre step  1000  loss 0.5627  42s
+no_pre step  1500  loss 0.5785  61s
+no_pre step  2000  loss 0.5718  82s
+no_pre step  2500  loss 0.6097  98s
+no_pre step  3000  loss 0.5467  117s
+no_pre step  3500  loss 0.5746  133s
+no_pre step  3999  loss 0.5794  149s
+no_pre {
+ "seen": {
+  "clause_acc": 0.9863414634146341,
+  "word_acc": 0.9770335166339048,
+  "state_mae": 0.007741173374988382,
+  "negation_clause_acc": 0.967741935483871,
+  "contrast_clause_acc": 0.983147853736089,
+  "ambiguous_verb_acc_no_lookahead": 0.381201044386423,
+  "ambiguous_verb_acc_lookahead": 0.9778067885117493,
+  "flips_per_word_model": 0.16016820523028688,
+  "flips_per_word_teacher": 0.15743113787354748,
+  "jitter_model": 0.20407848247724877,
+  "jitter_teacher": 0.1970422429022874,
+  "segment_f1": 0.984977767095301
+ },
+ "unseen_forms": {
+  "clause_acc": 0.8773493975903615,
+  "word_acc": 0.8884430512016719,
+  "state_mae": 0.01963732764345923,
+  "negation_clause_acc": 0.8822152886115444,
+  "contrast_clause_acc": 0.8931989924433249,
+  "ambiguous_verb_acc_no_lookahead": 0.3896551724137931,
+  "ambiguous_verb_acc_lookahead": 0.9724137931034482,
+  "flips_per_word_model": 0.15582027168234064,
+  "flips_per_word_teacher": 0.15523510971786833,
+  "jitter_model": 0.1902137657584083,
+  "jitter_teacher": 0.19464386624869492,
+  "segment_f1": 0.9796771130104464
+ }
+}
+no_post step     0  loss 1.9487  0s
+no_post step   500  loss 0.6037  18s
+no_post step  1000  loss 0.5929  42s
+no_post step  1500  loss 0.6060  59s
+no_post step  2000  loss 0.6084  79s
+no_post step  2500  loss 0.6371  107s
+no_post step  3000  loss 0.5894  128s
+no_post step  3500  loss 0.6128  150s
+no_post step  3999  loss 0.6085  171s
+no_post {
+ "seen": {
+  "clause_acc": 0.9763066202090592,
+  "word_acc": 0.9442633556445794,
+  "state_mae": 0.0129731035767487,
+  "negation_clause_acc": 0.932937181663837,
+  "contrast_clause_acc": 0.9710651828298887,
+  "ambiguous_verb_acc_no_lookahead": 0.4164490861618799,
+  "ambiguous_verb_acc_lookahead": 0.4164490861618799,
+  "flips_per_word_model": 0.1689517032023688,
+  "flips_per_word_teacher": 0.15743113787354748,
+  "jitter_model": 0.20399877838203753,
+  "jitter_teacher": 0.1970422429022874,
+  "segment_f1": 0.9847227234452063
+ },
+ "unseen_forms": {
+  "clause_acc": 0.8722891566265061,
+  "word_acc": 0.8655381400208987,
+  "state_mae": 0.02333915306737047,
+  "negation_clause_acc": 0.8642745709828393,
+  "contrast_clause_acc": 0.8906801007556675,
+  "ambiguous_verb_acc_no_lookahead": 0.38275862068965516,
+  "ambiguous_verb_acc_lookahead": 0.38275862068965516,
+  "flips_per_word_model": 0.16217345872518285,
+  "flips_per_word_teacher": 0.15523510971786833,
+  "jitter_model": 0.19048257972246688,
+  "jitter_teacher": 0.19464386624869492,
+  "segment_f1": 0.9775750665146332
+ }
+}
+no_integrator step     0  loss 2.2373  0s
+no_integrator step   500  loss 0.6078  21s
+no_integrator step  1000  loss 0.5803  40s
+no_integrator step  1500  loss 0.5785  60s
+no_integrator step  2000  loss 0.5765  72s
+no_integrator step  2500  loss 0.6052  84s
+no_integrator step  3000  loss 0.5490  102s
+no_integrator step  3500  loss 0.5777  139s
+no_integrator step  3999  loss 0.5798  160s
+no_integrator {
+ "seen": {
+  "clause_acc": 0.9804878048780488,
+  "word_acc": 0.9671551917191271,
+  "state_mae": 0.0087986295787125,
+  "negation_clause_acc": 0.9643463497453311,
+  "contrast_clause_acc": 0.9726550079491256,
+  "ambiguous_verb_acc_no_lookahead": 0.40992167101827676,
+  "ambiguous_verb_acc_lookahead": 0.9451697127937336,
+  "flips_per_word_model": 0.16925029236855857,
+  "flips_per_word_teacher": 0.15743113787354748,
+  "jitter_model": 0.21305307115829164,
+  "jitter_teacher": 0.1970422429022874,
+  "segment_f1": 0.9843561973525873
+ },
+ "unseen_forms": {
+  "clause_acc": 0.8713253012048193,
+  "word_acc": 0.8716405433646813,
+  "state_mae": 0.02068799424484004,
+  "negation_clause_acc": 0.8673946957878315,
+  "contrast_clause_acc": 0.8947103274559194,
+  "ambiguous_verb_acc_no_lookahead": 0.3896551724137931,
+  "ambiguous_verb_acc_lookahead": 0.9275862068965517,
+  "flips_per_word_model": 0.16564263322884012,
+  "flips_per_word_teacher": 0.15523510971786833,
+  "jitter_model": 0.19582267982167034,
+  "jitter_teacher": 0.19464386624869492,
+  "segment_f1": 0.9751281564457945
+ }
+}
+lexicon {'seen': 0.671219512195122, 'unseen_forms': 0.4568674698795181}
+wrote /Users/nicucociorva/Documents/neuronal network face/ml/textnet/../../js/emotion/textNetWeights.json 1.49 MB
+done

@@ -5,7 +5,7 @@ tags:
   - moc
   - idei
 created: 2026-09-15
-updated: 2026-09-15
+updated: 2026-09-28
 ---
 
 # MOC Idei
@@ -17,13 +17,16 @@ Fiecare idee are `fezabilitate` și `impact` (1–5) plus secțiunea „Ce ar tr
 |---|---|---|
 | [[Scor de simetrie facială live]] | 5 | 4 |
 | [[Exerciții de recuperare cu feedback]] | 4 | 4 |
-| [[Avatar cu 52 blendshapes ARKit]] | 4 | 4 |
+| [[Avatar cu 52 blendshapes ARKit]] (realizat parțial, 2026-09-28) | 4 | 4 |
 | [[Înregistrare sesiuni ca serii de timp]] | 5 | 5 |
 | [[Dashboard de expresivitate în timp]] | 4 | 4 |
 | [[Puls estimat din video (rPPG)]] | 3 | 3 |
 | [[Rată de clipire și oboseală]] | 4 | 3 |
 | [[Rețeaua ca hartă de activare pe regiuni]] | 5 | 3 |
 | [[Ochi deschiși pe scanul cu ochii închiși]] (în lucru) | 3 | 3 |
+| [[Fabrică de date sintetice etichetate]] | 3 | 5 |
+| [[Avatar condus de voce și text]] | 4 | 4 |
+| [[Evaluator AU cu LibreFace sau OpenFace 3]] | 4 | 4 |
 
 ## Imposibile (încă)
 | Idee | Fezabilitate | Impact |

@@ -1,11 +1,11 @@
 ---
 type: idee
-status: idee
+status: parțial realizată
 tags:
   - idee
   - posibila
 created: 2026-09-15
-updated: 2026-09-15
+updated: 2026-09-28
 fezabilitate: 4
 impact: 4
 related:

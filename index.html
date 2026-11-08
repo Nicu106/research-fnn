@@ -45,6 +45,13 @@
     </div>
   </header>
 
+  <nav class="tabs" id="tabs" aria-label="Secțiuni">
+    <button data-tab="network" class="on">Rețea neuronală</button>
+    <button data-tab="emotion">Studio emoții</button>
+    <button data-tab="map">Harta emoțiilor</button>
+    <button data-tab="brain">Creierul emoțional</button>
+  </nav>
+
   <div class="status"><span class="dot"></span>LIVE<span class="sep"></span><span id="fps">--</span>&nbsp;FPS</div>
 
   <section class="stats">
@@ -54,7 +61,7 @@
     <div class="stat"><b data-stat="regions">0</b><span>Regiuni</span></div>
   </section>
 
-  <aside class="panel">
+  <aside class="panel" id="panelNetwork">
     <div class="group">
       <div class="label">Sursă</div>
       <div class="seg" data-seg="source">
@@ -82,6 +89,7 @@
         <button data-value="skin" class="on">Piele</button>
         <button data-value="hybrid">Hibrid</button>
         <button data-value="network">Rețea</button>
+        <button data-value="muscles">Mușchi</button>
       </div>
       <div class="slider">
         <span>Opacitate piele</span>
@@ -93,6 +101,8 @@
     <div class="group">
       <div class="label">Straturi</div>
       <div class="layers" id="layers"></div>
+      <button class="toggle" data-toggle="neuro" aria-pressed="true" style="--c:#ffe8a3"><b class="swatch"></b><span>Cale neuromotorie</span><em class="count" data-nm-count>7 niveluri</em><i></i></button>
+      <button class="toggle" data-toggle="brainLabels" aria-pressed="true" style="--c:#c77dff"><b class="swatch"></b><span>Etichete creier</span><em class="count">12 structuri</em><i></i></button>
     </div>
 
     <div class="group">
@@ -121,6 +131,180 @@
     </button>
   </aside>
 
+  <aside class="panel panel-emotion" id="panelEmotion" hidden>
+    <div class="group">
+      <div class="label">Emoție</div>
+      <div class="emo-grid" id="emoGrid"></div>
+      <div class="depth" id="sadDepth" hidden></div>
+      <div class="slider"><span>Intensitate</span><output>100</output><input id="emoIntensity" type="range" min="0" max="150" value="100" /></div>
+    </div>
+
+    <div class="group">
+      <div class="label">Scenariu în timp</div>
+      <div class="scene-list" id="sceneList"></div>
+      <label class="field"><span>Celălalt spune</span><input id="sceneHeard" type="text" maxlength="120" /></label>
+      <div class="text-words" id="sceneWords" aria-live="polite"></div>
+      <button class="toggle" id="textLive" aria-pressed="false"><span>Fața reacționează live, cât scrii</span><i></i></button>
+      <label class="field"><span>Avatarul răspunde</span><input id="sceneReply" type="text" maxlength="160" /></label>
+      <button class="toggle" id="sceneSound" aria-pressed="true"><span>Voce (sinteză vocală)</span><i></i></button>
+      <button class="ghost" id="sceneExit" hidden>Ieși din scenariu</button>
+      <p class="hint-small">Scenariul scris: ascultă → șoc → neîncredere → tristețe → compasiune, apoi răspunde. „Din text”: rețeaua neuronală citește fraza cuvânt cu cuvânt (culorile de sub câmp) și construiește singură linia de timp. Trage pe linia de timp ca să vezi orice moment.</p>
+    </div>
+
+    <div class="group">
+      <div class="label">Lucrează pe față</div>
+      <div class="emo-groups" id="emoGroups"></div>
+      <button class="ghost" id="emoReset">Resetează ajustările</button>
+    </div>
+
+    <details class="group adv">
+      <summary class="label">Avansat · fiecare mușchi (FACS)</summary>
+      <div class="muscles" id="emoMuscles"></div>
+    </details>
+
+    <div class="group">
+      <div class="label">Din imagine</div>
+      <button class="drop" id="capDrop">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 16l4.5-4.5 3 3L16 10l4 4M4 5h16v14H4z" /></svg>
+        <span>Trage o fotografie aici, apasă pentru a alege, sau lipește (⌘V)</span>
+      </button>
+      <input type="file" id="capFile" accept="image/*" hidden />
+      <canvas id="capCanvas" width="560" height="400" hidden></canvas>
+      <p class="cap-status" id="capStatus">Fața din imagine e analizată local; nu pleacă nicăieri.</p>
+      <div class="cap-ref" id="capRef" hidden>Referință neutră: <b id="capRefName"></b><button id="capNeutralClear" aria-label="Elimină referința">×</button></div>
+      <div class="cap-result" id="capResult" hidden>
+        <div class="label">Seamănă cu</div>
+        <ul class="recog" id="capRecog"></ul>
+        <button class="toggle" id="capPose" aria-pressed="true"><span>Include înclinarea capului</span><i></i></button>
+        <button class="ghost" id="capNeutral" title="Pentru aceeași persoană: capturile următoare vor măsura doar schimbarea față de fața ei relaxată">Folosește ca față neutră (referință)</button>
+        <div class="row2">
+          <button class="ghost" id="capApply">Aplică pe față</button>
+          <button class="primary" id="capSave">Salvează</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="group">
+      <div class="label">Salvează expresia curentă</div>
+      <div class="save-row">
+        <input id="saveName" type="text" placeholder="Nume (opțional)" maxlength="60" />
+        <button class="primary" id="saveBtn">Salvează</button>
+      </div>
+    </div>
+
+    <div class="group">
+      <div class="label">Expresii salvate <em id="libCount">0</em></div>
+      <ul class="lib" id="lib"></ul>
+      <div class="row2">
+        <button class="ghost" id="libExport">Exportă .json</button>
+        <button class="ghost" id="libImport">Importă</button>
+      </div>
+      <input type="file" id="libFile" accept="application/json,.json" hidden />
+    </div>
+
+    <div class="group">
+      <div class="label">Vizualizare</div>
+      <div class="seg" data-seg="preset">
+        <button data-value="skin" class="on">Piele</button>
+        <button data-value="hybrid">Hibrid</button>
+        <button data-value="network">Rețea</button>
+        <button data-value="muscles">Mușchi</button>
+      </div>
+      <button class="toggle" data-toggle="activation" aria-pressed="true"><span>Activare neuronală pe mușchi</span><i></i></button>
+      <button class="toggle" data-toggle="neuro" aria-pressed="true" style="--c:#ffe8a3"><b class="swatch"></b><span>Cale neuromotorie</span><em class="count" data-nm-count>7 niveluri</em><i></i></button>
+      <button class="toggle" data-toggle="brainLabels" aria-pressed="true" style="--c:#c77dff"><b class="swatch"></b><span>Etichete creier</span><em class="count">12 structuri</em><i></i></button>
+      <p class="hint-small">Emoție → amigdală → cortex → nucleul facial → nervul VII → mușchi → piele. Se vede în modurile Hibrid și Rețea.</p>
+    </div>
+  </aside>
+
+  <section class="map-view" id="mapView" hidden></section>
+
+  <aside class="panel panel-map" id="panelMap" hidden>
+    <div class="group">
+      <input id="mapSearch" class="search" type="search" placeholder="Caută o emoție… (ex. rușine, fear)" autocomplete="off" />
+      <div class="seg" id="mapLayout">
+        <button data-layout="tree" class="on">Arbore</button>
+        <button data-layout="va">Valență · activare</button>
+        <button data-layout="force">Rețea</button>
+      </div>
+      <p class="map-focus" id="mapFocus"></p>
+    </div>
+
+    <div class="group">
+      <div class="label">Detalii</div>
+      <div class="map-detail" id="mapDetail"></div>
+    </div>
+
+    <div class="group">
+      <div class="label">Ce poate modelul <em>apasă pentru filtrare</em></div>
+      <div class="caps" id="mapCaps"></div>
+      <div class="label sub">Are deja</div>
+      <div class="have" id="mapHave"></div>
+    </div>
+
+    <div class="group">
+      <div class="label">Abilități de adăugat <em>emoții deblocate</em></div>
+      <ul class="gaps" id="mapGaps"></ul>
+    </div>
+
+    <div class="group">
+      <div class="label">Legături</div>
+      <div id="mapLinks"></div>
+    </div>
+
+    <details class="group guide">
+      <summary class="label">Cum să faci și să clasifici datele</summary>
+      <ol>
+        <li><b>Etichetă ierarhică</b> familie / emoție / sub-emoție (ex. <code>sadness/melancholy</code>). Lasă nivelurile adânci goale dacă nu ești sigur; mai bine o etichetă corectă și largă decât una fină și greșită.</li>
+        <li><b>Intensitate</b> 0–1 și <b>valență / activare</b> în [-1, 1]. Dimensiunile prind ce categoriile scapă: stările mixte și trecerile.</li>
+        <li><b>Mușchii (AU)</b> pe scara FACS 0–5: exact parametrii acestui model, deci datele se pot aplica direct pe față.</li>
+        <li><b>Semnale din afara feței</b> ca booleene: lacrimi, roșeață, postură, voce. Fără ele durerea, jena și mândria nu se pot învăța.</li>
+        <li><b>Metadate:</b> persoana (împarte train/test pe persoane, nu pe imagini), pozat vs. spontan, unghi, lumină.</li>
+        <li><b>Perechile care se confundă</b> (liniile roșii) cer instrucțiuni clare pentru adnotatori și mai multe exemple.</li>
+        <li><b>Cel puțin 2 adnotatori</b> pe imagine, cu acordul raportat (Cohen κ / Krippendorff α).</li>
+        <li>Pentru emoțiile <b>compozabile</b>, modelul acesta poate genera date sintetice (randări cu variație de intensitate, asimetrie, unghi și lumină) pentru pre-antrenare; pentru cele <b>fără expresie pe față</b> e nevoie de video cu context și auto-raportare.</li>
+      </ol>
+    </details>
+
+    <div class="group">
+      <div class="row2">
+        <button class="ghost" id="mapExportJson">Taxonomia (.json)</button>
+        <button class="ghost" id="mapExportCsv">Șablon etichete (.csv)</button>
+      </div>
+    </div>
+  </aside>
+
+  <section class="blog-view" id="blogView" hidden>
+    <iframe id="blogFrame" title="Atlasul emoțiilor"></iframe>
+  </section>
+
+  <div class="emo-caption" id="emoCaption" hidden>
+    <b id="emoCapName">—</b>
+    <ul id="emoCapAU"></ul>
+    <p class="cap-path" id="emoCapPath"></p>
+  </div>
+
+  <div class="scene-sub" id="sceneSub" hidden><em id="sceneSubWho"></em><span id="sceneSubText"></span></div>
+
+  <div class="scene-bar" id="sceneBar" hidden>
+    <button class="sb-btn" id="scenePlay" aria-label="Redă">
+      <svg class="i-play" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5.5v13l10.5-6.5z" /></svg>
+      <svg class="i-pause" viewBox="0 0 24 24" aria-hidden="true"><path d="M7.5 5.5h3v13h-3zM13.5 5.5h3v13h-3z" /></svg>
+    </button>
+    <button class="sb-btn" id="sceneRestart" aria-label="De la început">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12a7 7 0 1 0 2.1-5M5 4.5V8h3.5" /></svg>
+    </button>
+    <div class="sb-track" id="sceneTrack">
+      <div class="sb-lines" id="sceneLines"></div>
+      <div class="sb-beats" id="sceneBeats"></div>
+      <i class="sb-head" id="sceneHead"></i>
+    </div>
+    <output class="sb-time" id="sceneTime">0:00.0</output>
+    <div class="sb-speed" id="sceneSpeed"><button data-speed="0.5">0.5×</button><button data-speed="1" class="on">1×</button></div>
+  </div>
+
+  <div class="toast" id="toast" hidden></div>
+
   <div class="cam-pill" id="camPill" hidden><span class="spin"></span><b>Pornesc camera…</b></div>
   <figure class="cam-preview off" id="camPreview">
     <video id="camVideo" playsinline muted></video>
@@ -138,6 +322,7 @@
       <dt>Z</dt><dd data-f="z">0</dd>
       <dt>Conexiuni</dt><dd data-f="degree">0</dd>
     </dl>
+    <p class="ins-info" data-f="info"></p>
   </div>
 
   <script type="module" src="js/main.js"></script>

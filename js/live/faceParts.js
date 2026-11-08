@@ -14,6 +14,8 @@ const EYES = [
 ];
 const MOUTH = { corners: [78, 308], upper: 13, lower: 14 };
 
+const EYE_RAISE = 0.025; // ~1.3 mm
+
 const anchorAt = (anchors, i) => new THREE.Vector3(anchors[i * 3], anchors[i * 3 + 1], anchors[i * 3 + 2]);
 
 // Equirectangular eyeball texture; the iris is the cap around +Y (rotated to face +Z later).
@@ -81,7 +83,9 @@ export class FaceParts {
       // Sit the globe well inside the orbit so it never pokes through the lower lid or cheek.
       const radius = width * 0.39;
       const center = a.clone().add(b).multiplyScalar(0.5);
-      center.y = (center.y + upper.y) / 2 + 0.01;
+      // The scan's lid seam is where a CLOSED eye's lids meet, i.e. the lower third of the globe,
+      // so the globe's centre sits ~3 mm above it (see EYE_LIFT in avatarRig.js).
+      center.y = (center.y + upper.y) / 2 + 0.01 + EYE_RAISE;
       center.z = upper.z - radius - 0.075;
       const geo = new THREE.SphereGeometry(radius, 64, 48).rotateX(Math.PI / 2);
       const mesh = new THREE.Mesh(geo, eyeMat);
@@ -89,6 +93,22 @@ export class FaceParts {
       mesh.rotation.order = 'YXZ';
       this.group.add(mesh);
       return mesh;
+    });
+
+    /** Parts only meant to be seen through the lid and lip openings (see setSkin). */
+    this.interior = [];
+    // Conjunctiva behind each globe: what shows in the corners of the eye, where the sphere does not
+    // reach (the pinkish caruncle at the inner corner, the moist fold at the outer one). Without it
+    // those corners showed the empty socket, as black wedges.
+    const lining = new THREE.MeshStandardMaterial({ color: 0x6b3d39, roughness: 0.5, metalness: 0 });
+    this.eyes.forEach((mesh) => {
+      const r = mesh.geometry.parameters.radius;
+      const back = new THREE.Mesh(new THREE.SphereGeometry(1, 32, 20), lining);
+      back.scale.set(r * 1.3, r * 1.0, r * 0.7);
+      back.position.copy(mesh.position);
+      back.position.z -= r * 0.42;
+      this.group.add(back);
+      this.interior.push(back);
     });
 
     const c0 = anchorAt(anchors, MOUTH.corners[0]);
@@ -108,6 +128,7 @@ export class FaceParts {
     cavity.scale.set(width * 0.72, width * 0.7, width * 0.95);
     cavity.position.set(cx, seamY - 0.15, lipZ - width * 0.8);
     this.group.add(cavity);
+    this.interior.push(cavity);
 
     // Full dentition, anchored at the lip seam. The lower arch and tongue ride on the jaw.
     const teeth = buildDentition({ width });
@@ -118,21 +139,28 @@ export class FaceParts {
     this.jaw.add(teeth.lower, teeth.tongue);
     mouth.add(this.jaw);
     this.group.add(mouth);
+    this.interior.push(mouth);
 
     // Soft socket shadow: darkens the top of each eyeball where the upper lid overhangs it.
     const shadowMat = new THREE.ShaderMaterial({
       transparent: true,
       depthWrite: false,
-      uniforms: { uCenterY: { value: 0 }, uRadius: { value: 1 } },
+      uniforms: { uCenterY: { value: 0 }, uRadius: { value: 1 }, uLid: { value: 0.35 } },
       vertexShader: /* glsl */ `
         varying float vY;
-        void main() { vY = (modelMatrix * vec4(position, 1.0)).y; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }
+        // Height on the globe in its own frame (the sphere is centred on the eye). This used to be
+        // world Y compared against a head-local centre, which only agreed while the head stood
+        // still at the origin: any head turn or tilt slid the shadow off the lid line.
+        void main() { vY = position.y; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }
       `,
       fragmentShader: /* glsl */ `
-        uniform float uCenterY; uniform float uRadius; varying float vY;
+        uniform float uCenterY; uniform float uRadius; uniform float uLid; varying float vY;
         void main() {
-          float t = (vY - uCenterY) / uRadius;
-          float a = smoothstep(0.1, 0.85, t) * 0.55 + smoothstep(-0.2, -1.0, t) * 0.25;
+          float t = vY / uRadius;
+          // uLid: height of the upper lid margin on the globe (in radii). The lid overhangs the eye
+          // and shades the band just below it; a lowered, heavy lid shades further down. Without
+          // this the white of a half-closed eye stayed bright right up to the lashes.
+          float a = smoothstep(uLid - 0.8, uLid - 0.02, t) * 0.78 + smoothstep(-0.2, -1.0, t) * 0.25;
           gl_FragColor = vec4(0.02, 0.01, 0.01, a);
         }
       `,
@@ -145,7 +173,20 @@ export class FaceParts {
       shade.position.copy(mesh.position);
       shade.renderOrder = 1;
       this.group.add(shade);
+      (this.shades ??= []).push(shade);
     });
+  }
+
+  /**
+   * Visibility by skin opacity. The eyes help a see-through face look alive, so they stay from
+   * fairly low opacity; the mouth interior and the eye-corner lining are only meant to be seen
+   * through the openings, and through semi-transparent skin the full dentition showed behind
+   * closed lips.
+   */
+  setSkin(opacity) {
+    this.group.visible = opacity > 0.2;
+    const inner = opacity > 0.85;
+    for (const o of this.interior) o.visible = inner;
   }
 
   /**
@@ -157,6 +198,10 @@ export class FaceParts {
     this.group.matrixWorldNeedsUpdate = true;
     this.eyes.forEach((mesh, i) => {
       mesh.rotation.set(face.gaze[i][1], face.gaze[i][0], 0);
+      // Lid margin height on the globe, in radii: ~0.5 fully open, lower as the lid comes down
+      // (openness already includes the lid following a downward gaze).
+      // Lid margin above the globe centre, in radii: (0.94 * EYE_LIFT * lid - centre offset) / r.
+      if (this.shades) this.shades[i].material.uniforms.uLid.value = -0.28 + 0.6 * (face.lid?.[i] ?? face.eyeOpen[i]);
     });
     // The jaw hinges near the ear: dropping the chin also swings the lower arch slightly back.
     const drop = Math.max(-0.32, Math.min(0, face.jaw.dy));

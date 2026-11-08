@@ -1,0 +1,2038 @@
+<!doctype html>
+<html lang="ro">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Atlasul emoțiilor</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Literata:ital,opsz,wght@0,7..72,400;0,7..72,600;1,7..72,400&family=Schibsted+Grotesk:wght@400;600;700&display=swap">
+<style>
+:root {
+  --bg: #f5f7f7; --paper: #ffffff; --ink: #172122; --ink-2: #3f4e50; --muted: #667779; --rule: #d7e0e0;
+  --accent: #0b6f79; --accent-soft: #e2f0f1; --warn: #9a5410; --warn-soft: #f6ecdf; --code-bg: #eaf0f0;
+  --serif: "Literata", "Iowan Old Style", Georgia, serif;
+  --sans: "Schibsted Grotesk", "Segoe UI", system-ui, sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, Menlo, monospace;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0d1314; --paper: #121a1b; --ink: #e2eceb; --ink-2: #b9c8c7; --muted: #8a9d9c; --rule: #24302f;
+    --accent: #5cc9d2; --accent-soft: #15292b; --warn: #e2a25e; --warn-soft: #2a2117; --code-bg: #1a2526;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0d1314; --paper: #121a1b; --ink: #e2eceb; --ink-2: #b9c8c7; --muted: #8a9d9c; --rule: #24302f;
+  --accent: #5cc9d2; --accent-soft: #15292b; --warn: #e2a25e; --warn-soft: #2a2117; --code-bg: #1a2526;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--ink); font-family: var(--serif); font-size: 17px; line-height: 1.65; }
+.page { display: grid; grid-template-columns: minmax(0, 1fr); gap: 48px; max-width: 1120px; margin: 0 auto; padding-inline: 20px; padding-block: 40px 96px; }
+@media (min-width: 1040px) { .page { grid-template-columns: 230px minmax(0, 1fr); } }
+nav.toc { font-family: var(--sans); font-size: 14px; }
+@media (min-width: 1040px) { nav.toc { position: sticky; top: calc(env(safe-area-inset-top, 0px) + 24px); align-self: start; max-height: calc(100vh - 48px); overflow-y: auto; } }
+nav.toc b { display: block; font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); margin-bottom: 10px; }
+nav.toc ol { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
+nav.toc a { color: var(--ink-2); text-decoration: none; }
+nav.toc a:hover, nav.toc a:focus-visible { color: var(--accent); }
+article { min-width: 0; max-width: 70ch; }
+header.hero { display: grid; gap: 12px; padding-bottom: 28px; border-bottom: 1px solid var(--rule); margin-bottom: 12px; }
+.kicker { font-family: var(--sans); font-size: 12px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--accent); margin: 0; }
+h1 { font-family: var(--sans); font-weight: 700; font-size: clamp(32px, 5vw, 46px); line-height: 1.08; letter-spacing: -0.02em; margin: 0; text-wrap: balance; }
+.sub { font-size: 19px; color: var(--ink-2); margin: 0; }
+h2 { font-family: var(--sans); font-weight: 700; font-size: 28px; line-height: 1.2; letter-spacing: -0.01em; margin: 64px 0 12px; text-wrap: balance; scroll-margin-top: 20px; }
+h3 { font-family: var(--sans); font-weight: 600; font-size: 20px; margin: 40px 0 8px; color: var(--accent); scroll-margin-top: 20px; }
+h4 { font-family: var(--sans); font-weight: 600; font-size: 17px; margin: 0 0 4px; }
+h4 .en { font-weight: 400; color: var(--muted); font-size: 14px; margin-left: 6px; }
+p { margin: 0 0 12px; }
+.lede { font-size: 18px; color: var(--ink-2); }
+a { color: var(--accent); }
+code { font-family: var(--mono); font-size: 0.84em; background: var(--code-bg); padding: 1px 5px; border-radius: 4px; }
+.entry { padding: 18px 0; border-top: 1px solid var(--rule); scroll-margin-top: 20px; }
+.entry p { margin-bottom: 8px; }
+.entry.sub { padding-left: 22px; border-left: 2px solid var(--rule); border-top-style: dashed; }
+.tag { font-family: var(--sans); font-size: 11px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--accent); margin-right: 4px; }
+.tag.warn, .myth .tag { color: var(--warn); }
+.evidence { background: var(--accent-soft); padding: 10px 12px; border-radius: 6px; }
+.myth { background: var(--warn-soft); padding: 10px 12px; border-radius: 6px; }
+.meta { font-family: var(--sans); font-size: 13px; color: var(--muted); }
+.cite { font-family: var(--sans); font-size: 12px; text-decoration: none; vertical-align: super; line-height: 0; margin-left: 1px; }
+.facts { list-style: none; margin: 8px 0 10px; padding: 0; display: flex; flex-wrap: wrap; gap: 6px 18px; font-family: var(--sans); font-size: 13.5px; }
+.facts span { color: var(--muted); margin-right: 6px; }
+.facs { font-size: 15.5px; }
+.table-wrap { overflow-x: auto; margin: 12px 0 20px; }
+table { border-collapse: collapse; width: 100%; font-size: 15px; }
+th { font-family: var(--sans); font-size: 12px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); text-align: left; font-weight: 600; }
+th, td { padding: 9px 10px; border-bottom: 1px solid var(--rule); vertical-align: top; }
+td.when { font-family: var(--mono); font-size: 13px; white-space: nowrap; color: var(--accent); }
+td.structs { font-family: var(--sans); font-size: 13.5px; min-width: 150px; }
+td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; font-family: var(--sans); }
+.est { font-family: var(--sans); color: var(--warn); font-weight: 700; }
+.myths s { color: var(--warn); text-decoration-thickness: 1px; }
+dl.paths dt { font-family: var(--sans); font-weight: 600; font-size: 15px; margin-top: 14px; }
+dl.paths dd { margin: 4px 0 0; }
+dl.paths ul { margin: 0; padding-left: 20px; }
+.counts { display: flex; flex-wrap: wrap; gap: 8px 22px; font-family: var(--sans); font-size: 14px; }
+.counts strong { font-size: 20px; margin-right: 4px; font-variant-numeric: tabular-nums; }
+.familytoc { font-family: var(--sans); font-size: 14px; line-height: 1.9; }
+.steps { padding-left: 22px; display: grid; gap: 10px; }
+.cols { line-height: 2.1; }
+.sources { font-size: 14.5px; padding-left: 26px; display: grid; gap: 8px; }
+.sources li { scroll-margin-top: 20px; }
+.sources li:target { background: var(--accent-soft); }
+footer { margin-top: 56px; padding-top: 18px; border-top: 1px solid var(--rule); font-family: var(--sans); font-size: 13px; color: var(--muted); }
+a:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 2px; }
+@media (prefers-reduced-motion: no-preference) { html { scroll-behavior: smooth; } }
+</style>
+</head>
+<body>
+<div class="page">
+  <nav class="toc" aria-label="Cuprins">
+    <b>Cuprins</b>
+    <ol><li><a href="#creierul">Cum lucrează creierul emoțiile</a></li><li><a href="#scenarii">De la stimul la față</a></li><li><a href="#teorii">Teoriile de azi</a></li><li><a href="#mituri">Mituri corectate</a></li><li><a href="#neurochimie">Neurochimie</a></li><li><a href="#spectrul">Spectrul emoțiilor</a></li><li><a href="#muschi">Mușchii feței</a></li><li><a href="#abilitati">Ce poate modelul</a></li><li><a href="#date">Cum faci și clasifici datele</a></li><li><a href="#model">Ce înseamnă pentru model</a></li><li><a href="#surse">Surse</a></li></ol>
+  </nav>
+  <article>
+    <header class="hero">
+      <p class="kicker">Neural Face · text de referință</p>
+      <h1>Atlasul emoțiilor</h1>
+      <p class="sub">Cum produce creierul o emoție, cum ajunge ea pe față, toate cele 92 emoții și stări cu mușchii lor și cum se etichetează datele pentru un model. Fiecare afirmație are sursa ei.</p>
+    </header>
+    
+  <section id="creierul">
+    <h2>Cum lucrează creierul emoțiile</h2>
+    <p class="lede">Nu există un singur „centru al emoțiilor”. O emoție apare din mai multe rețele care lucrează împreună: unele detectează ce e important, altele pregătesc corpul, altele o simt, o numesc și o reglează. O meta-analiză a studiilor de imagistică nu a găsit regiuni dedicate fiecărei emoții, ci rețele comune multor emoții <a class="cite" href="#src-lindquist2012" title="Lindquist, Wager, Kober, Bliss-Moreau &amp; Barrett (2012). The brain basis of emotion: a meta-analytic review. Behavioral and Brain Sciences 35(3), 121–143.">[3]</a>; emoțiile pot fi totuși deosebite după tiparele de activitate răspândite prin tot creierul <a class="cite" href="#src-kragel2016" title="Kragel &amp; LaBar (2016). Decoding the nature of emotion in the brain. Trends in Cognitive Sciences 20(6), 444–455.">[6]</a>.</p>
+    <p>Mai jos, cele 25 structuri cele mai implicate, grupate pe sisteme. Pozițiile sunt coordonate MNI, spațiul standard din neuroimagistică (x pozitiv = emisfera dreaptă, y = înainte, z = în sus), luate ca valori tipice din literatură.</p>
+    
+    <h3 id="sistem-limbic">Limbic / subcortical</h3>
+    
+      <section class="entry" id="amygdala">
+        <h4>Amigdala <span class="en">Amygdala</span></h4>
+        <p>Evaluează rapid ce contează pentru tine — mai ales amenințări, dar și recompense și fețe. Declanșează reacțiile corpului (inimă, pupile, încremenire) prin hipotalamus și trunchiul cerebral.</p>
+        <p class="evidence"><span class="tag">Dovezi</span> Răspunde la fețe speriate la doar 74 ms, pe o cale subcorticală rapidă, doar la contururi (frecvențe spațiale joase). Pacienta S.M., fără amigdale, nu simte frică — dar simte celelalte emoții. <a class="cite" href="#src-mendez2016" title="Méndez-Bértolo et al. (2016). A fast pathway for fear in human amygdala. Nature Neuroscience 19, 1041–1049.">[1]</a><a class="cite" href="#src-feinstein2011" title="Feinstein, Adolphs, Damasio &amp; Tranel (2011). The human amygdala and the induction and experience of fear. Current Biology 21, 34–38.">[2]</a></p>
+        <p class="myth"><span class="tag">Atenție la mit</span> Nu e „centrul fricii”: e un detector de relevanță; fără ea frica dispare, dar celelalte emoții rămân.</p>
+        <p class="meta">Poziție MNI (mm): <code>±23, -5, -18</code> · în ambele emisfere</p>
+      </section>
+      <section class="entry" id="hippocampus">
+        <h4>Hipocamp <span class="en">Hippocampus</span></h4>
+        <p>Contextul și memoria: îți spune unde și când — de ce aceeași situație sperie într-un loc și nu în altul.</p>
+        <p class="evidence"><span class="tag">Dovezi</span> Lucrează în pereche cu amigdala: amigdala marchează ce e important, hipocampul leagă de context. <a class="cite" href="#src-lindquist2012" title="Lindquist, Wager, Kober, Bliss-Moreau &amp; Barrett (2012). The brain basis of emotion: a meta-analytic review. Behavioral and Brain Sciences 35(3), 121–143.">[3]</a></p>
+        
+        <p class="meta">Poziție MNI (mm): <code>±29, -22, -12</code> · în ambele emisfere</p>
+      </section>
+      <section class="entry" id="hypothalamus">
+        <h4>Hipotalamus <span class="en">Hypothalamus</span></h4>
+        <p>Transformă emoția în corp: sistemul nervos autonom (puls, transpirație, roșeață, paloare) și hormonii de stres (axa hipotalamus–hipofiză–suprarenală).</p>
+        <p class="evidence"><span class="tag">Dovezi</span> Cortizolul — produsul final al axei — atinge vârful la 20–40 de minute după un stres acut: emoția ține mult după ce expresia a dispărut. <a class="cite" href="#src-dickerson2004" title="Dickerson &amp; Kemeny (2004). Acute stressors and cortisol responses: a theoretical integration and synthesis of laboratory research. Psychological Bulletin 130, 355–391.">[4]</a></p>
+        
+        <p class="meta">Poziție MNI (mm): <code>0, -5, -10</code></p>
+      </section>
+      <section class="entry" id="pituitary">
+        <h4>Hipofiză <span class="en">Pituitary</span></h4>
+        <p>Glanda care primește comanda hipotalamusului și pornește eliberarea de cortizol în suprarenale.</p>
+        <p class="evidence"><span class="tag">Dovezi</span> Veriga din mijloc a axei stresului. <a class="cite" href="#src-dickerson2004" title="Dickerson &amp; Kemeny (2004). Acute stressors and cortisol responses: a theoretical integration and synthesis of laboratory research. Psychological Bulletin 130, 355–391.">[4]</a></p>
+        
+        <p class="meta">Poziție MNI (mm): <code>0, 2, -34</code></p>
+      </section>
+    <h3 id="sistem-sensory">Percepție (fețe, simțuri)</h3>
+    
+      <section class="entry" id="thalamus">
+        <h4>Talamus <span class="en">Thalamus</span></h4>
+        <p>Stație de releu pentru simțuri. Pulvinarul (partea lui posterioară) face parte din calea rapidă spre amigdală.</p>
+        <p class="evidence"><span class="tag">Dovezi</span> Calea rapidă: coliculul superior → pulvinar → amigdală, independentă de cortexul vizual. <a class="cite" href="#src-mendez2016" title="Méndez-Bértolo et al. (2016). A fast pathway for fear in human amygdala. Nature Neuroscience 19, 1041–1049.">[1]</a></p>
+        
+        <p class="meta">Poziție MNI (mm): <code>±11, -18, 7</code> · în ambele emisfere</p>
+      </section>
+      <section class="entry" id="colliculus">
+        <h4>Coliculul superior <span class="en">Superior colliculus</span></h4>
+        <p>Veche structură vizuală a mezencefalului: vede mișcarea și contururile grosiere, foarte repede.</p>
+        <p class="evidence"><span class="tag">Dovezi</span> Prima verigă a căii subcorticale spre amigdală. <a class="cite" href="#src-mendez2016" title="Méndez-Bértolo et al. (2016). A fast pathway for fear in human amygdala. Nature Neuroscience 19, 1041–1049.">[1]</a></p>
+        
+        <p class="meta">Poziție MNI (mm): <code>±5, -30, -5</code> · în ambele emisfere</p>
+      </section>
+      <section class="entry" id="v1">
+        <h4>Cortex vizual <span class="en">Visual cortex</span></h4>
+        <p>Analiza detaliată a imaginii — calea „lentă”, dar precisă, spre recunoașterea feței și a expresiei.</p>
+        <p class="evidence"><span class="tag">Dovezi</span> Răspunsurile de frică apar aici mai târziu decât în amigdală. <a class="cite" href="#src-mendez2016" title="Méndez-Bértolo et al. (2016). A fast pathway for fear in human amygdala. Nature Neuroscience 19, 1041–1049.">[1]</a></p>
+        
+        <p class="meta">Poziție MNI (mm): <code>±12, -88, 4</code> · în ambele emisfere</p>
+      </section>
+      <section class="entry" id="ffa">
+        <h4>Girusul fusiform (fețe) <span class="en">Fusiform face area</span></h4>
+        <p>Recunoaște că ceva e o față și a cui e.</p>
+        <p class="evidence"><span class="tag">Dovezi</span> Semnalul electric specific fețelor (N170) apare la ~170 ms. <a class="cite" href="#src-bentin1996" title="Bentin, Allison, Puce, Perez &amp; McCarthy (1996). Electrophysiological studies of face perception in humans (componenta N170). Journal of Cognitive Neuroscience 8, 551–565.">[5]</a></p>
+        
+        <p class="meta">Poziție MNI (mm): <code>±40, -54, -18</code> · în ambele emisfere</p>
+      </section>
+      <section class="entry" id="psts">
+        <h4>Sulcul temporal superior <span class="en">Posterior STS</span></h4>
+        <p>Citește ce se mișcă pe față: privirea, gura, expresia — informația socială schimbătoare.</p>
+        <p class="evidence"><span class="tag">Dovezi</span> Complementar girusului fusiform: identitate acolo, expresie și privire aici. <a class="cite" href="#src-kragel2016" title="Kragel &amp; LaBar (2016). Decoding the nature of emotion in the brain. Trends in Cognitive Sciences 20(6), 444–455.">[6]</a></p>
+        
+        <p class="meta">Poziție MNI (mm): <code>±50, -46, 10</code> · în ambele emisfere</p>
+      </section>
+    <h3 id="sistem-cortex">Cortex prefrontal și cingular</h3>
+    
+      <section class="entry" id="insula">
+        <h4>Insula anterioară <span class="en">Anterior insula</span></h4>
+        <p>Simte starea corpului din interior (interocepție) și o transformă în sentiment: „nodul în gât”, greața, inima care bate.</p>
+        <p class="evidence"><span class="tag">Dovezi</span> Activitatea ei corelează cu toate sentimentele trăite, nu doar cu dezgustul. Un pacient cu leziune stângă (NK) nu mai recunoștea dezgustul; unul cu leziune dreaptă, da. <a class="cite" href="#src-craig2009" title="Craig (2009). How do you feel — now? The anterior insula and human awareness. Nature Reviews Neuroscience 10, 59–70.">[7]</a><a class="cite" href="#src-calder2000" title="Calder, Keane, Manes, Antoun &amp; Young (2000). Impaired recognition and experience of disgust following brain injury. Nature Neuroscience 3, 1077–1078.">[8]</a><a class="cite" href="#src-straube2010" title="Straube et al. (2010). No impairment of recognition and experience of disgust in a patient with a right-hemispheric lesion of the insula and basal ganglia. Neuropsychologia 48(6), 1735–1741.">[9]</a></p>
+        <p class="myth"><span class="tag">Atenție la mit</span> Nu e „centrul dezgustului”: e baza tuturor sentimentelor corporale; efectul asupra dezgustului pare lateralizat.</p>
+        <p class="meta">Poziție MNI (mm): <code>±37, 14, 0</code> · în ambele emisfere</p>
+      </section>
+      <section class="entry" id="dacc">
+        <h4>Cortexul cingular anterior (dorsal) <span class="en">Dorsal ACC</span></h4>
+        <p>Semnalează conflictul și durerea (inclusiv cea socială), reglează reacția autonomă; împreună cu insula formează „rețeaua de relevanță”.</p>
+        <p class="evidence"><span class="tag">Dovezi</span> Face parte din rețelele distribuite găsite în toate categoriile de emoții. <a class="cite" href="#src-lindquist2012" title="Lindquist, Wager, Kober, Bliss-Moreau &amp; Barrett (2012). The brain basis of emotion: a meta-analytic review. Behavioral and Brain Sciences 35(3), 121–143.">[3]</a></p>
+        
+        <p class="meta">Poziție MNI (mm): <code>0, 22, 34</code></p>
+      </section>
+      <section class="entry" id="sgacc">
+        <h4>Cingularul subgenual (aria 25) <span class="en">Subgenual ACC (BA25)</span></h4>
+        <p>Legat de tristețe și de dispoziția negativă; controlează reacțiile autonome și hormonale.</p>
+        <p class="evidence"><span class="tag">Dovezi</span> Tristețea indusă crește activitatea aici și o scade în prefrontalul dorsolateral drept; stimularea profundă a acestei zone ameliorează depresia severă. <a class="cite" href="#src-mayberg1999" title="Mayberg et al. (1999). Reciprocal limbic-cortical function and negative mood: converging PET findings in depression and normal sadness. American Journal of Psychiatry 156, 675–682.">[10]</a></p>
+        
+        <p class="meta">Poziție MNI (mm): <code>0, 24, -8</code></p>
+      </section>
+      <section class="entry" id="vmpfc">
+        <h4>Cortexul prefrontal ventromedial <span class="en">vmPFC / medial OFC</span></h4>
+        <p>Dă valoare lucrurilor și reglează amigdala: stinge frica învățată, pune emoția în contextul scopurilor tale.</p>
+        <p class="evidence"><span class="tag">Dovezi</span> Parte a buclei de reglare prefrontal–amigdală. <a class="cite" href="#src-ochsner2005" title="Ochsner &amp; Gross (2005). The cognitive control of emotion. Trends in Cognitive Sciences 9, 242–249.">[11]</a></p>
+        
+        <p class="meta">Poziție MNI (mm): <code>0, 46, -12</code></p>
+      </section>
+      <section class="entry" id="ofc">
+        <h4>Cortexul orbitofrontal lateral <span class="en">Lateral OFC</span></h4>
+        <p>Evaluează recompense și pedepse, se actualizează când ceva nu mai e plăcut.</p>
+        <p class="evidence"><span class="tag">Dovezi</span> Integrează valoarea cu informația din simțuri. <a class="cite" href="#src-berridge2009" title="Berridge, Robinson &amp; Aldridge (2009). Dissecting components of reward: “liking”, “wanting”, and learning. Current Opinion in Pharmacology 9, 65–73.">[12]</a></p>
+        
+        <p class="meta">Poziție MNI (mm): <code>±30, 36, -16</code> · în ambele emisfere</p>
+      </section>
+      <section class="entry" id="dlpfc">
+        <h4>Cortexul prefrontal dorsolateral <span class="en">dlPFC</span></h4>
+        <p>Controlul cognitiv al emoției: reinterpretarea („nu e chiar așa de grav”), menținerea scopului.</p>
+        <p class="evidence"><span class="tag">Dovezi</span> Reinterpretarea cognitivă recrutează prefrontalul lateral și reduce activitatea amigdalei. <a class="cite" href="#src-ochsner2005" title="Ochsner &amp; Gross (2005). The cognitive control of emotion. Trends in Cognitive Sciences 9, 242–249.">[11]</a><a class="cite" href="#src-mayberg1999" title="Mayberg et al. (1999). Reciprocal limbic-cortical function and negative mood: converging PET findings in depression and normal sadness. American Journal of Psychiatry 156, 675–682.">[10]</a></p>
+        
+        <p class="meta">Poziție MNI (mm): <code>±42, 32, 30</code> · în ambele emisfere</p>
+      </section>
+      <section class="entry" id="vlpfc">
+        <h4>Cortexul prefrontal ventrolateral <span class="en">vlPFC / IFG</span></h4>
+        <p>Inhibă și selectează răspunsuri — inclusiv ascunderea unei expresii.</p>
+        <p class="evidence"><span class="tag">Dovezi</span> Implicat în reglarea emoțiilor și etichetarea lor verbală. <a class="cite" href="#src-ochsner2005" title="Ochsner &amp; Gross (2005). The cognitive control of emotion. Trends in Cognitive Sciences 9, 242–249.">[11]</a></p>
+        
+        <p class="meta">Poziție MNI (mm): <code>±48, 30, 2</code> · în ambele emisfere</p>
+      </section>
+    <h3 id="sistem-reward">Recompensă (dopamină)</h3>
+    
+      <section class="entry" id="nacc">
+        <h4>Nucleul accumbens <span class="en">Nucleus accumbens</span></h4>
+        <p>„Vreau”: motivația de a obține ceva (dopamină). Câteva puncte mici din el („hotspoturi hedonice”, opioide) fac „îmi place”.</p>
+        <p class="evidence"><span class="tag">Dovezi</span> Dorința (wanting) și plăcerea (liking) sunt sisteme separate: dopamina crește dorința, nu plăcerea. <a class="cite" href="#src-berridge2009" title="Berridge, Robinson &amp; Aldridge (2009). Dissecting components of reward: “liking”, “wanting”, and learning. Current Opinion in Pharmacology 9, 65–73.">[12]</a></p>
+        
+        <p class="meta">Poziție MNI (mm): <code>±10, 11, -8</code> · în ambele emisfere</p>
+      </section>
+      <section class="entry" id="vta">
+        <h4>Aria tegmentală ventrală <span class="en">VTA</span></h4>
+        <p>Sursa dopaminei pentru accumbens și prefrontal: semnalează recompense neașteptate și împinge spre ele.</p>
+        <p class="evidence"><span class="tag">Dovezi</span> Calea mezolimbică VTA → accumbens. <a class="cite" href="#src-berridge2009" title="Berridge, Robinson &amp; Aldridge (2009). Dissecting components of reward: “liking”, “wanting”, and learning. Current Opinion in Pharmacology 9, 65–73.">[12]</a><a class="cite" href="#src-brainstemAtlas" title="Levinson et al. (2023). A structural connectivity atlas of limbic brainstem nuclei (LC, NTS, PAG, VTA, rafeul dorsal, în spațiul MNI). Frontiers in Neuroimaging 1, 1009399.">[13]</a></p>
+        
+        <p class="meta">Poziție MNI (mm): <code>0, -16, -13</code></p>
+      </section>
+    <h3 id="sistem-brainstem">Trunchi cerebral</h3>
+    
+      <section class="entry" id="pag">
+        <h4>Substanța cenușie periapeductală <span class="en">PAG</span></h4>
+        <p>Execută comportamentele de supraviețuire: încremenire, fugă, atac, vocalizări; modulează durerea (opioide).</p>
+        <p class="evidence"><span class="tag">Dovezi</span> Ținta principală a amigdalei pentru răspunsurile defensive; parte din sistemele emoționale subcorticale descrise la toate mamiferele. <a class="cite" href="#src-panksepp" title="Panksepp (1998, 2012). Affective Neuroscience; The Archaeology of Mind — seven primary emotional systems (SEEKING, RAGE, FEAR, LUST, CARE, PANIC/GRIEF, PLAY).">[14]</a><a class="cite" href="#src-ledoux2016" title="LeDoux &amp; Pine (2016). Using neuroscience to help understand fear and anxiety: a two-system framework. American Journal of Psychiatry 173, 1083–1093.">[15]</a></p>
+        
+        <p class="meta">Poziție MNI (mm): <code>0, -30, -10</code></p>
+      </section>
+      <section class="entry" id="lc">
+        <h4>Locus coeruleus <span class="en">Locus coeruleus</span></h4>
+        <p>Sursa noradrenalinei: trezirea, vigilența, pupilele dilatate.</p>
+        <p class="evidence"><span class="tag">Dovezi</span> Nucleu mic din punte, desenat mai mare ca să se vadă. <a class="cite" href="#src-brainstemAtlas" title="Levinson et al. (2023). A structural connectivity atlas of limbic brainstem nuclei (LC, NTS, PAG, VTA, rafeul dorsal, în spațiul MNI). Frontiers in Neuroimaging 1, 1009399.">[13]</a></p>
+        
+        <p class="meta">Poziție MNI (mm): <code>±5, -37, -27</code> · în ambele emisfere</p>
+      </section>
+      <section class="entry" id="raphe">
+        <h4>Nucleul rafeului dorsal <span class="en">Dorsal raphe</span></h4>
+        <p>Sursa serotoninei: dispoziție, răbdare, controlul impulsurilor.</p>
+        <p class="evidence"><span class="tag">Dovezi</span> Proiectează spre aproape tot creierul. <a class="cite" href="#src-brainstemAtlas" title="Levinson et al. (2023). A structural connectivity atlas of limbic brainstem nuclei (LC, NTS, PAG, VTA, rafeul dorsal, în spațiul MNI). Frontiers in Neuroimaging 1, 1009399.">[13]</a></p>
+        
+        <p class="meta">Poziție MNI (mm): <code>0, -27, -17</code></p>
+      </section>
+      <section class="entry" id="ssn">
+        <h4>Nucleul salivator superior (lacrimal) <span class="en">Superior salivatory nucleus</span></h4>
+        <p>Comanda lacrimilor: fibre parasimpatice care merg împreună cu nervul facial spre glanda lacrimală.</p>
+        <p class="evidence"><span class="tag">Dovezi</span> Primește intrări din cortexul frontal, ganglionii bazali, talamus și hipotalamus — de aceea plângem de emoție, nu doar din reflex. <a class="cite" href="#src-bylsma2019" title="Bylsma, Gračanin &amp; Vingerhoets (2019). The neurobiology of human crying. Clinical Autonomic Research 29, 63–73.">[16]</a></p>
+        
+        <p class="meta">Poziție MNI (mm): <code>±9, -36, -34</code> · în ambele emisfere</p>
+      </section>
+    <h3 id="sistem-motor">Motor (expresia facială)</h3>
+    
+      <section class="entry" id="facialN">
+        <h4>Nucleul nervului facial (VII) <span class="en">Facial motor nucleus</span></h4>
+        <p>Ultima oprire în creier: de aici pornesc fibrele nervului VII spre toți mușchii mimici. Primește comenzi și pe calea voluntară, și pe cea emoțională.</p>
+        <p class="evidence"><span class="tag">Dovezi</span> Partea pentru fața de sus primește fibre din cortexul motor al ambelor emisfere și din cortexul cingular motor; cea pentru fața de jos, mai ales din emisfera opusă. <a class="cite" href="#src-morecraft2001" title="Morecraft, Louie, Herrick &amp; Stilwell-Morecraft (2001). Cortical innervation of the facial nucleus in the non-human primate. Brain 124, 176–208.">[17]</a></p>
+        
+        <p class="meta">Poziție MNI (mm): <code>±12, -38, -40</code> · în ambele emisfere</p>
+      </section>
+      <section class="entry" id="m1face">
+        <h4>Cortexul motor (aria feței) <span class="en">M1 face area</span></h4>
+        <p>Calea VOLUNTARĂ a expresiei: zâmbetul „la comandă”, prin tractul piramidal.</p>
+        <p class="evidence"><span class="tag">Dovezi</span> O leziune aici paralizează mișcarea voluntară a feței, dar un zâmbet spontan la o glumă rămâne posibil — și invers pentru leziunile căii emoționale. <a class="cite" href="#src-hopf1992" title="Hopf, Müller-Forell &amp; Hopf (1992). Localization of emotional and volitional facial paresis. Neurology 42(10), 1918–1923.">[18]</a><a class="cite" href="#src-morecraft2001" title="Morecraft, Louie, Herrick &amp; Stilwell-Morecraft (2001). Cortical innervation of the facial nucleus in the non-human primate. Brain 124, 176–208.">[17]</a></p>
+        
+        <p class="meta">Poziție MNI (mm): <code>±54, -8, 32</code> · în ambele emisfere</p>
+      </section>
+      <section class="entry" id="cma">
+        <h4>Aria motorie cingulară <span class="en">Cingulate motor areas (M3/M4)</span></h4>
+        <p>Calea EMOȚIONALĂ a expresiei: legată de sistemul limbic, trimite comenzi spre nucleul facial, mai ales pentru fața de sus.</p>
+        <p class="evidence"><span class="tag">Dovezi</span> Cortexul cingular motor rostral (M3) proiectează bilateral spre partea nucleului facial care controlează fruntea și pleoapele. <a class="cite" href="#src-morecraft2001" title="Morecraft, Louie, Herrick &amp; Stilwell-Morecraft (2001). Cortical innervation of the facial nucleus in the non-human primate. Brain 124, 176–208.">[17]</a><a class="cite" href="#src-gothard2014" title="Gothard (2014). The amygdalo-motor pathways and the control of facial expressions. Frontiers in Neuroscience 8, 43.">[19]</a></p>
+        
+        <p class="meta">Poziție MNI (mm): <code>±6, 12, 42</code> · în ambele emisfere</p>
+      </section>
+    <h3 id="caile">Căile dintre ele</h3>
+    <dl class="paths">
+    <dt>Cale rapidă subcorticală</dt>
+    <dd><ul><li>Calea rapidă: colicul → pulvinar <a class="cite" href="#src-mendez2016" title="Méndez-Bértolo et al. (2016). A fast pathway for fear in human amygdala. Nature Neuroscience 19, 1041–1049.">[1]</a></li><li>Calea rapidă: pulvinar → amigdală (~74 ms) <a class="cite" href="#src-mendez2016" title="Méndez-Bértolo et al. (2016). A fast pathway for fear in human amygdala. Nature Neuroscience 19, 1041–1049.">[1]</a></li></ul></dd>
+    <dt>Percepție</dt>
+    <dd><ul><li>Talamus → cortex vizual </li><li>Cortex vizual → fusiform (fața) <a class="cite" href="#src-bentin1996" title="Bentin, Allison, Puce, Perez &amp; McCarthy (1996). Electrophysiological studies of face perception in humans (componenta N170). Journal of Cognitive Neuroscience 8, 551–565.">[5]</a></li><li>Cortex vizual → STS (expresia) </li><li>Fusiform → amigdală (calea lentă, detaliată) </li></ul></dd>
+    <dt>Spre corp (autonom, hormoni)</dt>
+    <dd><ul><li>Amigdală → hipotalamus (corp, hormoni) </li><li>Hipotalamus → hipofiză (axa cortizolului) <a class="cite" href="#src-dickerson2004" title="Dickerson &amp; Kemeny (2004). Acute stressors and cortisol responses: a theoretical integration and synthesis of laboratory research. Psychological Bulletin 130, 355–391.">[4]</a></li><li>Amigdală → PAG (încremenire, fugă) <a class="cite" href="#src-ledoux2016" title="LeDoux &amp; Pine (2016). Using neuroscience to help understand fear and anxiety: a two-system framework. American Journal of Psychiatry 173, 1083–1093.">[15]</a></li><li>Amigdală → locus coeruleus (noradrenalină) </li><li>Cingular subgenual → hipotalamus <a class="cite" href="#src-mayberg1999" title="Mayberg et al. (1999). Reciprocal limbic-cortical function and negative mood: converging PET findings in depression and normal sadness. American Journal of Psychiatry 156, 675–682.">[10]</a></li><li>Hipotalamus → nucleul lacrimal <a class="cite" href="#src-bylsma2019" title="Bylsma, Gračanin &amp; Vingerhoets (2019). The neurobiology of human crying. Clinical Autonomic Research 29, 63–73.">[16]</a></li></ul></dd>
+    <dt>Rețele limbice</dt>
+    <dd><ul><li>Hipocamp ↔ amigdală (context, memorie) </li><li>Insulă ↔ cingular (rețeaua de relevanță) <a class="cite" href="#src-craig2009" title="Craig (2009). How do you feel — now? The anterior insula and human awareness. Nature Reviews Neuroscience 10, 59–70.">[7]</a></li><li>Amigdală ↔ insulă </li></ul></dd>
+    <dt>Reglare prefrontală</dt>
+    <dd><ul><li>Prefrontal ventromedial → amigdală (reglare) <a class="cite" href="#src-ochsner2005" title="Ochsner &amp; Gross (2005). The cognitive control of emotion. Trends in Cognitive Sciences 9, 242–249.">[11]</a></li><li>Prefrontal dorsolateral → ventromedial (reinterpretare) <a class="cite" href="#src-ochsner2005" title="Ochsner &amp; Gross (2005). The cognitive control of emotion. Trends in Cognitive Sciences 9, 242–249.">[11]</a></li></ul></dd>
+    <dt>Dopamină / recompensă</dt>
+    <dd><ul><li>VTA → accumbens (dopamină: „vreau”) <a class="cite" href="#src-berridge2009" title="Berridge, Robinson &amp; Aldridge (2009). Dissecting components of reward: “liking”, “wanting”, and learning. Current Opinion in Pharmacology 9, 65–73.">[12]</a></li><li>VTA → prefrontal (dopamină) </li><li>Orbitofrontal → accumbens (valoare) </li></ul></dd>
+    <dt>Expresie: calea emoțională</dt>
+    <dd><ul><li>Amigdală → aria motorie cingulară <a class="cite" href="#src-gothard2014" title="Gothard (2014). The amygdalo-motor pathways and the control of facial expressions. Frontiers in Neuroscience 8, 43.">[19]</a></li><li>Calea EMOȚIONALĂ → nucleul facial <a class="cite" href="#src-morecraft2001" title="Morecraft, Louie, Herrick &amp; Stilwell-Morecraft (2001). Cortical innervation of the facial nucleus in the non-human primate. Brain 124, 176–208.">[17]</a><a class="cite" href="#src-hopf1992" title="Hopf, Müller-Forell &amp; Hopf (1992). Localization of emotional and volitional facial paresis. Neurology 42(10), 1918–1923.">[18]</a></li></ul></dd>
+    <dt>Expresie: calea voluntară</dt>
+    <dd><ul><li>Calea VOLUNTARĂ (piramidală) → nucleul facial <a class="cite" href="#src-hopf1992" title="Hopf, Müller-Forell &amp; Hopf (1992). Localization of emotional and volitional facial paresis. Neurology 42(10), 1918–1923.">[18]</a></li><li>Decizie → cortex motor </li></ul></dd></dl>
+  </section>
+
+  <section id="scenarii">
+    <h2>De la stimul la față</h2>
+    <p class="lede">Patru situații, pas cu pas. Timpii măsurați au sursa lângă ei; cei marcați cu <span class="est">≈</span> sunt estimări, nu valori dintr-un studiu anume.</p>
+    
+      <h3 id="scenariu-fear">Frică: vezi o față speriată</h3>
+      <div class="table-wrap"><table class="timeline">
+        <thead><tr><th>Când</th><th>Ce se întâmplă</th><th>Structuri</th></tr></thead>
+        <tbody>
+          <tr>
+            <td class="when">0 ms</td>
+            <td><strong>Imaginea atinge retina.</strong> Totul începe cu lumina: încă nu știi nimic despre ce vezi. </td>
+            <td class="structs">—</td>
+          </tr>
+          <tr>
+            <td class="when"><span class="est" title="estimare">≈</span> ~40–60 ms</td>
+            <td><strong>Calea rapidă pornește.</strong> Coliculul superior și pulvinarul prind contururile grosiere — ocolind cortexul vizual. <a class="cite" href="#src-mendez2016" title="Méndez-Bértolo et al. (2016). A fast pathway for fear in human amygdala. Nature Neuroscience 19, 1041–1049.">[1]</a></td>
+            <td class="structs"><a href="#colliculus">Coliculul superior</a>, <a href="#thalamus">Talamus</a></td>
+          </tr>
+          <tr>
+            <td class="when">74 ms</td>
+            <td><strong>Amigdala reacționează.</strong> Înainte ca fața să fie recunoscută conștient. Doar la fețe speriate, nu la cele neutre sau fericite, și doar la informația de contur. <a class="cite" href="#src-mendez2016" title="Méndez-Bértolo et al. (2016). A fast pathway for fear in human amygdala. Nature Neuroscience 19, 1041–1049.">[1]</a></td>
+            <td class="structs"><a href="#amygdala">Amigdala</a>, <a href="#thalamus">Talamus</a></td>
+          </tr>
+          <tr>
+            <td class="when">~170 ms</td>
+            <td><strong>Calea lentă: „e o față, și e speriată”.</strong> Cortexul vizual, girusul fusiform și STS analizează detaliat fața și expresia (componenta N170). <a class="cite" href="#src-bentin1996" title="Bentin, Allison, Puce, Perez &amp; McCarthy (1996). Electrophysiological studies of face perception in humans (componenta N170). Journal of Cognitive Neuroscience 8, 551–565.">[5]</a></td>
+            <td class="structs"><a href="#v1">Cortex vizual</a>, <a href="#ffa">Girusul fusiform (fețe)</a>, <a href="#psts">Sulcul temporal superior</a></td>
+          </tr>
+          <tr>
+            <td class="when"><span class="est" title="estimare">≈</span> 100–300 ms</td>
+            <td><strong>Corpul se pregătește.</strong> Amigdala activează hipotalamusul, PAG și locus coeruleus: pulsul crește, pupilele se dilată, apare tendința de încremenire. Aceste circuite controlează reacția — nu sentimentul. <a class="cite" href="#src-ledoux2016" title="LeDoux &amp; Pine (2016). Using neuroscience to help understand fear and anxiety: a two-system framework. American Journal of Psychiatry 173, 1083–1093.">[15]</a></td>
+            <td class="structs"><a href="#amygdala">Amigdala</a>, <a href="#hypothalamus">Hipotalamus</a>, <a href="#pag">Substanța cenușie periapeductală</a>, <a href="#lc">Locus coeruleus</a></td>
+          </tr>
+          <tr>
+            <td class="when">300–400 ms</td>
+            <td><strong>Fața reacționează.</strong> Mușchii feței răspund în 300–400 ms, chiar dacă imaginea n-a fost văzută conștient — pe calea emoțională, nu pe cea voluntară. <a class="cite" href="#src-dimberg2000" title="Dimberg, Thunberg &amp; Elmehed (2000). Unconscious facial reactions to emotional facial expressions. Psychological Science 11, 86–89.">[20]</a><a class="cite" href="#src-hopf1992" title="Hopf, Müller-Forell &amp; Hopf (1992). Localization of emotional and volitional facial paresis. Neurology 42(10), 1918–1923.">[18]</a></td>
+            <td class="structs"><a href="#cma">Aria motorie cingulară</a>, <a href="#facialN">Nucleul nervului facial (VII)</a>, <a href="#amygdala">Amigdala</a></td>
+          </tr>
+          <tr>
+            <td class="when"><span class="est" title="estimare">≈</span> după ~0,5 s</td>
+            <td><strong>Sentimentul de frică.</strong> Trăirea conștientă apare din circuitele corticale (memorie de lucru, interocepție), separate de cele care au pornit reacția. <a class="cite" href="#src-ledoux2016" title="LeDoux &amp; Pine (2016). Using neuroscience to help understand fear and anxiety: a two-system framework. American Journal of Psychiatry 173, 1083–1093.">[15]</a><a class="cite" href="#src-craig2009" title="Craig (2009). How do you feel — now? The anterior insula and human awareness. Nature Reviews Neuroscience 10, 59–70.">[7]</a></td>
+            <td class="structs"><a href="#insula">Insula anterioară</a>, <a href="#dacc">Cortexul cingular anterior (dorsal)</a>, <a href="#vmpfc">Cortexul prefrontal ventromedial</a>, <a href="#dlpfc">Cortexul prefrontal dorsolateral</a></td>
+          </tr>
+          <tr>
+            <td class="when">secunde</td>
+            <td><strong>Reglarea.</strong> „E doar o poză.” Prefrontalul reinterpretează și reduce activitatea amigdalei. <a class="cite" href="#src-ochsner2005" title="Ochsner &amp; Gross (2005). The cognitive control of emotion. Trends in Cognitive Sciences 9, 242–249.">[11]</a></td>
+            <td class="structs"><a href="#dlpfc">Cortexul prefrontal dorsolateral</a>, <a href="#vmpfc">Cortexul prefrontal ventromedial</a>, <a href="#amygdala">Amigdala</a></td>
+          </tr>
+          <tr>
+            <td class="when">20–40 min</td>
+            <td><strong>Cortizolul atinge vârful.</strong> Expresia a dispărut demult; axa stresului încă lucrează. <a class="cite" href="#src-dickerson2004" title="Dickerson &amp; Kemeny (2004). Acute stressors and cortisol responses: a theoretical integration and synthesis of laboratory research. Psychological Bulletin 130, 355–391.">[4]</a></td>
+            <td class="structs"><a href="#hypothalamus">Hipotalamus</a>, <a href="#pituitary">Hipofiză</a></td>
+          </tr></tbody>
+      </table></div>
+      <h3 id="scenariu-sad">Tristețe: o pierdere</h3>
+      <div class="table-wrap"><table class="timeline">
+        <thead><tr><th>Când</th><th>Ce se întâmplă</th><th>Structuri</th></tr></thead>
+        <tbody>
+          <tr>
+            <td class="when">0</td>
+            <td><strong>Afli o veste proastă.</strong> Tristețea nu pornește de obicei dintr-un stimul brut, ci din ce înseamnă el pentru tine. </td>
+            <td class="structs"><a href="#v1">Cortex vizual</a>, <a href="#psts">Sulcul temporal superior</a></td>
+          </tr>
+          <tr>
+            <td class="when"><span class="est" title="estimare">≈</span> sute de ms – secunde</td>
+            <td><strong>Semnificația.</strong> Memoria și evaluarea prefrontală decid ce ai pierdut. Nicio regiune nu e „centrul tristeții”: sunt rețele distribuite, comune multor emoții. <a class="cite" href="#src-lindquist2012" title="Lindquist, Wager, Kober, Bliss-Moreau &amp; Barrett (2012). The brain basis of emotion: a meta-analytic review. Behavioral and Brain Sciences 35(3), 121–143.">[3]</a><a class="cite" href="#src-kragel2016" title="Kragel &amp; LaBar (2016). Decoding the nature of emotion in the brain. Trends in Cognitive Sciences 20(6), 444–455.">[6]</a></td>
+            <td class="structs"><a href="#hippocampus">Hipocamp</a>, <a href="#vmpfc">Cortexul prefrontal ventromedial</a>, <a href="#dlpfc">Cortexul prefrontal dorsolateral</a>, <a href="#amygdala">Amigdala</a></td>
+          </tr>
+          <tr>
+            <td class="when">secunde</td>
+            <td><strong>Cingularul subgenual crește.</strong> Tristețea indusă crește activitatea în aria 25 și o scade în prefrontalul dorsolateral drept. <a class="cite" href="#src-mayberg1999" title="Mayberg et al. (1999). Reciprocal limbic-cortical function and negative mood: converging PET findings in depression and normal sadness. American Journal of Psychiatry 156, 675–682.">[10]</a></td>
+            <td class="structs"><a href="#sgacc">Cingularul subgenual (aria 25)</a>, <a href="#dlpfc">Cortexul prefrontal dorsolateral</a></td>
+          </tr>
+          <tr>
+            <td class="when">secunde</td>
+            <td><strong>Durerea se simte în corp.</strong> Insula transformă starea corpului în sentiment („nod în gât”); PAG și opioidele endogene țin de durerea separării (sistemul PANIC/GRIEF). <a class="cite" href="#src-craig2009" title="Craig (2009). How do you feel — now? The anterior insula and human awareness. Nature Reviews Neuroscience 10, 59–70.">[7]</a><a class="cite" href="#src-panksepp" title="Panksepp (1998, 2012). Affective Neuroscience; The Archaeology of Mind — seven primary emotional systems (SEEKING, RAGE, FEAR, LUST, CARE, PANIC/GRIEF, PLAY).">[14]</a></td>
+            <td class="structs"><a href="#insula">Insula anterioară</a>, <a href="#dacc">Cortexul cingular anterior (dorsal)</a>, <a href="#pag">Substanța cenușie periapeductală</a></td>
+          </tr>
+          <tr>
+            <td class="when">secunde</td>
+            <td><strong>Fața: sprâncene oblice, colțuri în jos.</strong> Calea emoțională duce semnalul la nucleul facial — fruntea (AU1) primește comandă din ambele emisfere. <a class="cite" href="#src-morecraft2001" title="Morecraft, Louie, Herrick &amp; Stilwell-Morecraft (2001). Cortical innervation of the facial nucleus in the non-human primate. Brain 124, 176–208.">[17]</a></td>
+            <td class="structs"><a href="#cma">Aria motorie cingulară</a>, <a href="#facialN">Nucleul nervului facial (VII)</a></td>
+          </tr>
+          <tr>
+            <td class="when">secunde</td>
+            <td><strong>Lacrimile.</strong> Nucleul salivator superior trimite fibre parasimpatice, pe traseul nervului facial, spre glanda lacrimală. Intrări din frontal, talamus și hipotalamus explică plânsul emoțional. <a class="cite" href="#src-bylsma2019" title="Bylsma, Gračanin &amp; Vingerhoets (2019). The neurobiology of human crying. Clinical Autonomic Research 29, 63–73.">[16]</a></td>
+            <td class="structs"><a href="#hypothalamus">Hipotalamus</a>, <a href="#ssn">Nucleul salivator superior (lacrimal)</a></td>
+          </tr></tbody>
+      </table></div>
+      <h3 id="scenariu-joy">Bucurie: o recompensă</h3>
+      <div class="table-wrap"><table class="timeline">
+        <thead><tr><th>Când</th><th>Ce se întâmplă</th><th>Structuri</th></tr></thead>
+        <tbody>
+          <tr>
+            <td class="when">0</td>
+            <td><strong>Ceva bun se întâmplă.</strong> Un mesaj, un prieten, o reușită. </td>
+            <td class="structs"><a href="#v1">Cortex vizual</a></td>
+          </tr>
+          <tr>
+            <td class="when"><span class="est" title="estimare">≈</span> ~100 ms+</td>
+            <td><strong>Evaluarea valorii.</strong> Orbitofrontalul și amigdala marchează că e ceva bun — amigdala nu e doar pentru pericol. <a class="cite" href="#src-berridge2009" title="Berridge, Robinson &amp; Aldridge (2009). Dissecting components of reward: “liking”, “wanting”, and learning. Current Opinion in Pharmacology 9, 65–73.">[12]</a></td>
+            <td class="structs"><a href="#ofc">Cortexul orbitofrontal lateral</a>, <a href="#amygdala">Amigdala</a></td>
+          </tr>
+          <tr>
+            <td class="when"><span class="est" title="estimare">≈</span> sute de ms</td>
+            <td><strong>Dopamina: „vreau”.</strong> VTA eliberează dopamină în accumbens — motivația. Plăcerea propriu-zisă vine din hotspoturi opioide mici, nu din dopamină. <a class="cite" href="#src-berridge2009" title="Berridge, Robinson &amp; Aldridge (2009). Dissecting components of reward: “liking”, “wanting”, and learning. Current Opinion in Pharmacology 9, 65–73.">[12]</a></td>
+            <td class="structs"><a href="#vta">Aria tegmentală ventrală</a>, <a href="#nacc">Nucleul accumbens</a>, <a href="#vmpfc">Cortexul prefrontal ventromedial</a></td>
+          </tr>
+          <tr>
+            <td class="when">sute de ms</td>
+            <td><strong>Zâmbetul autentic.</strong> Pe calea emoțională: colțurile gurii (AU12) și, involuntar, mușchiul din jurul ochilor (AU6) — semnul zâmbetului Duchenne. <a class="cite" href="#src-hopf1992" title="Hopf, Müller-Forell &amp; Hopf (1992). Localization of emotional and volitional facial paresis. Neurology 42(10), 1918–1923.">[18]</a><a class="cite" href="#src-gothard2014" title="Gothard (2014). The amygdalo-motor pathways and the control of facial expressions. Frontiers in Neuroscience 8, 43.">[19]</a></td>
+            <td class="structs"><a href="#cma">Aria motorie cingulară</a>, <a href="#facialN">Nucleul nervului facial (VII)</a></td>
+          </tr></tbody>
+      </table></div>
+      <h3 id="scenariu-posed">Zâmbet la comandă</h3>
+      <div class="table-wrap"><table class="timeline">
+        <thead><tr><th>Când</th><th>Ce se întâmplă</th><th>Structuri</th></tr></thead>
+        <tbody>
+          <tr>
+            <td class="when">0</td>
+            <td><strong>Decizi să zâmbești.</strong> Pentru o poză, din politețe. </td>
+            <td class="structs"><a href="#dlpfc">Cortexul prefrontal dorsolateral</a>, <a href="#vlpfc">Cortexul prefrontal ventrolateral</a></td>
+          </tr>
+          <tr>
+            <td class="when">sute de ms</td>
+            <td><strong>Cortexul motor.</strong> Aria feței din cortexul motor primar trimite comanda pe tractul piramidal. <a class="cite" href="#src-hopf1992" title="Hopf, Müller-Forell &amp; Hopf (1992). Localization of emotional and volitional facial paresis. Neurology 42(10), 1918–1923.">[18]</a></td>
+            <td class="structs"><a href="#dlpfc">Cortexul prefrontal dorsolateral</a>, <a href="#m1face">Cortexul motor (aria feței)</a></td>
+          </tr>
+          <tr>
+            <td class="when">sute de ms</td>
+            <td><strong>Calea voluntară → nucleul facial.</strong> Alt drum decât zâmbetul emoțional: leziunile uneia o lasă intactă pe cealaltă. <a class="cite" href="#src-hopf1992" title="Hopf, Müller-Forell &amp; Hopf (1992). Localization of emotional and volitional facial paresis. Neurology 42(10), 1918–1923.">[18]</a><a class="cite" href="#src-morecraft2001" title="Morecraft, Louie, Herrick &amp; Stilwell-Morecraft (2001). Cortical innervation of the facial nucleus in the non-human primate. Brain 124, 176–208.">[17]</a></td>
+            <td class="structs"><a href="#m1face">Cortexul motor (aria feței)</a>, <a href="#facialN">Nucleul nervului facial (VII)</a></td>
+          </tr>
+          <tr>
+            <td class="when">dinamica</td>
+            <td><strong>Cum se trădează.</strong> Zâmbetele deliberate au debut și retragere mai rapide și amplitudine mai mare. Contrar unei idei răspândite, nu sunt mai asimetrice. <a class="cite" href="#src-schmidt2006" title="Schmidt, Ambadar, Cohn &amp; Reed (2006). Movement differences between deliberate and spontaneous facial expressions: zygomaticus major action in smiling. Journal of Nonverbal Behavior 30, 37–52.">[21]</a></td>
+            <td class="structs"><a href="#facialN">Nucleul nervului facial (VII)</a></td>
+          </tr></tbody>
+      </table></div>
+  </section>
+
+  <section id="teorii">
+    <h2>Teoriile de azi</h2>
+    <section class="entry"><h4>Emoții de bază <span class="en">Ekman; Panksepp</span></h4><p>Câteva emoții universale, cu circuite proprii. Panksepp descrie 7 sisteme subcorticale comune mamiferelor: SEEKING, RAGE, FEAR, LUST, CARE, PANIC/GRIEF, PLAY. <a class="cite" href="#src-panksepp" title="Panksepp (1998, 2012). Affective Neuroscience; The Archaeology of Mind — seven primary emotional systems (SEEKING, RAGE, FEAR, LUST, CARE, PANIC/GRIEF, PLAY).">[14]</a></p></section><section class="entry"><h4>Emoții construite <span class="en">Barrett; Lindquist</span></h4><p>Creierul construiește emoțiile din ingrediente generale — senzații corporale, concepte, context. O meta-analiză a studiilor de imagistică nu a găsit regiuni dedicate fiecărei emoții, ci rețele comune. <a class="cite" href="#src-lindquist2012" title="Lindquist, Wager, Kober, Bliss-Moreau &amp; Barrett (2012). The brain basis of emotion: a meta-analytic review. Behavioral and Brain Sciences 35(3), 121–143.">[3]</a></p></section><section class="entry"><h4>Două sisteme <span class="en">LeDoux &amp; Pine</span></h4><p>Circuitele care produc reacția (amigdală, trunchi cerebral) sunt diferite de cele care produc sentimentul conștient (cortex). „Frica” trăită nu e același lucru cu reacția defensivă. <a class="cite" href="#src-ledoux2016" title="LeDoux &amp; Pine (2016). Using neuroscience to help understand fear and anxiety: a two-system framework. American Journal of Psychiatry 173, 1083–1093.">[15]</a></p></section><section class="entry"><h4>Tipare distribuite <span class="en">Kragel &amp; LaBar</span></h4><p>Emoțiile pot fi totuși decodate din tipare de activitate răspândite prin tot creierul — nici „un centru”, nici „nicio diferență”. <a class="cite" href="#src-kragel2016" title="Kragel &amp; LaBar (2016). Decoding the nature of emotion in the brain. Trends in Cognitive Sciences 20(6), 444–455.">[6]</a></p></section>
+  </section>
+  <section id="mituri">
+    <h2>Mituri corectate</h2>
+    <div class="table-wrap"><table class="myths">
+      <thead><tr><th>Se spune</th><th>Ce arată studiile</th></tr></thead>
+      <tbody><tr><td><s>Există un „sistem limbic” care face emoțiile.</s></td><td>Emoțiile folosesc rețele larg distribuite, cortex inclus; aceleași regiuni lucrează și în memorie, atenție, percepție. <a class="cite" href="#src-lindquist2012" title="Lindquist, Wager, Kober, Bliss-Moreau &amp; Barrett (2012). The brain basis of emotion: a meta-analytic review. Behavioral and Brain Sciences 35(3), 121–143.">[3]</a></td></tr><tr><td><s>Amigdala este centrul fricii.</s></td><td>Detectează ce e relevant, inclusiv recompense. Fără ea, frica dispare — dar celelalte emoții rămân. <a class="cite" href="#src-feinstein2011" title="Feinstein, Adolphs, Damasio &amp; Tranel (2011). The human amygdala and the induction and experience of fear. Current Biology 21, 34–38.">[2]</a></td></tr><tr><td><s>Insula este centrul dezgustului.</s></td><td>Stă la baza tuturor sentimentelor corporale; deficitul de dezgust după leziuni pare să depindă de emisferă. <a class="cite" href="#src-craig2009" title="Craig (2009). How do you feel — now? The anterior insula and human awareness. Nature Reviews Neuroscience 10, 59–70.">[7]</a><a class="cite" href="#src-straube2010" title="Straube et al. (2010). No impairment of recognition and experience of disgust in a patient with a right-hemispheric lesion of the insula and basal ganglia. Neuropsychologia 48(6), 1735–1741.">[9]</a></td></tr><tr><td><s>Emoția se citește sigur de pe față.</s></td><td>Aceeași mișcare facială poate însemna emoții diferite în contexte și culturi diferite; oamenii nu arată mereu ce simt. <a class="cite" href="#src-barrett2019" title="Barrett, Adolphs, Marsella, Martinez &amp; Pollak (2019). Emotional expressions reconsidered. Psychological Science in the Public Interest 20(1), 1–68.">[22]</a></td></tr><tr><td><s>Zâmbetele false sunt mai asimetrice.</s></td><td>Măsurătorile arată că diferă prin viteză și amplitudine, nu prin asimetrie. <a class="cite" href="#src-schmidt2006" title="Schmidt, Ambadar, Cohn &amp; Reed (2006). Movement differences between deliberate and spontaneous facial expressions: zygomaticus major action in smiling. Journal of Nonverbal Behavior 30, 37–52.">[21]</a></td></tr><tr><td><s>Dopamina este molecula plăcerii.</s></td><td>Dopamina produce dorința („vreau”); plăcerea („îmi place”) vine din sisteme opioide și endocanabinoide mici. <a class="cite" href="#src-berridge2009" title="Berridge, Robinson &amp; Aldridge (2009). Dissecting components of reward: “liking”, “wanting”, and learning. Current Opinion in Pharmacology 9, 65–73.">[12]</a></td></tr></tbody>
+    </table></div>
+  </section>
+  <section id="neurochimie">
+    <h2>Neurochimie</h2>
+    <div class="table-wrap"><table>
+      <thead><tr><th>Substanța</th><th>Sursa</th><th>Rolul</th></tr></thead>
+      <tbody><tr><td><strong>Dopamină</strong></td><td>VTA</td><td>Motivație, dorință, învățarea din recompense. <a class="cite" href="#src-berridge2009" title="Berridge, Robinson &amp; Aldridge (2009). Dissecting components of reward: “liking”, “wanting”, and learning. Current Opinion in Pharmacology 9, 65–73.">[12]</a></td></tr><tr><td><strong>Opioide endogene</strong></td><td>hotspoturi, PAG</td><td>Plăcere („îmi place”), durerea separării, analgezie. <a class="cite" href="#src-berridge2009" title="Berridge, Robinson &amp; Aldridge (2009). Dissecting components of reward: “liking”, “wanting”, and learning. Current Opinion in Pharmacology 9, 65–73.">[12]</a><a class="cite" href="#src-panksepp" title="Panksepp (1998, 2012). Affective Neuroscience; The Archaeology of Mind — seven primary emotional systems (SEEKING, RAGE, FEAR, LUST, CARE, PANIC/GRIEF, PLAY).">[14]</a></td></tr><tr><td><strong>Noradrenalină</strong></td><td>locus coeruleus</td><td>Vigilență, trezire, pupile dilatate. <a class="cite" href="#src-brainstemAtlas" title="Levinson et al. (2023). A structural connectivity atlas of limbic brainstem nuclei (LC, NTS, PAG, VTA, rafeul dorsal, în spațiul MNI). Frontiers in Neuroimaging 1, 1009399.">[13]</a></td></tr><tr><td><strong>Serotonină</strong></td><td>rafeul dorsal</td><td>Dispoziție, răbdare, controlul impulsurilor. <a class="cite" href="#src-brainstemAtlas" title="Levinson et al. (2023). A structural connectivity atlas of limbic brainstem nuclei (LC, NTS, PAG, VTA, rafeul dorsal, în spațiul MNI). Frontiers in Neuroimaging 1, 1009399.">[13]</a></td></tr><tr><td><strong>Cortizol</strong></td><td>axa hipotalamus–hipofiză–suprarenale</td><td>Hormonul stresului; vârf la 20–40 min după stres. <a class="cite" href="#src-dickerson2004" title="Dickerson &amp; Kemeny (2004). Acute stressors and cortisol responses: a theoretical integration and synthesis of laboratory research. Psychological Bulletin 130, 355–391.">[4]</a></td></tr></tbody>
+    </table></div>
+  </section>
+
+  <section id="spectrul">
+    <h2>Spectrul emoțiilor</h2>
+    <p class="lede">92 emoții, nuanțe și stări, în 10 familii. Structura urmează arborele lui Parrott, completat cu emoțiile de bază ale lui Ekman și cu emoțiile sociale descrise de Tracy și Robins; intensitățile și combinațiile urmează roata lui Plutchik. Valența și activarea sunt poziții aproximative în cercul lui Russell, nu norme măsurate.</p>
+    <p>Pentru fiecare: definiția, rețeta de mușchi faciali (codurile FACS: numărul unității de acțiune și intensitatea, de la A, urmă, la E, maxim), cât de sigur se recunoaște din față, ce îi lipsește modelului ca să o arate, cu ce se confundă și ce seturi de date o acoperă.</p>
+    <p class="counts"><span><strong>10</strong> gata (preset reglat)</span><span><strong>27</strong> compozabilă din mușchi</span><span><strong>41</strong> parțială: lipsesc abilități</span><span><strong>14</strong> nu se vede pe față</span></p>
+    <p class="familytoc"><a href="#familie-joy">Bucurie</a> · <a href="#familie-sadness">Tristețe</a> · <a href="#familie-fear">Frică</a> · <a href="#familie-anger">Furie</a> · <a href="#familie-surprise">Surpriză</a> · <a href="#familie-disgust">Dezgust</a> · <a href="#familie-contempt">Dispreț</a> · <a href="#familie-love">Iubire &amp; afecțiune</a> · <a href="#familie-social">Emoții sociale</a> · <a href="#familie-states">Stări (nu emoții)</a></p>
+    
+    <h3 id="familie-joy">Bucurie</h3>
+    
+      <section class="entry emo family" id="e-joy">
+        <h4>Bucurie <span class="en">Joy</span></h4>
+        <p>Plăcere față de ceva bun care se întâmplă.</p>
+        <ul class="facts">
+          <li><span>Valență / activare</span>+0.80 / +0.50</li>
+          <li><span>Din față</span>ridicată</li>
+          <li><span>Modelul</span>Gata (preset reglat)</li>
+          <li><span>Etichetă</span><code>joy</code></li>
+        </ul>
+        <p class="facs"><span class="tag">FACS</span> <code>6C+12D</code> — ridicarea obrajilor (AU6C); tragerea colțurilor gurii în sus (AU12D)</p>
+        
+        
+        
+        <p><span class="tag">Legată de</span> <a href="#e-love">Iubire &amp; afecțiune</a>, <a href="#e-nostalgia">Nostalgie</a></p>
+        <p class="meta">Date: CK+ (Extended Cohn-Kanade) · AffectNet · RAF-DB · FER2013 · KDEF</p>
+      </section>
+    
+      <section class="entry emo sub" id="e-duchenne">
+        <h4>Zâmbet autentic (Duchenne) <span class="en">Felt smile</span></h4>
+        <p>Zâmbet care implică ochii (AU6): laba gâștei, obraji ridicați.</p>
+        <ul class="facts">
+          <li><span>Valență / activare</span>+0.80 / +0.50</li>
+          <li><span>Din față</span>medie</li>
+          <li><span>Modelul</span>Compozabilă din mușchi</li>
+          <li><span>Etichetă</span><code>joy/duchenne</code></li>
+        </ul>
+        <p class="facs"><span class="tag">FACS</span> <code>6C+12D</code> — ridicarea obrajilor (AU6C); tragerea colțurilor gurii în sus (AU12D)</p>
+        
+        <p><span class="tag">Semne</span> Diferența față de cel politicos e AU6 — cea mai importantă distincție de etichetat la bucurie.</p>
+        <p><span class="tag warn">Se confundă cu</span> <a href="#e-socialsmile">Zâmbet politicos (social)</a></p>
+        
+        <p class="meta">Date: DISFA · BP4D-Spontaneous</p>
+      </section>
+      <section class="entry emo sub" id="e-socialsmile">
+        <h4>Zâmbet politicos (social) <span class="en">Social smile</span></h4>
+        <p>Colțurile gurii fără ochi (fără AU6); politețe, nu neapărat bucurie.</p>
+        <ul class="facts">
+          <li><span>Valență / activare</span>+0.30 / +0.20</li>
+          <li><span>Din față</span>medie</li>
+          <li><span>Modelul</span>Compozabilă din mușchi</li>
+          <li><span>Etichetă</span><code>joy/socialsmile</code></li>
+        </ul>
+        <p class="facs"><span class="tag">FACS</span> <code>12C</code> — tragerea colțurilor gurii în sus (AU12C)</p>
+        
+        <p><span class="tag">Semne</span> Adesea simetric, debut și retragere rapide.</p>
+        <p><span class="tag warn">Se confundă cu</span> <a href="#e-contempt">Dispreț</a>, <a href="#e-duchenne">Zâmbet autentic (Duchenne)</a></p>
+        
+        <p class="meta">Date: DISFA · BP4D-Spontaneous</p>
+      </section>
+      <section class="entry emo emotion" id="e-amusement">
+        <h4>Amuzament <span class="en">Amusement</span></h4>
+        <p>Ceva e amuzant.</p>
+        <ul class="facts">
+          <li><span>Valență / activare</span>+0.80 / +0.65</li>
+          <li><span>Din față</span>medie</li>
+          <li><span>Modelul</span>Parțială: lipsesc abilități</li>
+          <li><span>Etichetă</span><code>joy/amusement</code></li>
+        </ul>
+        <p class="facs"><span class="tag">FACS</span> <code>6C+12D+25B+26B+53A</code> — ridicarea obrajilor (AU6C); tragerea colțurilor gurii în sus (AU12D); buze întredeschise (AU25B); maxilar coborât (AU26B); capul ridicat (AU53A)</p>
+        <p><span class="tag">Îi lipsește modelului</span> Voce și sunete (râs, suspin), Dinamică temporală (micro-expresii, tresărire)</p>
+        <p><span class="tag">Semne</span> Râsul: sunet, capul pe spate, umerii se mișcă.</p>
+        <p><span class="tag warn">Se confundă cu</span> <a href="#e-embarrassment">Jenă</a></p>
+        
+        <p class="meta">Date: BP4D-Spontaneous · Colectare proprie</p>
+      </section>
+      <section class="entry emo emotion" id="e-delight">
+        <h4>Încântare <span class="en">Happily surprised</span></h4>
+        <p>Bucurie și surpriză deodată (emoție compusă).</p>
+        <ul class="facts">
+          <li><span>Valență / activare</span>+0.80 / +0.75</li>
+          <li><span>Din față</span>medie</li>
+          <li><span>Modelul</span>Compozabilă din mușchi</li>
+          <li><span>Etichetă</span><code>joy/delight</code></li>
+        </ul>
+        <p class="facs"><span class="tag">FACS</span> <code>1B+2B+5A+12C+25B</code> — ridicarea interioară a sprâncenelor (AU1B); ridicarea exterioară a sprâncenelor (AU2B); ridicarea pleoapei superioare (AU5A); tragerea colțurilor gurii în sus (AU12C); buze întredeschise (AU25B)</p>
+        
+        
+        
+        <p><span class="tag">Legată de</span> <a href="#e-surprise">Surpriză</a></p>
+        <p class="meta">Date: RAF-DB · EmotioNet</p>
+      </section>
+      <section class="entry emo emotion" id="e-ecstasy">
+        <h4>Extaz <span class="en">Ecstasy</span></h4>
+        <p>Bucurie la intensitate maximă (Plutchik).</p>
+        <ul class="facts">
+          <li><span>Valență / activare</span>+0.95 / +0.90</li>
+          <li><span>Din față</span>medie</li>
+          <li><span>Modelul</span>Parțială: lipsesc abilități</li>
+          <li><span>Etichetă</span><code>joy/ecstasy</code></li>
+        </ul>
+        <p class="facs"><span class="tag">FACS</span> <code>6E+12E+25C+26C+53B</code> — ridicarea obrajilor (AU6E); tragerea colțurilor gurii în sus (AU12E); buze întredeschise (AU25C); maxilar coborât (AU26C); capul ridicat (AU53B)</p>
+        <p><span class="tag">Îi lipsește modelului</span> Voce și sunete (râs, suspin), Dinamică temporală (micro-expresii, tresărire)</p>
+        
+        
+        
+        <p class="meta">Date: Colectare proprie</p>
+      </section>
+      <section class="entry emo emotion" id="e-contentment">
+        <h4>Mulțumire <span class="en">Contentment</span></h4>
+        <p>Liniștea de a avea ce îți trebuie.</p>
+        <ul class="facts">
+          <li><span>Valență / activare</span>+0.70 / −0.20</li>
+          <li><span>Din față</span>medie</li>
+          <li><span>Modelul</span>Compozabilă din mușchi</li>
+          <li><span>Etichetă</span><code>joy/contentment</code></li>
+        </ul>
+        <p class="facs"><span class="tag">FACS</span> <code>6A+12B</code> — ridicarea obrajilor (AU6A); tragerea colțurilor gurii în sus (AU12B)</p>
+        
+        
+        
+        
+        <p class="meta">Date: AffectNet</p>
+      </section>
+      <section class="entry emo sub" id="e-serenity">
+        <h4>Seninătate <span class="en">Serenity</span></h4>
+        <p>Bucurie la intensitate joasă, calmă (Plutchik).</p>
+        <ul class="facts">
+          <li><span>Valență / activare</span>+0.60 / −0.55</li>
+          <li><span>Din față</span>scăzută</li>
+          <li><span>Modelul</span>Parțială: lipsesc abilități</li>
+          <li><span>Etichetă</span><code>joy/contentment/serenity</code></li>
+        </ul>
+        <p class="facs"><span class="tag">FACS</span> <code>12A+43A</code> — tragerea colțurilor gurii în sus (AU12A); ochi închiși / pleoape grele (AU43A)</p>
+        <p><span class="tag">Îi lipsește modelului</span> Respirație vizibilă (oftat, hiperventilație)</p>
+        
+        
+        
+        <p class="meta">Date: Colectare proprie</p>
+      </section>
+      <section class="entry emo emotion" id="e-relief">
+        <h4>Ușurare <span class="en">Relief</span></h4>
+        <p>O amenințare a trecut.</p>
+        <ul class="facts">
+          <li><span>Valență / activare</span>+0.60 / −0.30</li>
+          <li><span>Din față</span>scăzută</li>
+          <li><span>Modelul</span>Parțială: lipsesc abilități</li>
+          <li><span>Etichetă</span><code>joy/relief</code></li>
+        </ul>
+        <p class="facs"><span class="tag">FACS</span> <code>12A+43B+54A</code> — tragerea colțurilor gurii în sus (AU12A); ochi închiși / pleoape grele (AU43B); capul plecat (AU54A)</p>
+        <p><span class="tag">Îi lipsește modelului</span> Respirație vizibilă (oftat, hiperventilație), Dinamică temporală (micro-expresii, tresărire)</p>
+        <p><span class="tag">Semne</span> Expirul lung și relaxarea bruscă a feței, după tensiune.</p>
+        
+        
+        <p class="meta">Date: Colectare proprie</p>
+      </section>
+      <section class="entry emo emotion" id="e-enthusiasm">
+        <h4>Entuziasm <span class="en">Enthusiasm</span></h4>
+        <p>Bucurie orientată spre ceva ce urmează.</p>
+        <ul class="facts">
+          <li><span>Valență / activare</span>+0.80 / +0.80</li>
+          <li><span>Din față</span>medie</li>
+          <li><span>Modelul</span>Compozabilă din mușchi</li>
+          <li><span>Etichetă</span><code>joy/enthusiasm</code></li>
+        </ul>
+        <p class="facs"><span class="tag">FACS</span> <code>1B+2B+5A+6B+12C+25B</code> — ridicarea interioară a sprâncenelor (AU1B); ridicarea exterioară a sprâncenelor (AU2B); ridicarea pleoapei superioare (AU5A); ridicarea obrajilor (AU6B); tragerea colțurilor gurii în sus (AU12C); buze întredeschise (AU25B)</p>
+        
+        
+        
+        
+        <p class="meta">Date: Colectare proprie</p>
+      </section>
+      <section class="entry emo emotion" id="e-hope">
+        <h4>Speranță / optimism <span class="en">Hope</span></h4>
+        <p>Așteptarea a ceva bun (Plutchik: anticipare + bucurie).</p>
+        <ul class="facts">
+          <li><span>Valență / activare</span>+0.50 / +0.20</li>
+          <li><span>Din față</span>scăzută</li>
+          <li><span>Modelul</span>Nu se vede pe față</li>
+          <li><span>Etichetă</span><code>joy/hope</code></li>
+        </ul>
+        <p class="facs"><span class="tag">FACS</span> nu are o expresie facială proprie; se recunoaște din context, voce sau comportament.</p>
+        <p><span class="tag">Îi lipsește modelului</span> Context și situație</p>
+        
+        
+        <p><span class="tag">Legată de</span> <a href="#e-anticipation">Anticipare</a></p>
+        <p class="meta">Date: GoEmotions (text) · Colectare proprie</p>
+      </section>
+      <section class="entry emo emotion" id="e-gratitude">
+        <h4>Recunoștință <span class="en">Gratitude</span></h4>
+        <p>Bucurie față de binele făcut de altcineva.</p>
+        <ul class="facts">
+          <li><span>Valență / activare</span>+0.70 / +0.10</li>
+          <li><span>Din față</span>scăzută</li>
+          <li><span>Modelul</span>Nu se vede pe față</li>
+          <li><span>Etichetă</span><code>joy/gratitude</code></li>
+        </ul>
+        <p class="facs"><span class="tag">FACS</span> nu are o expresie facială proprie; se recunoaște din context, voce sau comportament.</p>
+        <p><span class="tag">Îi lipsește modelului</span> Context și situație</p>
+        
+        
+        
+        <p class="meta">Date: GoEmotions (text) · Colectare proprie</p>
+      </section>
+    <h3 id="familie-sadness">Tristețe</h3>
+    
+      <section class="entry emo family" id="e-sadness">
+        <h4>Tristețe <span class="en">Sadness</span></h4>
+        <p>Pierderea a ceva important.</p>
+        <ul class="facts">
+          <li><span>Valență / activare</span>−0.70 / −0.35</li>
+          <li><span>Din față</span>ridicată</li>
+          <li><span>Modelul</span>Gata (preset reglat)</li>
+          <li><span>Etichetă</span><code>sadness</code></li>
+        </ul>
+        <p class="facs"><span class="tag">FACS</span> <code>1D+4A+15C+17B+54A+64B</code> — ridicarea interioară a sprâncenelor (AU1D); coborârea și apropierea sprâncenelor (AU4A); coborârea colțurilor gurii (AU15C); ridicarea bărbiei (AU17B); capul plecat (AU54A); privirea în jos (AU64B)</p>
+        
+        <p><span class="tag">Semne</span> Sprânceana oblică (AU1+4) e semnul cel mai sigur; privirea în jos.</p>
+        <p><span class="tag warn">Se confundă cu</span> <a href="#e-fear">Frică</a>, <a href="#e-fatigue">Oboseală</a></p>
+        <p><span class="tag">Legată de</span> <a href="#e-disapproval">Dezaprobare</a>, <a href="#e-remorse">Remușcare</a>, <a href="#e-compassion">Compasiune</a></p>
+        <p class="meta">Date: CK+ (Extended Cohn-Kanade) · AffectNet · RAF-DB · FER2013 · KDEF</p>
+      </section>
+    
+      <section class="entry emo emotion" id="e-melancholy">
+        <h4>Melancolie <span class="en">Melancholy</span></h4>
+        <p>Tristețe liniștită, îndelungată, reflexivă.</p>
+        <ul class="facts">
+          <li><span>Valență / activare</span>−0.50 / −0.50</li>
+          <li><span>Din față</span>medie</li>
+          <li><span>Modelul</span>Gata (preset reglat)</li>
+          <li><span>Etichetă</span><code>sadness/melancholy</code></li>
+        </ul>
+        <p class="facs"><span class="tag">FACS</span> <code>1C+15B+17A+43A+64B</code> — ridicarea interioară a sprâncenelor (AU1C); coborârea colțurilor gurii (AU15B); ridicarea bărbiei (AU17A); ochi închiși / pleoape grele (AU43A); privirea în jos (AU64B)</p>
+        
+        
+        
+        
+        <p class="meta">Date: AffectNet · Colectare proprie</p>
+      </section>
+      <section class="entry emo emotion" id="e-grief">
+        <h4>Durere sufletească <span class="en">Grief</span></h4>
+        <p>Tristețe profundă după o pierdere.</p>
+        <ul class="facts">
+          <li><span>Valență / activare</span>−0.90 / +0.30</li>
+          <li><span>Din față</span>medie</li>
+          <li><span>Modelul</span>Gata (preset reglat)</li>
+          <li><span>Etichetă</span><code>sadness/grief</code></li>
+        </ul>
+        <p class="facs"><span class="tag">FACS</span> <code>1E+4B+6B+7B+15D+17D+20A+54B+64C</code> — ridicarea interioară a sprâncenelor (AU1E); coborârea și apropierea sprâncenelor (AU4B); ridicarea obrajilor (AU6B); încordarea pleoapelor (AU7B); coborârea colțurilor gurii (AU15D); ridicarea bărbiei (AU17D); întinderea laterală a buzelor (AU20A); capul plecat (AU54B); privirea în jos (AU64C)</p>
+        <p><span class="tag">Îi lipsește modelului</span> Lacrimi (picături, dâre), Voce și sunete (râs, suspin)</p>
+        <p><span class="tag">Semne</span> Lacrimile și suspinul o deosebesc de furie; fără ele se confundă cu ea.</p>
+        <p><span class="tag warn">Se confundă cu</span> <a href="#e-anger">Furie</a></p>
+        
+        <p class="meta">Date: Colectare proprie</p>
+      </section>
+      <section class="entry emo sub" id="e-crying">
+        <h4>Plâns <span class="en">Crying</span></h4>
+        <p>Plânsul propriu-zis: ochi strânși, gura întinsă, bărbia tremurând.</p>
+        <ul class="facts">
+          <li><span>Valență / activare</span>−0.85 / +0.50</li>
+          <li><span>Din față</span>ridicată</li>
+          <li><span>Modelul</span>Parțială: lipsesc abilități</li>
+          <li><span>Etichetă</span><code>sadness/grief/crying</code></li>
+        </ul>
+        <p class="facs"><span class="tag">FACS</span> <code>1E+4C+6C+7C+15D+17D+20B+25B</code> — ridicarea interioară a sprâncenelor (AU1E); coborârea și apropierea sprâncenelor (AU4C); ridicarea obrajilor (AU6C); încordarea pleoapelor (AU7C); coborârea colțurilor gurii (AU15D); ridicarea bărbiei (AU17D); întinderea laterală a buzelor (AU20B); buze întredeschise (AU25B)</p>
+        <p><span class="tag">Îi lipsește modelului</span> Lacrimi (picături, dâre), Voce și sunete (râs, suspin), Respirație vizibilă (oftat, hiperventilație)</p>
+        
+        
+        
+        <p class="meta">Date: Colectare proprie</p>
+      </section>
+      <section class="entry emo emotion" id="e-disappointment">
+        <h4>Dezamăgire <span class="en">Disappointment</span></h4>
+        <p>O așteptare nu s-a împlinit (Plutchik: surpriză + tristețe).</p>
+        <ul class="facts">
+          <li><span>Valență / activare</span>−0.60 / −0.10</li>
+          <li><span>Din față</span>scăzută</li>
+          <li><span>Modelul</span>Compozabilă din mușchi</li>
+          <li><span>Etichetă</span><code>sadness/disappointment</code></li>
+        </ul>
+        <p class="facs"><span class="tag">FACS</span> <code>1B+4B+15B+24B+64A</code> — ridicarea interioară a sprâncenelor (AU1B); coborârea și apropierea sprâncenelor (AU4B); coborârea colțurilor gurii (AU15B); presarea buzelor (AU24B); privirea în jos (AU64A)</p>
+        
+        
+        
+        <p><span class="tag">Legată de</span> <a href="#e-surprise">Surpriză</a></p>
+        <p class="meta">Date: AffectNet · Colectare proprie</p>
+      </section>
+      <section class="entry emo emotion" id="e-loneliness">
+        <h4>Singurătate <span class="en">Loneliness</span></h4>
+        <p>Lipsa legăturii cu ceilalți.</p>
+        <ul class="facts">
+          <li><span>Valență / activare</span>−0.60 / −0.30</li>
+          <li><span>Din față</span>scăzută</li>
+          <li><span>Modelul</span>Nu se vede pe față</li>
+          <li><span>Etichetă</span><code>sadness/loneliness</code></li>
+        </ul>
+        <p class="facs"><span class="tag">FACS</span> nu are o expresie facială proprie; se recunoaște din context, voce sau comportament.</p>
+        <p><span class="tag">Îi lipsește modelului</span> Context și situație</p>
+        
+        
+        
+        <p class="meta">Date: GoEmotions (text) · Colectare proprie</p>
+      </section>
+      <section class="entry emo emotion" id="e-despair">
+        <h4>Disperare <span class="en">Despair</span></h4>
+        <p>Pierderea oricărei speranțe, cu agitație.</p>
+        <ul class="facts">
+          <li><span>Valență / activare</span>−0.95 / +0.30</li>
+          <li><span>Din față</span>medie</li>
+          <li><span>Modelul</span>Parțială: lipsesc abilități</li>
+          <li><span>Etichetă</span><code>sadness/despair</code></li>
+        </ul>
+        <p class="facs"><span class="tag">FACS</span> <code>1E+4D+15D+17C+43B+54C</code> — ridicarea interioară a sprâncenelor (AU1E); coborârea și apropierea sprâncenelor (AU4D); coborârea colțurilor gurii (AU15D); ridicarea bărbiei (AU17C); ochi închiși / pleoape grele (AU43B); capul plecat (AU54C)</p>
+        <p><span class="tag">Îi lipsește modelului</span> Lacrimi (picături, dâre), Postura corpului (umeri, trunchi)</p>
+        
+        
+        
+        <p class="meta">Date: Colectare proprie</p>
+      </section>
+      <section class="entry emo sub" id="e-resignation">
+        <h4>Resemnare <span class="en">Resignation</span></h4>
+        <p>Disperare fără energie: renunțare.</p>
+        <ul class="facts">
+          <li><span>Valență / activare</span>−0.70 / −0.65</li>
+          <li><span>Din față</span>scăzută</li>
+          <li><span>Modelul</span>Parțială: lipsesc abilități</li>
+          <li><span>Etichetă</span><code>sadness/despair/resignation</code></li>
+        </ul>
+        <p class="facs"><span class="tag">FACS</span> <code>15A+43B+54B+64B</code> — coborârea colțurilor gurii (AU15A); ochi închiși / pleoape grele (AU43B); capul plecat (AU54B); privirea în jos (AU64B)</p>
+        <p><span class="tag">Îi lipsește modelului</span> Postura corpului (umeri, trunchi), Respirație vizibilă (oftat, hiperventilație)</p>
+        
+        
+        
+        <p class="meta">Date: Colectare proprie</p>
+      </section>
+      <section class="entry emo emotion" id="e-nostalgia">
+        <h4>Nostalgie <span class="en">Nostalgia</span></h4>
+        <p>Dulce-amar: bucurie și tristețe pentru ce a fost.</p>
+        <ul class="facts">
+          <li><span>Valență / activare</span>0.00 / −0.30</li>
+          <li><span>Din față</span>scăzută</li>
+          <li><span>Modelul</span>Parțială: lipsesc abilități</li>
+          <li><span>Etichetă</span><code>sadness/nostalgia</code></li>
+        </ul>
+        <p class="facs"><span class="tag">FACS</span> <code>1A+12A+64A</code> — ridicarea interioară a sprâncenelor (AU1A); tragerea colțurilor gurii în sus (AU12A); privirea în jos (AU64A)</p>
+        <p><span class="tag">Îi lipsește modelului</span> Context și situație</p>
+        
+        
+        <p><span class="tag">Legată de</span> <a href="#e-joy">Bucurie</a></p>
+        <p class="meta">Date: Colectare proprie</p>
+      </section>
+    <h3 id="familie-fear">Frică</h3>
+    
+      <section class="entry emo family" id="e-fear">
+        <h4>Frică <span class="en">Fear</span></h4>
+        <p>Pericol iminent.</p>
+        <ul class="facts">
+          <li><span>Valență / activare</span>−0.70 / +0.75</li>
+          <li><span>Din față</span>medie</li>
+          <li><span>Modelul</span>Gata (preset reglat)</li>
+          <li><span>Etichetă</span><code>fear</code></li>
+        </ul>
+        <p class="facs"><span class="tag">FACS</span> <code>1C+2C+4B+5D+7B+20C+26B</code> — ridicarea interioară a sprâncenelor (AU1C); ridicarea exterioară a sprâncenelor (AU2C); coborârea și apropierea sprâncenelor (AU4B); ridicarea pleoapei superioare (AU5D); încordarea pleoapelor (AU7B); întinderea laterală a buzelor (AU20C); maxilar coborât (AU26B)</p>
+        
+        <p><span class="tag">Semne</span> Se confundă cu surpriza; diferența e AU4 și AU20.</p>
+        <p><span class="tag warn">Se confundă cu</span> <a href="#e-surprise">Surpriză</a>, <a href="#e-sadness">Tristețe</a></p>
+        <p><span class="tag">Legată de</span> <a href="#e-awe">Venerație / sublim</a></p>
+        <p class="meta">Date: CK+ (Extended Cohn-Kanade) · AffectNet · RAF-DB · KDEF</p>
+      </section>
+    
+      <section class="entry emo emotion" id="e-terror">
+        <h4>Teroare <span class="en">Terror</span></h4>
+        <p>Frică la maximum (Plutchik).</p>
+        <ul class="facts">
+          <li><span>Valență / activare</span>−0.95 / +0.95</li>
+          <li><span>Din față</span>ridicată</li>
+          <li><span>Modelul</span>Parțială: lipsesc abilități</li>
+          <li><span>Etichetă</span><code>fear/terror</code></li>
+        </ul>
+        <p class="facs"><span class="tag">FACS</span> <code>1E+2E+4C+5E+20E+26D</code> — ridicarea interioară a sprâncenelor (AU1E); ridicarea exterioară a sprâncenelor (AU2E); coborârea și apropierea sprâncenelor (AU4C); ridicarea pleoapei superioare (AU5E); întinderea laterală a buzelor (AU20E); maxilar coborât (AU26D)</p>
+        <p><span class="tag">Îi lipsește modelului</span> Paloare, Dilatarea pupilei</p>
+        
+        
+        
+        <p class="meta">Date: Colectare proprie</p>
+      </section>
+      <section class="entry emo sub" id="e-panic">
+        <h4>Panică <span class="en">Panic</span></h4>
+        <p>Teroare cu pierderea controlului: hiperventilație, privire agitată.</p>
+        <ul class="facts">
+          <li><span>Valență / activare</span>−0.90 / +0.95</li>
+          <li><span>Din față</span>medie</li>
+          <li><span>Modelul</span>Parțială: lipsesc abilități</li>
+          <li><span>Etichetă</span><code>fear/terror/panic</code></li>
+        </ul>
+        <p class="facs"><span class="tag">FACS</span> <code>1D+2C+4C+5E+20D+26C</code> — ridicarea interioară a sprâncenelor (AU1D); ridicarea exterioară a sprâncenelor (AU2C); coborârea și apropierea sprâncenelor (AU4C); ridicarea pleoapei superioare (AU5E); întinderea laterală a buzelor (AU20D); maxilar coborât (AU26C)</p>
+        <p><span class="tag">Îi lipsește modelului</span> Respirație vizibilă (oftat, hiperventilație), Dinamică temporală (micro-expresii, tresărire), Paloare</p>
+        
+        
+        
+        <p class="meta">Date: Colectare proprie</p>
+      </section>
+      <section class="entry emo emotion" id="e-anxiety">
+        <h4>Anxietate <span class="en">Anxiety</span></h4>
+        <p>Frică difuză, de ceva ce ar putea urma.</p>
+        <ul class="facts">
+          <li><span>Valență / activare</span>−0.60 / +0.50</li>
+          <li><span>Din față</span>scăzută</li>
+          <li><span>Modelul</span>Parțială: lipsesc abilități</li>
+          <li><span>Etichetă</span><code>fear/anxiety</code></li>
+        </ul>
+        <p class="facs"><span class="tag">FACS</span> <code>1B+4B+24A</code> — ridicarea interioară a sprâncenelor (AU1B); coborârea și apropierea sprâncenelor (AU4B); presarea buzelor (AU24A)</p>
+        <p><span class="tag">Îi lipsește modelului</span> Dinamică temporală (micro-expresii, tresărire), Respirație vizibilă (oftat, hiperventilație)</p>
+        <p><span class="tag">Semne</span> Privirea se mută des, clipit rapid, mușcarea buzelor.</p>
+        
+        
+        <p class="meta">Date: Colectare proprie</p>
+      </section>
+      <section class="entry emo sub" id="e-worry">
+        <h4>Îngrijorare <span class="en">Worry</span></h4>
+        <p>Anxietate legată de un gând anume.</p>
+        <ul class="facts">
+          <li><span>Valență / activare</span>−0.50 / +0.30</li>
+          <li><span>Din față</span>scăzută</li>
+          <li><span>Modelul</span>Compozabilă din mușchi</li>
+          <li><span>Etichetă</span><code>fear/anxiety/worry</code></li>
+        </ul>
+        <p class="facs"><span class="tag">FACS</span> <code>1B+4B+24B+64A</code> — ridicarea interioară a sprâncenelor (AU1B); coborârea și apropierea sprâncenelor (AU4B); presarea buzelor (AU24B); privirea în jos (AU64A)</p>
+        
+        
+        
+        
+        <p class="meta">Date: Colectare proprie</p>
+      </section>
+      <section class="entry emo sub" id="e-nervousness">
+        <h4>Nervozitate <span class="en">Nervousness</span></h4>
+        <p>Neliniște înainte de ceva (examen, scenă).</p>
+        <ul class="facts">
+          <li><span>Valență / activare</span>−0.40 / +0.55</li>
+          <li><span>Din față</span>scăzută</li>
+          <li><span>Modelul</span>Parțială: lipsesc abilități</li>
+          <li><span>Etichetă</span><code>fear/anxiety/nervousness</code></li>
+        </ul>
+        <p class="facs"><span class="tag">FACS</span> <code>1A+4A+24B</code> — ridicarea interioară a sprâncenelor (AU1A); coborârea și apropierea sprâncenelor (AU4A); presarea buzelor (AU24B)</p>
+        <p><span class="tag">Îi lipsește modelului</span> Dinamică temporală (micro-expresii, tresărire)</p>
+        
+        
+        
+        <p class="meta">Date: Colectare proprie</p>
+      </section>
+      <section class="entry emo emotion" id="e-apprehension">
+        <h4>Neliniște <span class="en">Apprehension</span></h4>
+        <p>Frică la intensitate joasă (Plutchik).</p>
+        <ul class="facts">
+          <li><span>Valență / activare</span>−0.40 / +0.35</li>
+          <li><span>Din față</span>scăzută</li>
+          <li><span>Modelul</span>Compozabilă din mușchi</li>
+          <li><span>Etichetă</span><code>fear/apprehension</code></li>
+        </ul>
+        <p class="facs"><span class="tag">FACS</span> <code>1A+2A+4A+5A</code> — ridicarea interioară a sprâncenelor (AU1A); ridicarea exterioară a sprâncenelor (AU2A); coborârea și apropierea sprâncenelor (AU4A); ridicarea pleoapei superioare (AU5A)</p>
+        
+        
+        
+        
+        <p class="meta">Date: Colectare proprie</p>
+      </section>
+      <section class="entry emo emotion" id="e-startle">
+        <h4>Tresărire <span class="en">Startle</span></h4>
+        <p>Reflexul la un stimul brusc.</p>
+        <ul class="facts">
+          <li><span>Valență / activare</span>−0.10 / +0.90</li>
+          <li><span>Din față</span>medie</li>
+          <li><span>Modelul</span>Parțială: lipsesc abilități</li>
+          <li><span>Etichetă</span><code>fear/startle</code></li>
+        </ul>
+        <p class="facs"><span class="tag">FACS</span> <code>7C+20C+45E+53A</code> — încordarea pleoapelor (AU7C); întinderea laterală a buzelor (AU20C); clipit (AU45E); capul ridicat (AU53A)</p>
+        <p><span class="tag">Îi lipsește modelului</span> Dinamică temporală (micro-expresii, tresărire)</p>
+        <p><span class="tag">Semne</span> Reflex: sub 0,3 s — nu se poate recunoaște dintr-o singură imagine.</p>
+        
+        
+        <p class="meta">Date: Colectare proprie</p>
+      </section>
+      <section class="entry emo sub" id="e-fearsurprise">
+        <h4>Surpriză înfricoșată <span class="en">Fearfully surprised</span></h4>
+        <p>Emoție compusă (Du et al.).</p>
+        <ul class="facts">
+          <li><span>Valență / activare</span>−0.50 / +0.85</li>
+          <li><span>Din față</span>medie</li>
+          <li><span>Modelul</span>Compozabilă din mușchi</li>
+          <li><span>Etichetă</span><code>fear/fearsurprise</code></li>
+        </ul>
+        <p class="facs"><span class="tag">FACS</span> <code>1D+2D+5D+20C+25C</code> — ridicarea interioară a sprâncenelor (AU1D); ridicarea exterioară a sprâncenelor (AU2D); ridicarea pleoapei superioare (AU5D); întinderea laterală a buzelor (AU20C); buze întredeschise (AU25C)</p>
+        
+        
+        
+        <p><span class="tag">Legată de</span> <a href="#e-surprise">Surpriză</a></p>
+        <p class="meta">Date: RAF-DB · EmotioNet</p>
+      </section>
+    <h3 id="familie-anger">Furie</h3>
+    
+      <section class="entry emo family" id="e-anger">
+        <h4>Furie <span class="en">Anger</span></h4>
+        <p>O nedreptate sau un obstacol.</p>
+        <ul class="facts">
+          <li><span>Valență / activare</span>−0.70 / +0.75</li>
+          <li><span>Din față</span>ridicată</li>
+          <li><span>Modelul</span>Gata (preset reglat)</li>
+          <li><span>Etichetă</span><code>anger</code></li>
+        </ul>
+        <p class="facs"><span class="tag">FACS</span> <code>4D+5C+7C+23C+24B</code> — coborârea și apropierea sprâncenelor (AU4D); ridicarea pleoapei superioare (AU5C); încordarea pleoapelor (AU7C); strângerea buzelor (AU23C); presarea buzelor (AU24B)</p>
+        
+        
+        <p><span class="tag warn">Se confundă cu</span> <a href="#e-disgust">Dezgust</a>, <a href="#e-grief">Durere sufletească</a>, <a href="#e-concentration">Concentrare</a></p>
+        <p><span class="tag">Legată de</span> <a href="#e-appalled">Oroare</a>, <a href="#e-contempt">Dispreț</a>, <a href="#e-humiliation">Umilință</a></p>
+        <p class="meta">Date: CK+ (Extended Cohn-Kanade) · AffectNet · RAF-DB · FER2013 · KDEF</p>
+      </section>
+    
+      <section class="entry emo emotion" id="e-rage">
+        <h4>Furie oarbă <span class="en">Rage</span></h4>
+        <p>Furie la maximum (Plutchik).</p>
+        <ul class="facts">
+          <li><span>Valență / activare</span>−0.90 / +0.95</li>
+          <li><span>Din față</span>ridicată</li>
+          <li><span>Modelul</span>Parțială: lipsesc abilități</li>
+          <li><span>Etichetă</span><code>anger/rage</code></li>
+        </ul>
+        <p class="facs"><span class="tag">FACS</span> <code>4E+5D+7D+9B+10C+16B+25C+26B</code> — coborârea și apropierea sprâncenelor (AU4E); ridicarea pleoapei superioare (AU5D); încordarea pleoapelor (AU7D); încrețirea nasului (AU9B); ridicarea buzei superioare (AU10C); coborârea buzei inferioare (AU16B); buze întredeschise (AU25C); maxilar coborât (AU26B)</p>
+        <p><span class="tag">Îi lipsește modelului</span> Roșeață pe obraji și față</p>
+        <p><span class="tag">Semne</span> Fața se înroșește, dinții dezveliți.</p>
+        
+        
+        <p class="meta">Date: Colectare proprie</p>
+      </section>
+      <section class="entry emo emotion" id="e-irritation">
+        <h4>Iritare <span class="en">Annoyance</span></h4>
+        <p>Furie la intensitate joasă (Plutchik).</p>
+        <ul class="facts">
+          <li><span>Valență / activare</span>−0.40 / +0.30</li>
+          <li><span>Din față</span>scăzută</li>
+          <li><span>Modelul</span>Compozabilă din mușchi</li>
+          <li><span>Etichetă</span><code>anger/irritation</code></li>
+        </ul>
+        <p class="facs"><span class="tag">FACS</span> <code>4B+7A+24B</code> — coborârea și apropierea sprâncenelor (AU4B); încordarea pleoapelor (AU7A); presarea buzelor (AU24B)</p>
+        
+        
+        
+        
+        <p class="meta">Date: AffectNet · Colectare proprie</p>
+      </section>
+      <section class="entry emo emotion" id="e-frustration">
+        <h4>Frustrare <span class="en">Frustration</span></h4>
+        <p>Un scop blocat.</p>
+        <ul class="facts">
+          <li><span>Valență / activare</span>−0.60 / +0.50</li>
+          <li><span>Din față</span>medie</li>
+          <li><span>Modelul</span>Parțială: lipsesc abilități</li>
+          <li><span>Etichetă</span><code>anger/frustration</code></li>
+        </ul>
+        <p class="facs"><span class="tag">FACS</span> <code>4C+17B+24C</code> — coborârea și apropierea sprâncenelor (AU4C); ridicarea bărbiei (AU17B); presarea buzelor (AU24C)</p>
+        <p><span class="tag">Îi lipsește modelului</span> Dinamică temporală (micro-expresii, tresărire)</p>
+        <p><span class="tag">Semne</span> Clătinatul capului, oftatul.</p>
+        
+        
+        <p class="meta">Date: DAiSEE · Colectare proprie</p>
+      </section>
+      <section class="entry emo sub" id="e-exasperation">
+        <h4>Exasperare <span class="en">Exasperation</span></h4>
+        <p>Frustrare care a durat prea mult.</p>
+        <ul class="facts">
+          <li><span>Valență / activare</span>−0.50 / +0.40</li>
+          <li><span>Din față</span>medie</li>
+          <li><span>Modelul</span>Parțială: lipsesc abilități</li>
+          <li><span>Etichetă</span><code>anger/frustration/exasperation</code></li>
+        </ul>
+        <p class="facs"><span class="tag">FACS</span> <code>4A+63C+24B</code> — coborârea și apropierea sprâncenelor (AU4A); privirea în sus (AU63C); presarea buzelor (AU24B)</p>
+        <p><span class="tag">Îi lipsește modelului</span> Dinamică temporală (micro-expresii, tresărire), Respirație vizibilă (oftat, hiperventilație)</p>
+        <p><span class="tag">Semne</span> Datul ochilor peste cap, expirul.</p>
+        
+        
+        <p class="meta">Date: Colectare proprie</p>
+      </section>
+      <section class="entry emo emotion" id="e-indignation">
+        <h4>Indignare <span class="en">Indignation</span></h4>
+        <p>Furie morală, față de o nedreptate.</p>
+        <ul class="facts">
+          <li><span>Valență / activare</span>−0.60 / +0.60</li>
+          <li><span>Din față</span>scăzută</li>
+          <li><span>Modelul</span>Parțială: lipsesc abilități</li>
+          <li><span>Etichetă</span><code>anger/indignation</code></li>
+        </ul>
+        <p class="facs"><span class="tag">FACS</span> <code>4C+5B+24B+53A</code> — coborârea și apropierea sprâncenelor (AU4C); ridicarea pleoapei superioare (AU5B); presarea buzelor (AU24B); capul ridicat (AU53A)</p>
+        <p><span class="tag">Îi lipsește modelului</span> Context și situație</p>
+        
+        
+        
+        <p class="meta">Date: Colectare proprie</p>
+      </section>
+      <section class="entry emo emotion" id="e-hatred">
+        <h4>Ură <span class="en">Hatred</span></h4>
+        <p>Furie + dezgust față de cineva (Du et al.: 4, 7, 10).</p>
+        <ul class="facts">
+          <li><span>Valență / activare</span>−0.90 / +0.50</li>
+          <li><span>Din față</span>medie</li>
+          <li><span>Modelul</span>Compozabilă din mușchi</li>
+          <li><span>Etichetă</span><code>anger/hatred</code></li>
+        </ul>
+        <p class="facs"><span class="tag">FACS</span> <code>4C+7C+10C</code> — coborârea și apropierea sprâncenelor (AU4C); încordarea pleoapelor (AU7C); ridicarea buzei superioare (AU10C)</p>
+        
+        
+        
+        <p><span class="tag">Legată de</span> <a href="#e-disgust">Dezgust</a></p>
+        <p class="meta">Date: RAF-DB · EmotioNet</p>
+      </section>
+      <section class="entry emo emotion" id="e-resentment">
+        <h4>Resentiment <span class="en">Resentment</span></h4>
+        <p>Furie veche, păstrată față de cineva.</p>
+        <ul class="facts">
+          <li><span>Valență / activare</span>−0.60 / +0.20</li>
+          <li><span>Din față</span>scăzută</li>
+          <li><span>Modelul</span>Nu se vede pe față</li>
+          <li><span>Etichetă</span><code>anger/resentment</code></li>
+        </ul>
+        <p class="facs"><span class="tag">FACS</span> nu are o expresie facială proprie; se recunoaște din context, voce sau comportament.</p>
+        <p><span class="tag">Îi lipsește modelului</span> Context și situație</p>
+        
+        
+        
+        <p class="meta">Date: GoEmotions (text) · Colectare proprie</p>
+      </section>
+    <h3 id="familie-surprise">Surpriză</h3>
+    
+      <section class="entry emo family" id="e-surprise">
+        <h4>Surpriză <span class="en">Surprise</span></h4>
+        <p>Ceva neașteptat.</p>
+        <ul class="facts">
+          <li><span>Valență / activare</span>+0.10 / +0.80</li>
+          <li><span>Din față</span>ridicată</li>
+          <li><span>Modelul</span>Gata (preset reglat)</li>
+          <li><span>Etichetă</span><code>surprise</code></li>
+        </ul>
+        <p class="facs"><span class="tag">FACS</span> <code>1D+2D+5B+26C</code> — ridicarea interioară a sprâncenelor (AU1D); ridicarea exterioară a sprâncenelor (AU2D); ridicarea pleoapei superioare (AU5B); maxilar coborât (AU26C)</p>
+        <p><span class="tag">Îi lipsește modelului</span> Dinamică temporală (micro-expresii, tresărire)</p>
+        <p><span class="tag">Semne</span> Durează doar o secundă; mai lungă, devine altceva.</p>
+        <p><span class="tag warn">Se confundă cu</span> <a href="#e-fear">Frică</a></p>
+        <p><span class="tag">Legată de</span> <a href="#e-delight">Încântare</a>, <a href="#e-fearsurprise">Surpriză înfricoșată</a>, <a href="#e-disapproval">Dezaprobare</a>, <a href="#e-disappointment">Dezamăgire</a></p>
+        <p class="meta">Date: CK+ (Extended Cohn-Kanade) · AffectNet · RAF-DB · FER2013 · KDEF</p>
+      </section>
+    
+      <section class="entry emo emotion" id="e-amazement">
+        <h4>Uimire <span class="en">Amazement</span></h4>
+        <p>Surpriză la maximum (Plutchik).</p>
+        <ul class="facts">
+          <li><span>Valență / activare</span>+0.40 / +0.85</li>
+          <li><span>Din față</span>medie</li>
+          <li><span>Modelul</span>Compozabilă din mușchi</li>
+          <li><span>Etichetă</span><code>surprise/amazement</code></li>
+        </ul>
+        <p class="facs"><span class="tag">FACS</span> <code>1E+2E+5C+26D+53A</code> — ridicarea interioară a sprâncenelor (AU1E); ridicarea exterioară a sprâncenelor (AU2E); ridicarea pleoapei superioare (AU5C); maxilar coborât (AU26D); capul ridicat (AU53A)</p>
+        
+        
+        
+        
+        <p class="meta">Date: Colectare proprie</p>
+      </section>
+      <section class="entry emo emotion" id="e-awe">
+        <h4>Venerație / sublim <span class="en">Awe</span></h4>
+        <p>În fața a ceva vast (Du et al. „awed”: 1, 2, 5, 25; Plutchik: frică + surpriză).</p>
+        <ul class="facts">
+          <li><span>Valență / activare</span>+0.50 / +0.55</li>
+          <li><span>Din față</span>medie</li>
+          <li><span>Modelul</span>Compozabilă din mușchi</li>
+          <li><span>Etichetă</span><code>surprise/awe</code></li>
+        </ul>
+        <p class="facs"><span class="tag">FACS</span> <code>1C+2C+5B+25B+26B+53A</code> — ridicarea interioară a sprâncenelor (AU1C); ridicarea exterioară a sprâncenelor (AU2C); ridicarea pleoapei superioare (AU5B); buze întredeschise (AU25B); maxilar coborât (AU26B); capul ridicat (AU53A)</p>
+        
+        
+        
+        <p><span class="tag">Legată de</span> <a href="#e-fear">Frică</a></p>
+        <p class="meta">Date: EmotioNet · Colectare proprie</p>
+      </section>
+      <section class="entry emo emotion" id="e-shock">
+        <h4>Șoc <span class="en">Shock</span></h4>
+        <p>Surpriză neplăcută, paralizantă.</p>
+        <ul class="facts">
+          <li><span>Valență / activare</span>−0.50 / +0.85</li>
+          <li><span>Din față</span>medie</li>
+          <li><span>Modelul</span>Parțială: lipsesc abilități</li>
+          <li><span>Etichetă</span><code>surprise/shock</code></li>
+        </ul>
+        <p class="facs"><span class="tag">FACS</span> <code>1D+2C+4A+5D+26D</code> — ridicarea interioară a sprâncenelor (AU1D); ridicarea exterioară a sprâncenelor (AU2C); coborârea și apropierea sprâncenelor (AU4A); ridicarea pleoapei superioare (AU5D); maxilar coborât (AU26D)</p>
+        <p><span class="tag">Îi lipsește modelului</span> Paloare</p>
+        
+        
+        
+        <p class="meta">Date: Colectare proprie</p>
+      </section>
+      <section class="entry emo emotion" id="e-bewilderment">
+        <h4>Nedumerire <span class="en">Bewilderment</span></h4>
+        <p>Surpriză amestecată cu neînțelegere.</p>
+        <ul class="facts">
+          <li><span>Valență / activare</span>−0.10 / +0.40</li>
+          <li><span>Din față</span>scăzută</li>
+          <li><span>Modelul</span>Compozabilă din mușchi</li>
+          <li><span>Etichetă</span><code>surprise/bewilderment</code></li>
+        </ul>
+        <p class="facs"><span class="tag">FACS</span> <code>1B+2A+4B+55B</code> — ridicarea interioară a sprâncenelor (AU1B); ridicarea exterioară a sprâncenelor (AU2A); coborârea și apropierea sprâncenelor (AU4B); capul înclinat la stânga (AU55B)</p>
+        
+        
+        
+        
+        <p class="meta">Date: DAiSEE · Colectare proprie</p>
+      </section>
+    <h3 id="familie-disgust">Dezgust</h3>
+    
+      <section class="entry emo family" id="e-disgust">
+        <h4>Dezgust <span class="en">Disgust</span></h4>
+        <p>Respingerea a ceva contaminat sau respingător.</p>
+        <ul class="facts">
+          <li><span>Valență / activare</span>−0.70 / +0.35</li>
+          <li><span>Din față</span>ridicată</li>
+          <li><span>Modelul</span>Gata (preset reglat)</li>
+          <li><span>Etichetă</span><code>disgust</code></li>
+        </ul>
+        <p class="facs"><span class="tag">FACS</span> <code>9D+10C+15B+17B</code> — încrețirea nasului (AU9D); ridicarea buzei superioare (AU10C); coborârea colțurilor gurii (AU15B); ridicarea bărbiei (AU17B)</p>
+        
+        <p><span class="tag">Semne</span> Se confundă cu furia; încrețirea nasului (AU9) e cheia.</p>
+        <p><span class="tag warn">Se confundă cu</span> <a href="#e-anger">Furie</a>, <a href="#e-pain">Durere fizică</a></p>
+        <p><span class="tag">Legată de</span> <a href="#e-hatred">Ură</a>, <a href="#e-contempt">Dispreț</a>, <a href="#e-remorse">Remușcare</a></p>
+        <p class="meta">Date: CK+ (Extended Cohn-Kanade) · AffectNet · RAF-DB · FER2013 · KDEF</p>
+      </section>
+    
+      <section class="entry emo emotion" id="e-revulsion">
+        <h4>Scârbă <span class="en">Revulsion</span></h4>
+        <p>Dezgust visceral, cu întoarcerea capului.</p>
+        <ul class="facts">
+          <li><span>Valență / activare</span>−0.85 / +0.50</li>
+          <li><span>Din față</span>ridicată</li>
+          <li><span>Modelul</span>Compozabilă din mușchi</li>
+          <li><span>Etichetă</span><code>disgust/revulsion</code></li>
+        </ul>
+        <p class="facs"><span class="tag">FACS</span> <code>9E+10D+16B+25B+43A+51B</code> — încrețirea nasului (AU9E); ridicarea buzei superioare (AU10D); coborârea buzei inferioare (AU16B); buze întredeschise (AU25B); ochi închiși / pleoape grele (AU43A); capul întors la stânga (AU51B)</p>
+        
+        
+        
+        
+        <p class="meta">Date: Colectare proprie</p>
+      </section>
+      <section class="entry emo sub" id="e-loathing">
+        <h4>Silă <span class="en">Loathing</span></h4>
+        <p>Dezgust la maximum (Plutchik).</p>
+        <ul class="facts">
+          <li><span>Valență / activare</span>−0.90 / +0.40</li>
+          <li><span>Din față</span>medie</li>
+          <li><span>Modelul</span>Compozabilă din mușchi</li>
+          <li><span>Etichetă</span><code>disgust/revulsion/loathing</code></li>
+        </ul>
+        <p class="facs"><span class="tag">FACS</span> <code>4B+9C+10C+51A</code> — coborârea și apropierea sprâncenelor (AU4B); încrețirea nasului (AU9C); ridicarea buzei superioare (AU10C); capul întors la stânga (AU51A)</p>
+        
+        
+        
+        
+        <p class="meta">Date: Colectare proprie</p>
+      </section>
+      <section class="entry emo emotion" id="e-distaste">
+        <h4>Neplăcere <span class="en">Distaste</span></h4>
+        <p>Dezgust la intensitate joasă.</p>
+        <ul class="facts">
+          <li><span>Valență / activare</span>−0.40 / +0.10</li>
+          <li><span>Din față</span>scăzută</li>
+          <li><span>Modelul</span>Compozabilă din mușchi</li>
+          <li><span>Etichetă</span><code>disgust/distaste</code></li>
+        </ul>
+        <p class="facs"><span class="tag">FACS</span> <code>9A+10B</code> — încrețirea nasului (AU9A); ridicarea buzei superioare (AU10B)</p>
+        
+        
+        
+        
+        <p class="meta">Date: Colectare proprie</p>
+      </section>
+      <section class="entry emo emotion" id="e-appalled">
+        <h4>Oroare <span class="en">Appalled</span></h4>
+        <p>Dezgust + furie (Du et al.: 4, 9, 10).</p>
+        <ul class="facts">
+          <li><span>Valență / activare</span>−0.80 / +0.60</li>
+          <li><span>Din față</span>medie</li>
+          <li><span>Modelul</span>Compozabilă din mușchi</li>
+          <li><span>Etichetă</span><code>disgust/appalled</code></li>
+        </ul>
+        <p class="facs"><span class="tag">FACS</span> <code>4C+9C+10C</code> — coborârea și apropierea sprâncenelor (AU4C); încrețirea nasului (AU9C); ridicarea buzei superioare (AU10C)</p>
+        
+        
+        
+        <p><span class="tag">Legată de</span> <a href="#e-anger">Furie</a></p>
+        <p class="meta">Date: RAF-DB · EmotioNet</p>
+      </section>
+      <section class="entry emo emotion" id="e-moraldisgust">
+        <h4>Dezgust moral <span class="en">Moral disgust</span></h4>
+        <p>Dezgust față de un comportament, nu față de ceva fizic.</p>
+        <ul class="facts">
+          <li><span>Valență / activare</span>−0.60 / +0.30</li>
+          <li><span>Din față</span>scăzută</li>
+          <li><span>Modelul</span>Nu se vede pe față</li>
+          <li><span>Etichetă</span><code>disgust/moraldisgust</code></li>
+        </ul>
+        <p class="facs"><span class="tag">FACS</span> nu are o expresie facială proprie; se recunoaște din context, voce sau comportament.</p>
+        <p><span class="tag">Îi lipsește modelului</span> Context și situație</p>
+        
+        
+        
+        <p class="meta">Date: GoEmotions (text) · Colectare proprie</p>
+      </section>
+    <h3 id="familie-contempt">Dispreț</h3>
+    
+      <section class="entry emo family" id="e-contempt">
+        <h4>Dispreț <span class="en">Contempt</span></h4>
+        <p>Superioritate față de altcineva (Plutchik: furie + dezgust).</p>
+        <ul class="facts">
+          <li><span>Valență / activare</span>−0.50 / +0.10</li>
+          <li><span>Din față</span>medie</li>
+          <li><span>Modelul</span>Gata (preset reglat)</li>
+          <li><span>Etichetă</span><code>contempt</code></li>
+        </ul>
+        <p class="facs"><span class="tag">FACS</span> <code>R12A+R14C</code> — dreapta tragerea colțurilor gurii în sus (AU12A); dreapta gropiță (colțuri trase înapoi) (AU14C)</p>
+        
+        <p><span class="tag">Semne</span> Singura emoție de bază unilaterală; se confundă cu un zâmbet.</p>
+        <p><span class="tag warn">Se confundă cu</span> <a href="#e-socialsmile">Zâmbet politicos (social)</a></p>
+        <p><span class="tag">Legată de</span> <a href="#e-anger">Furie</a>, <a href="#e-disgust">Dezgust</a></p>
+        <p class="meta">Date: CK+ (Extended Cohn-Kanade) · AffectNet</p>
+      </section>
+    
+      <section class="entry emo emotion" id="e-disdain">
+        <h4>Aroganță <span class="en">Disdain</span></h4>
+        <p>Privit „de sus”: capul ridicat, privirea coborâtă spre celălalt.</p>
+        <ul class="facts">
+          <li><span>Valență / activare</span>−0.50 / 0.00</li>
+          <li><span>Din față</span>scăzută</li>
+          <li><span>Modelul</span>Compozabilă din mușchi</li>
+          <li><span>Etichetă</span><code>contempt/disdain</code></li>
+        </ul>
+        <p class="facs"><span class="tag">FACS</span> <code>R14B+53B+64A</code> — dreapta gropiță (colțuri trase înapoi) (AU14B); capul ridicat (AU53B); privirea în jos (AU64A)</p>
+        
+        
+        
+        
+        <p class="meta">Date: Colectare proprie</p>
+      </section>
+      <section class="entry emo emotion" id="e-scorn">
+        <h4>Batjocură <span class="en">Scorn</span></h4>
+        <p>Rânjet unilateral (buza de sus ridicată pe o parte).</p>
+        <ul class="facts">
+          <li><span>Valență / activare</span>−0.60 / +0.30</li>
+          <li><span>Din față</span>medie</li>
+          <li><span>Modelul</span>Compozabilă din mușchi</li>
+          <li><span>Etichetă</span><code>contempt/scorn</code></li>
+        </ul>
+        <p class="facs"><span class="tag">FACS</span> <code>R10C+R12A</code> — dreapta ridicarea buzei superioare (AU10C); dreapta tragerea colțurilor gurii în sus (AU12A)</p>
+        
+        
+        
+        
+        <p class="meta">Date: Colectare proprie</p>
+      </section>
+      <section class="entry emo emotion" id="e-sarcasm">
+        <h4>Ironie / sarcasm <span class="en">Sarcasm</span></h4>
+        <p>Dispreț îmbrăcat în umor.</p>
+        <ul class="facts">
+          <li><span>Valență / activare</span>−0.30 / +0.30</li>
+          <li><span>Din față</span>scăzută</li>
+          <li><span>Modelul</span>Parțială: lipsesc abilități</li>
+          <li><span>Etichetă</span><code>contempt/sarcasm</code></li>
+        </ul>
+        <p class="facs"><span class="tag">FACS</span> <code>R12B+R14B</code> — dreapta tragerea colțurilor gurii în sus (AU12B); dreapta gropiță (colțuri trase înapoi) (AU14B)</p>
+        <p><span class="tag">Îi lipsește modelului</span> Voce și sunete (râs, suspin), Context și situație, Dinamică temporală (micro-expresii, tresărire)</p>
+        
+        
+        
+        <p class="meta">Date: Colectare proprie</p>
+      </section>
+      <section class="entry emo emotion" id="e-disapproval">
+        <h4>Dezaprobare <span class="en">Disapproval</span></h4>
+        <p>Plutchik: surpriză + tristețe.</p>
+        <ul class="facts">
+          <li><span>Valență / activare</span>−0.50 / +0.20</li>
+          <li><span>Din față</span>scăzută</li>
+          <li><span>Modelul</span>Parțială: lipsesc abilități</li>
+          <li><span>Etichetă</span><code>contempt/disapproval</code></li>
+        </ul>
+        <p class="facs"><span class="tag">FACS</span> <code>4B+14A+24B</code> — coborârea și apropierea sprâncenelor (AU4B); gropiță (colțuri trase înapoi) (AU14A); presarea buzelor (AU24B)</p>
+        <p><span class="tag">Îi lipsește modelului</span> Context și situație</p>
+        
+        
+        <p><span class="tag">Legată de</span> <a href="#e-surprise">Surpriză</a>, <a href="#e-sadness">Tristețe</a></p>
+        <p class="meta">Date: Colectare proprie</p>
+      </section>
+    <h3 id="familie-love">Iubire &amp; afecțiune</h3>
+    
+      <section class="entry emo family" id="e-love">
+        <h4>Iubire &amp; afecțiune <span class="en">Love</span></h4>
+        <p>Atașament și grijă față de cineva (Parrott: emoție primară).</p>
+        <ul class="facts">
+          <li><span>Valență / activare</span>+0.80 / +0.20</li>
+          <li><span>Din față</span>scăzută</li>
+          <li><span>Modelul</span>Parțială: lipsesc abilități</li>
+          <li><span>Etichetă</span><code>love</code></li>
+        </ul>
+        <p class="facs"><span class="tag">FACS</span> <code>6A+12B+55A</code> — ridicarea obrajilor (AU6A); tragerea colțurilor gurii în sus (AU12B); capul înclinat la stânga (AU55A)</p>
+        <p><span class="tag">Îi lipsește modelului</span> Context și situație</p>
+        <p><span class="tag">Semne</span> Nu are o expresie facială proprie; se vede în privire, apropiere, atingere.</p>
+        
+        <p><span class="tag">Legată de</span> <a href="#e-joy">Bucurie</a>, <a href="#e-trust">Încredere</a></p>
+        <p class="meta">Date: GoEmotions (text) · Colectare proprie</p>
+      </section>
+    
+      <section class="entry emo emotion" id="e-tenderness">
+        <h4>Tandrețe <span class="en">Tenderness</span></h4>
+        <p>Blândețe față de cineva vulnerabil.</p>
+        <ul class="facts">
+          <li><span>Valență / activare</span>+0.70 / −0.20</li>
+          <li><span>Din față</span>scăzută</li>
+          <li><span>Modelul</span>Compozabilă din mușchi</li>
+          <li><span>Etichetă</span><code>love/tenderness</code></li>
+        </ul>
+        <p class="facs"><span class="tag">FACS</span> <code>6A+12A+43A+55B</code> — ridicarea obrajilor (AU6A); tragerea colțurilor gurii în sus (AU12A); ochi închiși / pleoape grele (AU43A); capul înclinat la stânga (AU55B)</p>
+        
+        
+        
+        
+        <p class="meta">Date: Colectare proprie</p>
+      </section>
+      <section class="entry emo emotion" id="e-compassion">
+        <h4>Compasiune <span class="en">Compassion</span></h4>
+        <p>Durerea altuia, cu dorința de a ajuta.</p>
+        <ul class="facts">
+          <li><span>Valență / activare</span>+0.30 / −0.10</li>
+          <li><span>Din față</span>scăzută</li>
+          <li><span>Modelul</span>Compozabilă din mușchi</li>
+          <li><span>Etichetă</span><code>love/compassion</code></li>
+        </ul>
+        <p class="facs"><span class="tag">FACS</span> <code>1B+4A+12A+55A</code> — ridicarea interioară a sprâncenelor (AU1B); coborârea și apropierea sprâncenelor (AU4A); tragerea colțurilor gurii în sus (AU12A); capul înclinat la stânga (AU55A)</p>
+        
+        <p><span class="tag">Semne</span> Sprâncene oblice ca la tristețe, dar cu privire caldă (Keltner).</p>
+        
+        <p><span class="tag">Legată de</span> <a href="#e-sadness">Tristețe</a></p>
+        <p class="meta">Date: Colectare proprie</p>
+      </section>
+      <section class="entry emo emotion" id="e-admiration">
+        <h4>Admirație <span class="en">Admiration</span></h4>
+        <p>Prețuirea calității cuiva.</p>
+        <ul class="facts">
+          <li><span>Valență / activare</span>+0.70 / +0.40</li>
+          <li><span>Din față</span>scăzută</li>
+          <li><span>Modelul</span>Parțială: lipsesc abilități</li>
+          <li><span>Etichetă</span><code>love/admiration</code></li>
+        </ul>
+        <p class="facs"><span class="tag">FACS</span> <code>1A+2A+5A+12B</code> — ridicarea interioară a sprâncenelor (AU1A); ridicarea exterioară a sprâncenelor (AU2A); ridicarea pleoapei superioare (AU5A); tragerea colțurilor gurii în sus (AU12B)</p>
+        <p><span class="tag">Îi lipsește modelului</span> Context și situație</p>
+        
+        
+        
+        <p class="meta">Date: GoEmotions (text) · Colectare proprie</p>
+      </section>
+      <section class="entry emo emotion" id="e-trust">
+        <h4>Încredere <span class="en">Trust</span></h4>
+        <p>Siguranța față de celălalt (Plutchik: emoție primară).</p>
+        <ul class="facts">
+          <li><span>Valență / activare</span>+0.60 / −0.10</li>
+          <li><span>Din față</span>scăzută</li>
+          <li><span>Modelul</span>Nu se vede pe față</li>
+          <li><span>Etichetă</span><code>love/trust</code></li>
+        </ul>
+        <p class="facs"><span class="tag">FACS</span> nu are o expresie facială proprie; se recunoaște din context, voce sau comportament.</p>
+        <p><span class="tag">Îi lipsește modelului</span> Context și situație</p>
+        
+        
+        <p><span class="tag">Legată de</span> <a href="#e-love">Iubire &amp; afecțiune</a></p>
+        <p class="meta">Date: Colectare proprie</p>
+      </section>
+      <section class="entry emo emotion" id="e-longing">
+        <h4>Dor <span class="en">Longing</span></h4>
+        <p>Lipsa cuiva drag, dulce-amar.</p>
+        <ul class="facts">
+          <li><span>Valență / activare</span>+0.10 / +0.10</li>
+          <li><span>Din față</span>scăzută</li>
+          <li><span>Modelul</span>Parțială: lipsesc abilități</li>
+          <li><span>Etichetă</span><code>love/longing</code></li>
+        </ul>
+        <p class="facs"><span class="tag">FACS</span> <code>1B+12A+64A</code> — ridicarea interioară a sprâncenelor (AU1B); tragerea colțurilor gurii în sus (AU12A); privirea în jos (AU64A)</p>
+        <p><span class="tag">Îi lipsește modelului</span> Context și situație</p>
+        
+        
+        
+        <p class="meta">Date: Colectare proprie</p>
+      </section>
+      <section class="entry emo emotion" id="e-attraction">
+        <h4>Atracție <span class="en">Attraction</span></h4>
+        <p>Interes romantic sau fizic.</p>
+        <ul class="facts">
+          <li><span>Valență / activare</span>+0.70 / +0.60</li>
+          <li><span>Din față</span>scăzută</li>
+          <li><span>Modelul</span>Parțială: lipsesc abilități</li>
+          <li><span>Etichetă</span><code>love/attraction</code></li>
+        </ul>
+        <p class="facs"><span class="tag">FACS</span> <code>12A+55A</code> — tragerea colțurilor gurii în sus (AU12A); capul înclinat la stânga (AU55A)</p>
+        <p><span class="tag">Îi lipsește modelului</span> Dilatarea pupilei, Context și situație, Dinamică temporală (micro-expresii, tresărire)</p>
+        <p><span class="tag">Semne</span> Pupile dilatate, privire prelungită.</p>
+        
+        
+        <p class="meta">Date: Colectare proprie</p>
+      </section>
+    <h3 id="familie-social">Emoții sociale</h3>
+    
+      <section class="entry emo family" id="e-social">
+        <h4>Emoții sociale <span class="en">Self-conscious emotions</span></h4>
+        <p>Emoții despre sine în ochii altora (Tracy &amp; Robins): cer o imagine despre sine.</p>
+        <ul class="facts">
+          <li><span>Valență / activare</span>−0.20 / +0.30</li>
+          <li><span>Din față</span>scăzută</li>
+          <li><span>Modelul</span>Nu se vede pe față</li>
+          <li><span>Etichetă</span><code>social</code></li>
+        </ul>
+        <p class="facs"><span class="tag">FACS</span> nu are o expresie facială proprie; se recunoaște din context, voce sau comportament.</p>
+        <p><span class="tag">Îi lipsește modelului</span> Context și situație</p>
+        
+        
+        
+        <p class="meta">Date: Colectare proprie</p>
+      </section>
+    
+      <section class="entry emo emotion" id="e-shame">
+        <h4>Rușine <span class="en">Shame</span></h4>
+        <p>Sentimentul că ești „rău” ca persoană.</p>
+        <ul class="facts">
+          <li><span>Valență / activare</span>−0.70 / +0.10</li>
+          <li><span>Din față</span>medie</li>
+          <li><span>Modelul</span>Parțială: lipsesc abilități</li>
+          <li><span>Etichetă</span><code>social/shame</code></li>
+        </ul>
+        <p class="facs"><span class="tag">FACS</span> <code>15A+54C+64C</code> — coborârea colțurilor gurii (AU15A); capul plecat (AU54C); privirea în jos (AU64C)</p>
+        <p><span class="tag">Îi lipsește modelului</span> Postura corpului (umeri, trunchi)</p>
+        <p><span class="tag">Semne</span> Capul și privirea în jos, umerii strânși (Tracy &amp; Robins).</p>
+        
+        <p><span class="tag">Legată de</span> <a href="#e-humiliation">Umilință</a></p>
+        <p class="meta">Date: Colectare proprie</p>
+      </section>
+      <section class="entry emo emotion" id="e-embarrassment">
+        <h4>Jenă <span class="en">Embarrassment</span></h4>
+        <p>O gafă în fața altora.</p>
+        <ul class="facts">
+          <li><span>Valență / activare</span>−0.40 / +0.50</li>
+          <li><span>Din față</span>medie</li>
+          <li><span>Modelul</span>Parțială: lipsesc abilități</li>
+          <li><span>Etichetă</span><code>social/embarrassment</code></li>
+        </ul>
+        <p class="facs"><span class="tag">FACS</span> <code>12B+24B+51A+64B</code> — tragerea colțurilor gurii în sus (AU12B); presarea buzelor (AU24B); capul întors la stânga (AU51A); privirea în jos (AU64B)</p>
+        <p><span class="tag">Îi lipsește modelului</span> Roșeață pe obraji și față, Dinamică temporală (micro-expresii, tresărire)</p>
+        <p><span class="tag">Semne</span> Zâmbet controlat, privire în jos, capul întors, roșeață (Keltner).</p>
+        <p><span class="tag warn">Se confundă cu</span> <a href="#e-amusement">Amuzament</a></p>
+        
+        <p class="meta">Date: Colectare proprie</p>
+      </section>
+      <section class="entry emo emotion" id="e-guilt">
+        <h4>Vinovăție <span class="en">Guilt</span></h4>
+        <p>Regretul pentru o faptă anume.</p>
+        <ul class="facts">
+          <li><span>Valență / activare</span>−0.60 / +0.20</li>
+          <li><span>Din față</span>scăzută</li>
+          <li><span>Modelul</span>Nu se vede pe față</li>
+          <li><span>Etichetă</span><code>social/guilt</code></li>
+        </ul>
+        <p class="facs"><span class="tag">FACS</span> nu are o expresie facială proprie; se recunoaște din context, voce sau comportament.</p>
+        <p><span class="tag">Îi lipsește modelului</span> Context și situație</p>
+        <p><span class="tag">Semne</span> Nu are o expresie proprie documentată.</p>
+        
+        
+        <p class="meta">Date: GoEmotions (text) · Colectare proprie</p>
+      </section>
+      <section class="entry emo sub" id="e-remorse">
+        <h4>Remușcare <span class="en">Remorse</span></h4>
+        <p>Plutchik: tristețe + dezgust (față de sine).</p>
+        <ul class="facts">
+          <li><span>Valență / activare</span>−0.70 / +0.10</li>
+          <li><span>Din față</span>scăzută</li>
+          <li><span>Modelul</span>Parțială: lipsesc abilități</li>
+          <li><span>Etichetă</span><code>social/guilt/remorse</code></li>
+        </ul>
+        <p class="facs"><span class="tag">FACS</span> <code>1B+4B+15B+64B</code> — ridicarea interioară a sprâncenelor (AU1B); coborârea și apropierea sprâncenelor (AU4B); coborârea colțurilor gurii (AU15B); privirea în jos (AU64B)</p>
+        <p><span class="tag">Îi lipsește modelului</span> Context și situație</p>
+        
+        
+        <p><span class="tag">Legată de</span> <a href="#e-sadness">Tristețe</a>, <a href="#e-disgust">Dezgust</a></p>
+        <p class="meta">Date: Colectare proprie</p>
+      </section>
+      <section class="entry emo emotion" id="e-pride">
+        <h4>Mândrie <span class="en">Pride</span></h4>
+        <p>O reușită proprie, recunoscută.</p>
+        <ul class="facts">
+          <li><span>Valență / activare</span>+0.70 / +0.40</li>
+          <li><span>Din față</span>medie</li>
+          <li><span>Modelul</span>Parțială: lipsesc abilități</li>
+          <li><span>Etichetă</span><code>social/pride</code></li>
+        </ul>
+        <p class="facs"><span class="tag">FACS</span> <code>12A+53C</code> — tragerea colțurilor gurii în sus (AU12A); capul ridicat (AU53C)</p>
+        <p><span class="tag">Îi lipsește modelului</span> Postura corpului (umeri, trunchi)</p>
+        <p><span class="tag">Semne</span> Zâmbet mic, capul pe spate ~20°, pieptul în față (Tracy &amp; Robins).</p>
+        
+        
+        <p class="meta">Date: Colectare proprie</p>
+      </section>
+      <section class="entry emo emotion" id="e-shyness">
+        <h4>Timiditate <span class="en">Shyness</span></h4>
+        <p>Reținere în fața altora.</p>
+        <ul class="facts">
+          <li><span>Valență / activare</span>−0.20 / +0.30</li>
+          <li><span>Din față</span>scăzută</li>
+          <li><span>Modelul</span>Parțială: lipsesc abilități</li>
+          <li><span>Etichetă</span><code>social/shyness</code></li>
+        </ul>
+        <p class="facs"><span class="tag">FACS</span> <code>12A+54A+64C</code> — tragerea colțurilor gurii în sus (AU12A); capul plecat (AU54A); privirea în jos (AU64C)</p>
+        <p><span class="tag">Îi lipsește modelului</span> Dinamică temporală (micro-expresii, tresărire), Roșeață pe obraji și față</p>
+        
+        
+        
+        <p class="meta">Date: Colectare proprie</p>
+      </section>
+      <section class="entry emo emotion" id="e-humiliation">
+        <h4>Umilință <span class="en">Humiliation</span></h4>
+        <p>Rușine + furie, provocată de altcineva.</p>
+        <ul class="facts">
+          <li><span>Valență / activare</span>−0.80 / +0.50</li>
+          <li><span>Din față</span>scăzută</li>
+          <li><span>Modelul</span>Parțială: lipsesc abilități</li>
+          <li><span>Etichetă</span><code>social/humiliation</code></li>
+        </ul>
+        <p class="facs"><span class="tag">FACS</span> <code>4B+15B+54C+64C</code> — coborârea și apropierea sprâncenelor (AU4B); coborârea colțurilor gurii (AU15B); capul plecat (AU54C); privirea în jos (AU64C)</p>
+        <p><span class="tag">Îi lipsește modelului</span> Context și situație, Roșeață pe obraji și față</p>
+        
+        
+        <p><span class="tag">Legată de</span> <a href="#e-anger">Furie</a>, <a href="#e-shame">Rușine</a></p>
+        <p class="meta">Date: Colectare proprie</p>
+      </section>
+      <section class="entry emo emotion" id="e-envy">
+        <h4>Invidie <span class="en">Envy</span></h4>
+        <p>Vrei ce are altcineva.</p>
+        <ul class="facts">
+          <li><span>Valență / activare</span>−0.50 / +0.40</li>
+          <li><span>Din față</span>scăzută</li>
+          <li><span>Modelul</span>Nu se vede pe față</li>
+          <li><span>Etichetă</span><code>social/envy</code></li>
+        </ul>
+        <p class="facs"><span class="tag">FACS</span> nu are o expresie facială proprie; se recunoaște din context, voce sau comportament.</p>
+        <p><span class="tag">Îi lipsește modelului</span> Context și situație</p>
+        
+        
+        
+        <p class="meta">Date: GoEmotions (text) · Colectare proprie</p>
+      </section>
+      <section class="entry emo emotion" id="e-jealousy">
+        <h4>Gelozie <span class="en">Jealousy</span></h4>
+        <p>Teama de a pierde pe cineva în favoarea altcuiva.</p>
+        <ul class="facts">
+          <li><span>Valență / activare</span>−0.60 / +0.60</li>
+          <li><span>Din față</span>scăzută</li>
+          <li><span>Modelul</span>Nu se vede pe față</li>
+          <li><span>Etichetă</span><code>social/jealousy</code></li>
+        </ul>
+        <p class="facs"><span class="tag">FACS</span> nu are o expresie facială proprie; se recunoaște din context, voce sau comportament.</p>
+        <p><span class="tag">Îi lipsește modelului</span> Context și situație</p>
+        
+        
+        
+        <p class="meta">Date: Colectare proprie</p>
+      </section>
+    <h3 id="familie-states">Stări (nu emoții)</h3>
+    
+      <section class="entry emo family" id="e-states">
+        <h4>Stări (nu emoții) <span class="en">States</span></h4>
+        <p>Stări cognitive, fizice și dispoziții de fond: nu au o cauză emoțională, dar se văd pe față.</p>
+        <ul class="facts">
+          <li><span>Valență / activare</span>0.00 / −0.20</li>
+          <li><span>Din față</span>medie</li>
+          <li><span>Modelul</span>Nu se vede pe față</li>
+          <li><span>Etichetă</span><code>states</code></li>
+        </ul>
+        <p class="facs"><span class="tag">FACS</span> nu are o expresie facială proprie; se recunoaște din context, voce sau comportament.</p>
+        
+        
+        
+        
+        <p class="meta">Date: DAiSEE · UTA-RLDD / NTHU-DDD · UNBC-McMaster Shoulder Pain</p>
+      </section>
+    
+      <section class="entry emo emotion" id="e-cognitive">
+        <h4>Stări cognitive <span class="en">Cognitive states</span></h4>
+        <p>Ce face mintea: atenție, înțelegere, interes.</p>
+        <ul class="facts">
+          <li><span>Valență / activare</span>+0.10 / +0.20</li>
+          <li><span>Din față</span>medie</li>
+          <li><span>Modelul</span>Nu se vede pe față</li>
+          <li><span>Etichetă</span><code>states/cognitive</code></li>
+        </ul>
+        <p class="facs"><span class="tag">FACS</span> nu are o expresie facială proprie; se recunoaște din context, voce sau comportament.</p>
+        
+        
+        
+        
+        <p class="meta">Date: DAiSEE</p>
+      </section>
+      <section class="entry emo sub" id="e-concentration">
+        <h4>Concentrare <span class="en">Concentration</span></h4>
+        <p>Atenție susținută.</p>
+        <ul class="facts">
+          <li><span>Valență / activare</span>+0.10 / +0.30</li>
+          <li><span>Din față</span>medie</li>
+          <li><span>Modelul</span>Compozabilă din mușchi</li>
+          <li><span>Etichetă</span><code>states/cognitive/concentration</code></li>
+        </ul>
+        <p class="facs"><span class="tag">FACS</span> <code>4B+7B+24B</code> — coborârea și apropierea sprâncenelor (AU4B); încordarea pleoapelor (AU7B); presarea buzelor (AU24B)</p>
+        
+        <p><span class="tag">Semne</span> Privire fixă, clipit rar; se confundă cu furia ușoară.</p>
+        <p><span class="tag warn">Se confundă cu</span> <a href="#e-anger">Furie</a>, <a href="#e-confusion">Confuzie</a></p>
+        
+        <p class="meta">Date: DAiSEE</p>
+      </section>
+      <section class="entry emo sub" id="e-confusion">
+        <h4>Confuzie <span class="en">Confusion</span></h4>
+        <p>Nu înțelegi încă.</p>
+        <ul class="facts">
+          <li><span>Valență / activare</span>−0.30 / +0.30</li>
+          <li><span>Din față</span>medie</li>
+          <li><span>Modelul</span>Compozabilă din mușchi</li>
+          <li><span>Etichetă</span><code>states/cognitive/confusion</code></li>
+        </ul>
+        <p class="facs"><span class="tag">FACS</span> <code>4C+7B+55B</code> — coborârea și apropierea sprâncenelor (AU4C); încordarea pleoapelor (AU7B); capul înclinat la stânga (AU55B)</p>
+        
+        <p><span class="tag">Semne</span> AU4 + AU7 și capul înclinat (Grafsgaard et al.).</p>
+        <p><span class="tag warn">Se confundă cu</span> <a href="#e-concentration">Concentrare</a></p>
+        
+        <p class="meta">Date: DAiSEE</p>
+      </section>
+      <section class="entry emo sub" id="e-interest">
+        <h4>Interes / curiozitate <span class="en">Interest</span></h4>
+        <p>Vrei să afli mai mult (Plutchik: anticipare).</p>
+        <ul class="facts">
+          <li><span>Valență / activare</span>+0.40 / +0.45</li>
+          <li><span>Din față</span>scăzută</li>
+          <li><span>Modelul</span>Parțială: lipsesc abilități</li>
+          <li><span>Etichetă</span><code>states/cognitive/interest</code></li>
+        </ul>
+        <p class="facs"><span class="tag">FACS</span> <code>1B+2B+5A+25A</code> — ridicarea interioară a sprâncenelor (AU1B); ridicarea exterioară a sprâncenelor (AU2B); ridicarea pleoapei superioare (AU5A); buze întredeschise (AU25A)</p>
+        <p><span class="tag">Îi lipsește modelului</span> Dilatarea pupilei</p>
+        
+        
+        
+        <p class="meta">Date: DAiSEE · Colectare proprie</p>
+      </section>
+      <section class="entry emo sub" id="e-contemplation">
+        <h4>Reflecție <span class="en">Contemplation</span></h4>
+        <p>Gândire liniștită, privirea „în gol”.</p>
+        <ul class="facts">
+          <li><span>Valență / activare</span>+0.10 / −0.30</li>
+          <li><span>Din față</span>scăzută</li>
+          <li><span>Modelul</span>Compozabilă din mușchi</li>
+          <li><span>Etichetă</span><code>states/cognitive/contemplation</code></li>
+        </ul>
+        <p class="facs"><span class="tag">FACS</span> <code>4A+17A+61B+64A</code> — coborârea și apropierea sprâncenelor (AU4A); ridicarea bărbiei (AU17A); privirea la stânga (AU61B); privirea în jos (AU64A)</p>
+        
+        
+        
+        
+        <p class="meta">Date: Colectare proprie</p>
+      </section>
+      <section class="entry emo sub" id="e-skepticism">
+        <h4>Scepticism / îndoială <span class="en">Skepticism</span></h4>
+        <p>O sprânceană ridicată: nu ești convins.</p>
+        <ul class="facts">
+          <li><span>Valență / activare</span>−0.20 / +0.20</li>
+          <li><span>Din față</span>scăzută</li>
+          <li><span>Modelul</span>Compozabilă din mușchi</li>
+          <li><span>Etichetă</span><code>states/cognitive/skepticism</code></li>
+        </ul>
+        <p class="facs"><span class="tag">FACS</span> <code>R2C+R14A</code> — dreapta ridicarea exterioară a sprâncenelor (AU2C); dreapta gropiță (colțuri trase înapoi) (AU14A)</p>
+        
+        
+        
+        
+        <p class="meta">Date: Colectare proprie</p>
+      </section>
+      <section class="entry emo sub" id="e-anticipation">
+        <h4>Anticipare <span class="en">Anticipation</span></h4>
+        <p>Aștepți ceva (Plutchik: emoție primară).</p>
+        <ul class="facts">
+          <li><span>Valență / activare</span>+0.30 / +0.45</li>
+          <li><span>Din față</span>scăzută</li>
+          <li><span>Modelul</span>Parțială: lipsesc abilități</li>
+          <li><span>Etichetă</span><code>states/cognitive/anticipation</code></li>
+        </ul>
+        <p class="facs"><span class="tag">FACS</span> <code>1A+5A+24A</code> — ridicarea interioară a sprâncenelor (AU1A); ridicarea pleoapei superioare (AU5A); presarea buzelor (AU24A)</p>
+        <p><span class="tag">Îi lipsește modelului</span> Context și situație</p>
+        
+        
+        <p><span class="tag">Legată de</span> <a href="#e-hope">Speranță / optimism</a></p>
+        <p class="meta">Date: Colectare proprie</p>
+      </section>
+      <section class="entry emo sub" id="e-boredom">
+        <h4>Plictiseală <span class="en">Boredom</span></h4>
+        <p>Lipsa stimulării.</p>
+        <ul class="facts">
+          <li><span>Valență / activare</span>−0.30 / −0.70</li>
+          <li><span>Din față</span>medie</li>
+          <li><span>Modelul</span>Parțială: lipsesc abilități</li>
+          <li><span>Etichetă</span><code>states/cognitive/boredom</code></li>
+        </ul>
+        <p class="facs"><span class="tag">FACS</span> <code>43B+54A+62B</code> — ochi închiși / pleoape grele (AU43B); capul plecat (AU54A); privirea la dreapta (AU62B)</p>
+        <p><span class="tag">Îi lipsește modelului</span> Dinamică temporală (micro-expresii, tresărire), Postura corpului (umeri, trunchi)</p>
+        <p><span class="tag">Semne</span> Privire care rătăcește, capul sprijinit.</p>
+        <p><span class="tag warn">Se confundă cu</span> <a href="#e-fatigue">Oboseală</a></p>
+        
+        <p class="meta">Date: DAiSEE</p>
+      </section>
+      <section class="entry emo emotion" id="e-physical">
+        <h4>Stări fizice <span class="en">Physical states</span></h4>
+        <p>Ce simte corpul.</p>
+        <ul class="facts">
+          <li><span>Valență / activare</span>−0.30 / +0.10</li>
+          <li><span>Din față</span>ridicată</li>
+          <li><span>Modelul</span>Nu se vede pe față</li>
+          <li><span>Etichetă</span><code>states/physical</code></li>
+        </ul>
+        <p class="facs"><span class="tag">FACS</span> nu are o expresie facială proprie; se recunoaște din context, voce sau comportament.</p>
+        
+        
+        
+        
+        <p class="meta">Date: UNBC-McMaster Shoulder Pain · UTA-RLDD / NTHU-DDD</p>
+      </section>
+      <section class="entry emo sub" id="e-pain">
+        <h4>Durere fizică <span class="en">Pain</span></h4>
+        <p>Durere corporală.</p>
+        <ul class="facts">
+          <li><span>Valență / activare</span>−0.80 / +0.65</li>
+          <li><span>Din față</span>ridicată</li>
+          <li><span>Modelul</span>Compozabilă din mușchi</li>
+          <li><span>Etichetă</span><code>states/physical/pain</code></li>
+        </ul>
+        <p class="facs"><span class="tag">FACS</span> <code>4C+6C+7C+9B+10B+43B</code> — coborârea și apropierea sprâncenelor (AU4C); ridicarea obrajilor (AU6C); încordarea pleoapelor (AU7C); încrețirea nasului (AU9B); ridicarea buzei superioare (AU10B); ochi închiși / pleoape grele (AU43B)</p>
+        
+        <p><span class="tag">Semne</span> Scorul PSPI = AU4 + max(AU6, AU7) + max(AU9, AU10) + AU43 (Prkachin &amp; Solomon).</p>
+        <p><span class="tag warn">Se confundă cu</span> <a href="#e-disgust">Dezgust</a></p>
+        
+        <p class="meta">Date: UNBC-McMaster Shoulder Pain</p>
+      </section>
+      <section class="entry emo sub" id="e-fatigue">
+        <h4>Oboseală <span class="en">Fatigue</span></h4>
+        <p>Lipsa energiei.</p>
+        <ul class="facts">
+          <li><span>Valență / activare</span>−0.30 / −0.80</li>
+          <li><span>Din față</span>medie</li>
+          <li><span>Modelul</span>Parțială: lipsesc abilități</li>
+          <li><span>Etichetă</span><code>states/physical/fatigue</code></li>
+        </ul>
+        <p class="facs"><span class="tag">FACS</span> <code>43C+54A</code> — ochi închiși / pleoape grele (AU43C); capul plecat (AU54A)</p>
+        <p><span class="tag">Îi lipsește modelului</span> Dinamică temporală (micro-expresii, tresărire)</p>
+        <p><span class="tag">Semne</span> Clipit lent, căscat, capul care cade.</p>
+        <p><span class="tag warn">Se confundă cu</span> <a href="#e-sadness">Tristețe</a>, <a href="#e-boredom">Plictiseală</a></p>
+        
+        <p class="meta">Date: UTA-RLDD / NTHU-DDD</p>
+      </section>
+      <section class="entry emo sub" id="e-sleepiness">
+        <h4>Somnolență <span class="en">Sleepiness</span></h4>
+        <p>Aproape de adormire: pleoape care cad, clipit lung.</p>
+        <ul class="facts">
+          <li><span>Valență / activare</span>−0.10 / −0.90</li>
+          <li><span>Din față</span>medie</li>
+          <li><span>Modelul</span>Parțială: lipsesc abilități</li>
+          <li><span>Etichetă</span><code>states/physical/sleepiness</code></li>
+        </ul>
+        <p class="facs"><span class="tag">FACS</span> <code>43D+54B</code> — ochi închiși / pleoape grele (AU43D); capul plecat (AU54B)</p>
+        <p><span class="tag">Îi lipsește modelului</span> Dinamică temporală (micro-expresii, tresărire)</p>
+        
+        
+        
+        <p class="meta">Date: UTA-RLDD / NTHU-DDD</p>
+      </section>
+      <section class="entry emo sub" id="e-yawn">
+        <h4>Căscat <span class="en">Yawn</span></h4>
+        <p>Acțiune reflexă, semn de oboseală sau plictiseală.</p>
+        <ul class="facts">
+          <li><span>Valență / activare</span>0.00 / −0.60</li>
+          <li><span>Din față</span>ridicată</li>
+          <li><span>Modelul</span>Parțială: lipsesc abilități</li>
+          <li><span>Etichetă</span><code>states/physical/yawn</code></li>
+        </ul>
+        <p class="facs"><span class="tag">FACS</span> <code>6B+27E+43C+53A</code> — ridicarea obrajilor (AU6B); gura larg deschisă (AU27E); ochi închiși / pleoape grele (AU43C); capul ridicat (AU53A)</p>
+        <p><span class="tag">Îi lipsește modelului</span> Dinamică temporală (micro-expresii, tresărire), Respirație vizibilă (oftat, hiperventilație)</p>
+        
+        
+        
+        <p class="meta">Date: UTA-RLDD / NTHU-DDD</p>
+      </section>
+      <section class="entry emo sub" id="e-effort">
+        <h4>Efort fizic <span class="en">Effort</span></h4>
+        <p>Încordare: dinți strânși, față roșie.</p>
+        <ul class="facts">
+          <li><span>Valență / activare</span>−0.20 / +0.80</li>
+          <li><span>Din față</span>medie</li>
+          <li><span>Modelul</span>Parțială: lipsesc abilități</li>
+          <li><span>Etichetă</span><code>states/physical/effort</code></li>
+        </ul>
+        <p class="facs"><span class="tag">FACS</span> <code>4C+6B+7C+10B+23D</code> — coborârea și apropierea sprâncenelor (AU4C); ridicarea obrajilor (AU6B); încordarea pleoapelor (AU7C); ridicarea buzei superioare (AU10B); strângerea buzelor (AU23D)</p>
+        <p><span class="tag">Îi lipsește modelului</span> Roșeață pe obraji și față, Transpirație, Respirație vizibilă (oftat, hiperventilație)</p>
+        
+        
+        
+        <p class="meta">Date: Colectare proprie</p>
+      </section>
+      <section class="entry emo emotion" id="e-baseline">
+        <h4>Dispoziții de fond <span class="en">Moods</span></h4>
+        <p>Stări lungi, fără cauză precisă: colorează toate emoțiile.</p>
+        <ul class="facts">
+          <li><span>Valență / activare</span>+0.10 / −0.30</li>
+          <li><span>Din față</span>scăzută</li>
+          <li><span>Modelul</span>Nu se vede pe față</li>
+          <li><span>Etichetă</span><code>states/baseline</code></li>
+        </ul>
+        <p class="facs"><span class="tag">FACS</span> nu are o expresie facială proprie; se recunoaște din context, voce sau comportament.</p>
+        <p><span class="tag">Îi lipsește modelului</span> Dinamică temporală (micro-expresii, tresărire)</p>
+        <p><span class="tag">Semne</span> Se văd în timp, nu într-o imagine.</p>
+        
+        
+        <p class="meta">Date: Colectare proprie</p>
+      </section>
+      <section class="entry emo sub" id="e-neutral">
+        <h4>Neutru <span class="en">Neutral</span></h4>
+        <p>Fața în repaus: referința pentru orice altă expresie.</p>
+        <ul class="facts">
+          <li><span>Valență / activare</span>0.00 / 0.00</li>
+          <li><span>Din față</span>ridicată</li>
+          <li><span>Modelul</span>Gata (preset reglat)</li>
+          <li><span>Etichetă</span><code>states/baseline/neutral</code></li>
+        </ul>
+        
+        
+        
+        
+        
+        <p class="meta">Date: CK+ (Extended Cohn-Kanade) · AffectNet · FER2013 · KDEF</p>
+      </section>
+      <section class="entry emo sub" id="e-calm">
+        <h4>Calm / relaxare <span class="en">Calm</span></h4>
+        <p>Liniște, fără tensiune.</p>
+        <ul class="facts">
+          <li><span>Valență / activare</span>+0.40 / −0.70</li>
+          <li><span>Din față</span>scăzută</li>
+          <li><span>Modelul</span>Parțială: lipsesc abilități</li>
+          <li><span>Etichetă</span><code>states/baseline/calm</code></li>
+        </ul>
+        <p class="facs"><span class="tag">FACS</span> <code>43A</code> — ochi închiși / pleoape grele (AU43A)</p>
+        <p><span class="tag">Îi lipsește modelului</span> Respirație vizibilă (oftat, hiperventilație)</p>
+        
+        
+        
+        <p class="meta">Date: Colectare proprie</p>
+      </section>
+      <section class="entry emo sub" id="e-lowmood">
+        <h4>Dispoziție apăsată <span class="en">Low mood</span></h4>
+        <p>Tristețe de fond, fără un motiv anume.</p>
+        <ul class="facts">
+          <li><span>Valență / activare</span>−0.50 / −0.50</li>
+          <li><span>Din față</span>scăzută</li>
+          <li><span>Modelul</span>Parțială: lipsesc abilități</li>
+          <li><span>Etichetă</span><code>states/baseline/lowmood</code></li>
+        </ul>
+        <p class="facs"><span class="tag">FACS</span> <code>1A+15A+43A</code> — ridicarea interioară a sprâncenelor (AU1A); coborârea colțurilor gurii (AU15A); ochi închiși / pleoape grele (AU43A)</p>
+        <p><span class="tag">Îi lipsește modelului</span> Dinamică temporală (micro-expresii, tresărire), Context și situație</p>
+        
+        
+        
+        <p class="meta">Date: Colectare proprie</p>
+      </section>
+      <section class="entry emo sub" id="e-irritable">
+        <h4>Dispoziție iritabilă <span class="en">Irritable mood</span></h4>
+        <p>Prag scăzut pentru furie.</p>
+        <ul class="facts">
+          <li><span>Valență / activare</span>−0.40 / +0.30</li>
+          <li><span>Din față</span>scăzută</li>
+          <li><span>Modelul</span>Parțială: lipsesc abilități</li>
+          <li><span>Etichetă</span><code>states/baseline/irritable</code></li>
+        </ul>
+        <p class="facs"><span class="tag">FACS</span> <code>4A+24A</code> — coborârea și apropierea sprâncenelor (AU4A); presarea buzelor (AU24A)</p>
+        <p><span class="tag">Îi lipsește modelului</span> Dinamică temporală (micro-expresii, tresărire), Context și situație</p>
+        
+        
+        
+        <p class="meta">Date: Colectare proprie</p>
+      </section>
+      <section class="entry emo sub" id="e-euphoria">
+        <h4>Euforie <span class="en">Euphoria</span></h4>
+        <p>Bucurie de fond, amplificată.</p>
+        <ul class="facts">
+          <li><span>Valență / activare</span>+0.85 / +0.70</li>
+          <li><span>Din față</span>scăzută</li>
+          <li><span>Modelul</span>Parțială: lipsesc abilități</li>
+          <li><span>Etichetă</span><code>states/baseline/euphoria</code></li>
+        </ul>
+        <p class="facs"><span class="tag">FACS</span> <code>6B+12C+25A</code> — ridicarea obrajilor (AU6B); tragerea colțurilor gurii în sus (AU12C); buze întredeschise (AU25A)</p>
+        <p><span class="tag">Îi lipsește modelului</span> Dinamică temporală (micro-expresii, tresărire)</p>
+        
+        
+        
+        <p class="meta">Date: Colectare proprie</p>
+      </section>
+  </section>
+
+  <section id="muschi">
+    <h2>Mușchii feței</h2>
+    <p class="lede">Unitățile de acțiune FACS (Facial Action Coding System) folosite mai sus și mușchii care le produc. Codurile 51–64 nu sunt mușchi faciali, ci mișcări ale capului și ale privirii.</p>
+    <div class="table-wrap"><table><thead><tr><th>Cod</th><th>Mișcarea</th><th>Mușchiul</th></tr></thead><tbody><tr><td><code>AU1</code></td><td>Ridicarea interioară a sprâncenelor</td><td>frontal (medial)</td></tr><tr><td><code>AU2</code></td><td>Ridicarea exterioară a sprâncenelor</td><td>frontal (lateral)</td></tr><tr><td><code>AU4</code></td><td>Coborârea și apropierea sprâncenelor</td><td>corugator, procer</td></tr><tr><td><code>AU5</code></td><td>Ridicarea pleoapei superioare</td><td>ridicătorul pleoapei (n. III)</td></tr><tr><td><code>AU6</code></td><td>Ridicarea obrajilor</td><td>orbicularul ochiului (orbitar)</td></tr><tr><td><code>AU7</code></td><td>Încordarea pleoapelor</td><td>orbicularul ochiului (palpebral)</td></tr><tr><td><code>AU9</code></td><td>Încrețirea nasului</td><td>ridicătorul buzei și aripii nasului</td></tr><tr><td><code>AU10</code></td><td>Ridicarea buzei superioare</td><td>ridicătorul buzei superioare</td></tr><tr><td><code>AU12</code></td><td>Tragerea colțurilor gurii în sus</td><td>zigomatic mare</td></tr><tr><td><code>AU14</code></td><td>Gropiță (colțuri trase înapoi)</td><td>buccinator</td></tr><tr><td><code>AU15</code></td><td>Coborârea colțurilor gurii</td><td>coborâtorul unghiului gurii</td></tr><tr><td><code>AU16</code></td><td>Coborârea buzei inferioare</td><td>coborâtorul buzei inferioare</td></tr><tr><td><code>AU17</code></td><td>Ridicarea bărbiei</td><td>mentonier</td></tr><tr><td><code>AU18</code></td><td>Țuguierea buzelor</td><td>orbicularul gurii</td></tr><tr><td><code>AU20</code></td><td>Întinderea laterală a buzelor</td><td>risorius, platisma</td></tr><tr><td><code>AU22</code></td><td>Buze în pâlnie</td><td>orbicularul gurii</td></tr><tr><td><code>AU23</code></td><td>Strângerea buzelor</td><td>orbicularul gurii</td></tr><tr><td><code>AU24</code></td><td>Presarea buzelor</td><td>orbicularul gurii</td></tr><tr><td><code>AU25</code></td><td>Buze întredeschise</td><td>relaxare / coborâtorii buzei</td></tr><tr><td><code>AU26</code></td><td>Maxilar coborât</td><td>pterigoidian, digastric (n. V3)</td></tr><tr><td><code>AU27</code></td><td>Gura larg deschisă</td><td>pterigoidian, digastric (n. V3)</td></tr><tr><td><code>AU28</code></td><td>Rularea buzelor spre interior</td><td>orbicularul gurii</td></tr><tr><td><code>AU41</code></td><td>Pleoapă căzută</td><td>relaxarea ridicătorului pleoapei</td></tr><tr><td><code>AU43</code></td><td>Ochi închiși / pleoape grele</td><td>relaxarea ridicătorului pleoapei</td></tr><tr><td><code>AU45</code></td><td>Clipit</td><td>orbicularul ochiului</td></tr><tr><td><code>AU51</code></td><td>Capul întors la stânga</td><td>poziția capului</td></tr><tr><td><code>AU52</code></td><td>Capul întors la dreapta</td><td>poziția capului</td></tr><tr><td><code>AU53</code></td><td>Capul ridicat</td><td>poziția capului</td></tr><tr><td><code>AU54</code></td><td>Capul plecat</td><td>poziția capului</td></tr><tr><td><code>AU55</code></td><td>Capul înclinat la stânga</td><td>poziția capului</td></tr><tr><td><code>AU56</code></td><td>Capul înclinat la dreapta</td><td>poziția capului</td></tr><tr><td><code>AU61</code></td><td>Privirea la stânga</td><td>direcția privirii</td></tr><tr><td><code>AU62</code></td><td>Privirea la dreapta</td><td>direcția privirii</td></tr><tr><td><code>AU63</code></td><td>Privirea în sus</td><td>direcția privirii</td></tr><tr><td><code>AU64</code></td><td>Privirea în jos</td><td>direcția privirii</td></tr></tbody></table></div>
+  </section>
+  <section id="abilitati">
+    <h2>Ce poate modelul și ce îi lipsește</h2>
+    <p>Are deja: 52 de mușchi faciali (FACS) · Poziția capului · Privire și pleoape · Clipit, respirație, micro-mișcări · Riduri de expresie · Roșeață în jurul ochilor · Ochi umezi.</p>
+    <p>Abilitățile care lipsesc, ordonate după câte emoții ar debloca:</p>
+    <div class="table-wrap"><table><thead><tr><th>Abilitatea</th><th class="num">Emoții</th><th>Cum s-ar adăuga</th></tr></thead><tbody>
+    <tr><td><strong>Context și situație</strong></td><td class="num">23</td><td>nu se vede pe față: etichete din auto-raportare sau descrierea situației</td></tr>
+    <tr><td><strong>Dinamică temporală (micro-expresii, tresărire)</strong></td><td class="num">22</td><td>secvențe cu durate reale: debut, apex, retragere; micro-expresii &lt; 0,5 s</td></tr>
+    <tr><td><strong>Respirație vizibilă (oftat, hiperventilație)</strong></td><td class="num">10</td><td>mișcarea nărilor și a pieptului, ritm legat de emoție</td></tr>
+    <tr><td><strong>Voce și sunete (râs, suspin)</strong></td><td class="num">5</td><td>canal audio separat; în afara feței</td></tr>
+    <tr><td><strong>Postura corpului (umeri, trunchi)</strong></td><td class="num">5</td><td>schelet pentru umeri și trunchi (scanul are doar bustul, static)</td></tr>
+    <tr><td><strong>Roșeață pe obraji și față</strong></td><td class="num">5</td><td>extinderea zonei de roșeață din shaderul pielii la obraji, frunte, gât</td></tr>
+    <tr><td><strong>Lacrimi (picături, dâre)</strong></td><td class="num">3</td><td>particule / hartă de umezeală pe obraz, legate de plâns și intensitate</td></tr>
+    <tr><td><strong>Paloare</strong></td><td class="num">3</td><td>desaturarea pielii (vasoconstricție) la frică intensă și șoc</td></tr>
+    <tr><td><strong>Dilatarea pupilei</strong></td><td class="num">3</td><td>raza pupilei ca parametru în textura ochiului</td></tr>
+    <tr><td><strong>Transpirație</strong></td><td class="num">1</td><td>hartă de luciu pe frunte și buza de sus</td></tr></tbody></table></div>
+  </section>
+  <section id="date">
+    <h2>Cum faci și clasifici datele</h2>
+    <ol class="steps">
+      <li><strong>Etichetă ierarhică</strong>: familie / emoție / nuanță, de exemplu <code>sadness/melancholy</code>. Lasă nivelurile adânci goale dacă nu ești sigur; o etichetă largă și corectă e mai utilă decât una fină și greșită.</li>
+      <li><strong>Intensitate</strong> între 0 și 1, plus <strong>valență și activare</strong> între −1 și 1. Dimensiunile prind stările mixte și trecerile pe care categoriile le pierd.</li>
+      <li><strong>Mușchii</strong>: intensitatea fiecărei unități de acțiune pe scara FACS 0–5.</li>
+      <li><strong>Semnale din afara feței</strong> ca da/nu: lacrimi, roșeață, postură, voce. Fără ele, durerea, jena și mândria nu pot fi învățate.</li>
+      <li><strong>Metadate</strong>: persoana (împarte datele de antrenare și de test pe persoane, nu pe imagini), expresie pozată sau spontană, unghiul, lumina.</li>
+      <li><strong>Perechile care se confundă</strong> (vezi „Se confundă cu” la fiecare emoție) cer instrucțiuni clare pentru cei care etichetează și mai multe exemple.</li>
+      <li><strong>Cel puțin doi adnotatori</strong> pe imagine, cu acordul dintre ei raportat (Cohen κ sau Krippendorff α).</li>
+      <li><strong>Contextul</strong>: aceeași mișcare a feței poate însemna emoții diferite în situații și culturi diferite <a class="cite" href="#src-barrett2019" title="Barrett, Adolphs, Marsella, Martinez &amp; Pollak (2019). Emotional expressions reconsidered. Psychological Science in the Public Interest 20(1), 1–68.">[22]</a>, deci notează situația.</li>
+    </ol>
+    <p>Coloanele unui fișier de etichetare:</p>
+    <p class="cols"><code>file</code> <code>person_id</code> <code>capture</code> <code>family</code> <code>emotion</code> <code>sub_emotion</code> <code>intensity</code> <code>valence</code> <code>arousal</code> <code>AU1 … AU45</code> <code>head_pitch</code> <code>head_yaw</code> <code>head_roll</code> <code>gaze</code> <code>tears</code> <code>blush</code> <code>context</code> <code>annotator</code> <code>confidence</code></p>
+    <h3 id="seturi">Seturi de date</h3>
+    <div class="table-wrap"><table><thead><tr><th>Set</th><th>Ce conține</th></tr></thead><tbody><tr><td><strong>CK+ (Extended Cohn-Kanade)</strong></td><td>secvențe pozate, 7 emoții incl. dispreț, cod FACS complet</td></tr><tr><td><strong>AffectNet</strong></td><td>~1 milion de imagini din internet; 8 categorii + valență și activare continue</td></tr><tr><td><strong>RAF-DB</strong></td><td>imagini spontane; 7 emoții de bază + 12 emoții compuse</td></tr><tr><td><strong>FER2013</strong></td><td>7 categorii, 48×48 alb-negru; mare, dar zgomotos</td></tr><tr><td><strong>KDEF</strong></td><td>7 emoții pozate de 70 de actori, 5 unghiuri</td></tr><tr><td><strong>DISFA</strong></td><td>intensitatea a 12 AU (0–5), expresii spontane, video</td></tr><tr><td><strong>BP4D-Spontaneous</strong></td><td>video 3D, AU codate, emoții induse</td></tr><tr><td><strong>EmotioNet</strong></td><td>AU și emoții compuse, adnotare automată + manuală</td></tr><tr><td><strong>UNBC-McMaster Shoulder Pain</strong></td><td>durere spontană, scor PSPI din AU</td></tr><tr><td><strong>DAiSEE</strong></td><td>implicare, plictiseală, confuzie, frustrare (4 niveluri) la învățare</td></tr><tr><td><strong>UTA-RLDD / NTHU-DDD</strong></td><td>somnolență la volan și în condiții reale</td></tr><tr><td><strong>GoEmotions (text)</strong></td><td>27 de emoții în text — pentru taxonomie, nu pentru fețe</td></tr><tr><td><strong>Colectare proprie</strong></td><td>nu există un set facial public solid: video + context + auto-raportare</td></tr></tbody></table></div>
+  </section>
+  <section id="model">
+    <h2>Ce înseamnă pentru un model al feței</h2>
+    <section class="entry"><h4>Două căi spre față</h4><p>Expresia spontană și cea voluntară folosesc circuite diferite. Modelul ar trebui să știe dacă o expresie e „trăită” sau „jucată”: zâmbetul spontan implică AU6, cel deliberat pornește și se retrage mai repede, cu amplitudine mai mare. <a class="cite" href="#src-hopf1992" title="Hopf, Müller-Forell &amp; Hopf (1992). Localization of emotional and volitional facial paresis. Neurology 42(10), 1918–1923.">[18]</a><a class="cite" href="#src-schmidt2006" title="Schmidt, Ambadar, Cohn &amp; Reed (2006). Movement differences between deliberate and spontaneous facial expressions: zygomaticus major action in smiling. Journal of Nonverbal Behavior 30, 37–52.">[21]</a></p></section><section class="entry"><h4>Timpii reali</h4><p>Fața reacționează la 300–400 ms după stimul, amigdala la ~74 ms, sentimentul conștient mai târziu, cortizolul după 20–40 min. O expresie are debut, vârf și retragere — nu e o poză. <a class="cite" href="#src-dimberg2000" title="Dimberg, Thunberg &amp; Elmehed (2000). Unconscious facial reactions to emotional facial expressions. Psychological Science 11, 86–89.">[20]</a><a class="cite" href="#src-mendez2016" title="Méndez-Bértolo et al. (2016). A fast pathway for fear in human amygdala. Nature Neuroscience 19, 1041–1049.">[1]</a><a class="cite" href="#src-dickerson2004" title="Dickerson &amp; Kemeny (2004). Acute stressors and cortisol responses: a theoretical integration and synthesis of laboratory research. Psychological Bulletin 130, 355–391.">[4]</a></p></section><section class="entry"><h4>Corpul, nu doar mușchii</h4><p>Hipotalamusul și trunchiul cerebral produc pupilele dilatate, roșeața, paloarea, transpirația și lacrimile — exact abilitățile care lipsesc încă modelului (vezi Harta emoțiilor). <a class="cite" href="#src-bylsma2019" title="Bylsma, Gračanin &amp; Vingerhoets (2019). The neurobiology of human crying. Clinical Autonomic Research 29, 63–73.">[16]</a></p></section><section class="entry"><h4>Fruntea e controlată bilateral</h4><p>Partea nucleului facial pentru fruntea și pleoapele primește fibre din ambele emisfere; fața de jos mai ales din cea opusă. Rețeaua neuromotorie din primul tab folosește deja această regulă. <a class="cite" href="#src-morecraft2001" title="Morecraft, Louie, Herrick &amp; Stilwell-Morecraft (2001). Cortical innervation of the facial nucleus in the non-human primate. Brain 124, 176–208.">[17]</a></p></section><section class="entry"><h4>Reglarea poate ascunde</h4><p>Prefrontalul poate reduce sau masca o emoție. Un parametru „mască” (reducerea expresiei, cu scurgeri scurte) ar face modelul mai realist în situații sociale. <a class="cite" href="#src-ochsner2005" title="Ochsner &amp; Gross (2005). The cognitive control of emotion. Trends in Cognitive Sciences 9, 242–249.">[11]</a></p></section><section class="entry"><h4>Contextul contează</h4><p>Fața singură nu spune sigur emoția. Datele de antrenare au nevoie de context, de dimensiuni (valență, activare) și de mai mulți adnotatori — cum propune schema din Harta emoțiilor. <a class="cite" href="#src-barrett2019" title="Barrett, Adolphs, Marsella, Martinez &amp; Pollak (2019). Emotional expressions reconsidered. Psychological Science in the Public Interest 20(1), 1–68.">[22]</a><a class="cite" href="#src-lindquist2012" title="Lindquist, Wager, Kober, Bliss-Moreau &amp; Barrett (2012). The brain basis of emotion: a meta-analytic review. Behavioral and Brain Sciences 35(3), 121–143.">[3]</a></p></section>
+  </section>
+    
+  <section id="surse">
+    <h2>Surse</h2>
+    <ol class="sources"><li id="src-mendez2016">Méndez-Bértolo et al. (2016). A fast pathway for fear in human amygdala. Nature Neuroscience 19, 1041–1049. <a href="https://www.nature.com/articles/nn.4324" target="_blank" rel="noopener">link</a></li><li id="src-feinstein2011">Feinstein, Adolphs, Damasio &amp; Tranel (2011). The human amygdala and the induction and experience of fear. Current Biology 21, 34–38. <a href="https://www.cell.com/current-biology/fulltext/S0960-9822(10)01508-3" target="_blank" rel="noopener">link</a></li><li id="src-lindquist2012">Lindquist, Wager, Kober, Bliss-Moreau &amp; Barrett (2012). The brain basis of emotion: a meta-analytic review. Behavioral and Brain Sciences 35(3), 121–143. <a href="https://www.cambridge.org/core/journals/behavioral-and-brain-sciences/article/brain-basis-of-emotion-a-metaanalytic-review/80F95F093305C76BA2C66BBA48D4BC8A" target="_blank" rel="noopener">link</a></li><li id="src-dickerson2004">Dickerson &amp; Kemeny (2004). Acute stressors and cortisol responses: a theoretical integration and synthesis of laboratory research. Psychological Bulletin 130, 355–391. <a href="https://www.semanticscholar.org/paper/Acute-stressors-and-cortisol-responses:-a-and-of-Dickerson-Kemeny/06c34ed878f059ce891417855190fcb86d3a0dac" target="_blank" rel="noopener">link</a></li><li id="src-bentin1996">Bentin, Allison, Puce, Perez &amp; McCarthy (1996). Electrophysiological studies of face perception in humans (componenta N170). Journal of Cognitive Neuroscience 8, 551–565. <a href="https://doi.org/10.1162/jocn.1996.8.6.551" target="_blank" rel="noopener">link</a></li><li id="src-kragel2016">Kragel &amp; LaBar (2016). Decoding the nature of emotion in the brain. Trends in Cognitive Sciences 20(6), 444–455. <a href="https://pubmed.ncbi.nlm.nih.gov/27133227/" target="_blank" rel="noopener">link</a></li><li id="src-craig2009">Craig (2009). How do you feel — now? The anterior insula and human awareness. Nature Reviews Neuroscience 10, 59–70. <a href="https://www.nature.com/articles/nrn2555" target="_blank" rel="noopener">link</a></li><li id="src-calder2000">Calder, Keane, Manes, Antoun &amp; Young (2000). Impaired recognition and experience of disgust following brain injury. Nature Neuroscience 3, 1077–1078. <a href="https://www.researchgate.net/publication/232794275_Impaired_recognition_and_experience_of_disgust_following_brain_injury" target="_blank" rel="noopener">link</a></li><li id="src-straube2010">Straube et al. (2010). No impairment of recognition and experience of disgust in a patient with a right-hemispheric lesion of the insula and basal ganglia. Neuropsychologia 48(6), 1735–1741. <a href="https://pubmed.ncbi.nlm.nih.gov/20188112/" target="_blank" rel="noopener">link</a></li><li id="src-mayberg1999">Mayberg et al. (1999). Reciprocal limbic-cortical function and negative mood: converging PET findings in depression and normal sadness. American Journal of Psychiatry 156, 675–682. <a href="https://psychiatryonline.org/doi/10.1176/ajp.156.5.675" target="_blank" rel="noopener">link</a></li><li id="src-ochsner2005">Ochsner &amp; Gross (2005). The cognitive control of emotion. Trends in Cognitive Sciences 9, 242–249. <a href="https://doi.org/10.1016/j.tics.2005.03.010" target="_blank" rel="noopener">link</a></li><li id="src-berridge2009">Berridge, Robinson &amp; Aldridge (2009). Dissecting components of reward: “liking”, “wanting”, and learning. Current Opinion in Pharmacology 9, 65–73. <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC2756052/" target="_blank" rel="noopener">link</a></li><li id="src-brainstemAtlas">Levinson et al. (2023). A structural connectivity atlas of limbic brainstem nuclei (LC, NTS, PAG, VTA, rafeul dorsal, în spațiul MNI). Frontiers in Neuroimaging 1, 1009399. <a href="https://www.frontiersin.org/journals/neuroimaging/articles/10.3389/fnimg.2022.1009399/full" target="_blank" rel="noopener">link</a></li><li id="src-panksepp">Panksepp (1998, 2012). Affective Neuroscience; The Archaeology of Mind — seven primary emotional systems (SEEKING, RAGE, FEAR, LUST, CARE, PANIC/GRIEF, PLAY). <a href="https://www.frontiersin.org/journals/neuroscience/articles/10.3389/fnins.2018.01025/full" target="_blank" rel="noopener">link</a></li><li id="src-ledoux2016">LeDoux &amp; Pine (2016). Using neuroscience to help understand fear and anxiety: a two-system framework. American Journal of Psychiatry 173, 1083–1093. <a href="https://pubmed.ncbi.nlm.nih.gov/27609244/" target="_blank" rel="noopener">link</a></li><li id="src-bylsma2019">Bylsma, Gračanin &amp; Vingerhoets (2019). The neurobiology of human crying. Clinical Autonomic Research 29, 63–73. <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC6201288/" target="_blank" rel="noopener">link</a></li><li id="src-morecraft2001">Morecraft, Louie, Herrick &amp; Stilwell-Morecraft (2001). Cortical innervation of the facial nucleus in the non-human primate. Brain 124, 176–208. <a href="https://academic.oup.com/brain/article/124/1/176/286402" target="_blank" rel="noopener">link</a></li><li id="src-hopf1992">Hopf, Müller-Forell &amp; Hopf (1992). Localization of emotional and volitional facial paresis. Neurology 42(10), 1918–1923. <a href="https://www.neurology.org/doi/10.1212/WNL.42.10.1918" target="_blank" rel="noopener">link</a></li><li id="src-gothard2014">Gothard (2014). The amygdalo-motor pathways and the control of facial expressions. Frontiers in Neuroscience 8, 43. <a href="https://www.frontiersin.org/journals/neuroscience/articles/10.3389/fnins.2014.00043/full" target="_blank" rel="noopener">link</a></li><li id="src-dimberg2000">Dimberg, Thunberg &amp; Elmehed (2000). Unconscious facial reactions to emotional facial expressions. Psychological Science 11, 86–89. <a href="https://journals.sagepub.com/doi/abs/10.1111/1467-9280.00221" target="_blank" rel="noopener">link</a></li><li id="src-schmidt2006">Schmidt, Ambadar, Cohn &amp; Reed (2006). Movement differences between deliberate and spontaneous facial expressions: zygomaticus major action in smiling. Journal of Nonverbal Behavior 30, 37–52. <a href="https://link.springer.com/article/10.1007/s10919-005-0003-x" target="_blank" rel="noopener">link</a></li><li id="src-barrett2019">Barrett, Adolphs, Marsella, Martinez &amp; Pollak (2019). Emotional expressions reconsidered. Psychological Science in the Public Interest 20(1), 1–68. <a href="https://journals.sagepub.com/doi/full/10.1177/1529100619832930" target="_blank" rel="noopener">link</a></li></ol>
+  </section>
+    <footer>Generat din datele proiectului Neural Face (js/brain/atlas.js, js/taxonomy/data.js, js/taxonomy/facs.js) la 2026-09-28. Pozițiile anatomice sunt valori tipice din literatură; timpii marcați cu ≈ sunt estimări.</footer>
+  </article>
+</div>
+</body>
+</html>

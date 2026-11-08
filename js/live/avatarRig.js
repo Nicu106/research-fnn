@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import { UPPER_LIP, LOWER_LIP, MOUTH_CORNERS, LID_LANDMARKS as LID_LIST, MIDLINE } from './landmarkSets.js';
 
 /*
  * Drives the photoreal scanned head from MediaPipe face landmarks.
@@ -32,8 +33,22 @@ const DEAD_ZONE = 0.004; // ignore jitter below this (model units) so a still fa
 const LIMIT = { yaw: 55, pitch: 35, roll: 35 };
 const DEG = 180 / Math.PI;
 
-const EYE_LIFT = 0.095; // upper-lid retraction at a fully open eye (model units)
-const EYE_DROP = 0.025; // lower-lid drop
+// Lid travel from the scan's closed seam to a relaxed open eye. Measured against a real eye: the
+// lids of a closed eye meet at the lower third of the cornea, so opening is mostly the upper lid
+// rising (~6.8 mm) while the lower lid drops only ~1.7 mm; the relaxed upper lid then covers
+// ~1.5 mm of the iris and the lower lid rests at its lower edge. The first values (5 mm / 1.3 mm)
+// left a 5.7 mm opening that covered 2 mm of iris top AND bottom: a face analyser read every
+// expression, neutral included, as squinting and looking down.
+const EYE_LIFT = 0.127; // upper-lid retraction at a fully open eye (model units)
+const EYE_DROP = 0.032; // lower-lid drop
+// Lower lid raised by a tightened orbicularis (squint, a genuine smile, crying): ~2 mm.
+const SQUINT_RAISE = 0.038;
+// Lid-gaze coupling: the upper lid follows the eye's vertical rotation. Without it a downward
+// look leaves the lids up and the face reads as staring; with it a lowered gaze looks lowered.
+const LID_FOLLOW = 0.9; // fraction of opening lost per radian of downward gaze
+const LIP_CONTACT_GAP = 0.024; // ~1.3 mm
+const LID_SKEW_UP = 0.12; // almond eye: keep in sync with FEATURE_CUT_GLSL in head.js
+const LID_SKEW_DOWN = 0.15;
 // Gaze: horizontal from the iris position between the eye corners (both eyes averaged, so the
 // avatar's eyes always move together and never cross), vertical from the look-up/down blendshapes.
 const GAZE_YAW_GAIN = 0.9; // radians per unit of normalised iris offset
@@ -42,19 +57,14 @@ const GAZE_PITCH = 0.3; // radians at full eyeLookUp / eyeLookDown
 const GAZE_DEAD = 0.03;
 const GAZE_EYES = [[33, 133, 468], [263, 362, 473]]; // [outer corner, inner corner, iris centre]
 
-const MIDLINE = [10, 151, 9, 8, 168, 6, 197, 195, 5, 4, 1, 19, 94, 2, 164, 0, 11, 12, 13, 14, 15, 16, 17, 18, 200, 199, 175, 152];
 const STABLE = [10, 151, 9, 8, 168, 6, 197, 195, 5, 4, 1, 33, 133, 362, 263, 234, 454, 127, 356];
 const RIGHT_PAIRS = [[33, 263], [133, 362], [234, 454], [127, 356]]; // subject's right -> left
-const UPPER_LIP = [61, 185, 40, 39, 37, 0, 267, 269, 270, 409, 291, 78, 191, 80, 81, 82, 13, 312, 311, 310, 415, 308];
-const LOWER_LIP = [146, 91, 181, 84, 17, 314, 405, 321, 375, 95, 88, 178, 87, 14, 317, 402, 318, 324];
 const UP_PAIRS = [[4, 10], [5, 151], [195, 9], [1, 168]]; // lower -> upper (all above the jaw)
 const LIP_SET = new Set([...UPPER_LIP, ...LOWER_LIP]);
 // Eyelid landmarks follow the user's blink, which the closed-eyed scan can't express by
 // deformation alone; they're driven procedurally instead of through the anchor weights.
-const LID_LANDMARKS = new Set([
-  246, 161, 160, 159, 158, 157, 173, 7, 163, 144, 145, 153, 154, 155,
-  466, 388, 387, 386, 385, 384, 398, 249, 390, 373, 374, 380, 381, 382,
-]);
+const LID_LANDMARKS = new Set(LID_LIST);
+const CORNERS = new Set(MOUTH_CORNERS);
 // Openings cut in the skin: [corner, corner, seam upper-mid, seam lower-mid].
 // 0 = subject's right eye (−X), 1 = subject's left eye (+X), 2 = mouth.
 const FEATURES = [[33, 133, 159, 145], [263, 362, 386, 374], [78, 308, 13, 14]];
@@ -71,6 +81,12 @@ const _t = new THREE.Matrix4();
 const _q = new THREE.Quaternion();
 const _e = new THREE.Euler();
 const IDENTITY = new THREE.Quaternion();
+
+/**
+ * AU1 lifts the inner part of the upper lid skin with the inner brow, AU2 the outer part: the lid
+ * line tilts with the brows. This is what makes sad eyes look sad rather than merely sleepy.
+ */
+export const lidTiltFromBrows = (inner, outer) => Math.max(-0.5, Math.min(0.85, 0.7 * inner - 0.35 * outer));
 
 const smooth = (a, b, x) => {
   const t = Math.min(1, Math.max(0, (x - a) / (b - a)));
@@ -132,8 +148,14 @@ export class AvatarRig {
     this.headMatrix = this.mats[BINS - 1];
     this.pose = { yaw: 0, pitch: 0, roll: 0 };
     /** Smoothed facial controls, consumed by FaceParts. */
-    this.face = { eyeOpen: [0, 0], gaze: [[0, 0], [0, 0]], mouth: { up: 0, down: 0 }, jaw: { dy: 0, dz: 0 } };
-    this.faceTarget = { eyeOpen: [1, 1], gaze: [[0, 0], [0, 0]], wide: [0, 0], squint: [0, 0] };
+    this.face = { eyeOpen: [0, 0], lid: [0, 0], gaze: [[0, 0], [0, 0]], mouth: { up: 0, down: 0, midY: 0, midZ: 0 }, jaw: { dy: 0, dz: 0 } };
+    // lidTilt > 0 lifts the upper lid more at its inner end (the oblique lid of sadness), < 0 at
+    // the outer end. cheek = orbicularis orbital part (AU6), which also raises the lower lid.
+    this.faceTarget = { eyeOpen: [1, 1], gaze: [[0, 0], [0, 0]], wide: [0, 0], squint: [0, 0], cheek: [0, 0], lidTilt: [0, 0] };
+    this.lidTilt = [0, 0];
+    /** When set, expressions come from code (emotion studio) instead of the webcam. */
+    this.synthetic = null;
+    this.Qsyn = new THREE.Quaternion();
     this.blinkBase = [0.1, 0.1];
     this.blinkAcc = [0, 0];
     this.gazeBase = [0, 0]; // [horizontal iris offset, vertical blendshape balance] when looking at the camera
@@ -156,13 +178,29 @@ export class AvatarRig {
         if (expr) expr.needsUpdate = true;
         geo.computeVertexNormals();
       }, expr?.array),
-      this.#bind(net.positions, net.count, () => view.updatePositions()),
+      this.#bind(net.positions, net.count, () => view.updatePositions(), undefined, true),
     ];
+    /** Per network node: how far its skin has moved from rest (scan units). Drives node glow. */
+    this.activation = this.targets[1].act;
   }
 
   start() {
     this.active = true;
     this.calibrate();
+  }
+
+  /**
+   * Make any point set follow the face: bound like the skin and the network (nearest-anchor
+   * weights for expression, neck-graded rotation for the head). Points deep inside the head get
+   * no expression weight and only turn with it.
+   * @param {Float32Array} array flat positions, modified in place every frame
+   * @param {number} count number of points
+   * @param {() => void} onUpdate called after each write
+   */
+  bindTarget(array, count, onUpdate) {
+    const T = this.#bind(array, count, onUpdate);
+    this.targets.push(T);
+    return T;
   }
 
   /** Re-capture the neutral face (look at the camera, relaxed). */
@@ -178,6 +216,24 @@ export class AvatarRig {
   release() {
     this.active = false;
     this.tracking = false;
+    this.synthetic = null;
+  }
+
+  /**
+   * Drive the face from code instead of the webcam. Call every frame with the current frame.
+   * @param {object} f
+   * @param {Float32Array} f.D landmark displacement (scan units, 478 * 3), e.g. from faceBasis.compose
+   * @param {{pitch:number,yaw:number,roll:number}} f.head radians; pitch > 0 = chin down,
+   *        yaw > 0 = face turns to the subject's left, roll > 0 = head tilts to the subject's right
+   * @param {number[]} f.eyeOpen per eye, 0 closed .. 1 open (index 0 = subject's right)
+   * @param {number[]} f.wide, f.squint, f.cheek per eye 0..1
+   * @param {number[][]} f.gaze per eye [yaw, pitch] radians; pitch > 0 = looking down
+   * @param {number[]} f.lidTilt per eye
+   */
+  drive(f) {
+    this.synthetic = f;
+    this.active = true;
+    this.calibrated = true;
   }
 
   /**
@@ -185,7 +241,26 @@ export class AvatarRig {
    * @returns {{ tracking: boolean, calibrating: boolean, progress: number }}
    */
   update(result, dt) {
-    if (this.active && result) {
+    if (this.active && this.synthetic) {
+      const f = this.synthetic;
+      this.D.set(f.D);
+      this.Qsyn.setFromEuler(_e.set(f.head.pitch, f.head.yaw, f.head.roll, 'YXZ'));
+      this.#clampRotation(this.Qsyn);
+      this.Q.copy(this.Qsyn);
+      const ft = this.faceTarget;
+      for (let i = 0; i < 2; i++) {
+        ft.eyeOpen[i] = f.eyeOpen[i];
+        ft.wide[i] = f.wide[i];
+        ft.squint[i] = f.squint[i];
+        ft.cheek[i] = f.cheek[i];
+        ft.lidTilt[i] = f.lidTilt[i];
+        ft.gaze[i][0] = f.gaze[i][0];
+        ft.gaze[i][1] = f.gaze[i][1];
+      }
+      this.tracking = true;
+      this.lostFor = 0;
+      this.relaxed = false;
+    } else if (this.active && result) {
       this.#toUser(result.landmarks, result.aspect);
       this.#basis(this.U, this.bU);
       this.#readBlendshapes(result.blendshapes ?? []);
@@ -260,13 +335,22 @@ export class AvatarRig {
       const openT = this.active ? ft.eyeOpen[i] : 0;
       f.eyeOpen[i] += (openT - f.eyeOpen[i]) * fa;
       for (let j = 0; j < 2; j++) f.gaze[i][j] += ((this.active ? ft.gaze[i][j] : 0) - f.gaze[i][j]) * a;
+      this.lidTilt[i] += ((this.active ? ft.lidTilt[i] : 0) - this.lidTilt[i]) * a;
       residual = Math.max(residual, Math.abs(openT - f.eyeOpen[i]), this.active ? 0 : f.eyeOpen[i]);
     }
     const Ds = this.Ds;
-    const mouth = this.featureGeo[2];
-    const cornerY = (Ds[mouth.a * 3 + 1] + Ds[mouth.b * 3 + 1]) / 2;
-    f.mouth.up = Math.max(0, Ds[FEATURES[2][2] * 3 + 1] - cornerY) * 0.9;
-    f.mouth.down = Math.max(0, cornerY - Ds[FEATURES[2][3] * 3 + 1]) * 0.9;
+    // Mouth opening = the actual gap between the inner lips (13 above, 14 below), around their
+    // own midpoint. It used to be measured against the mouth CORNERS, which read any frown (corners
+    // down, centre level) as an opening: a sad face, or a user frowning at the webcam, showed teeth
+    // through closed lips. The seam's centre now follows the lips too (see #apply).
+    const lu = FEATURES[2][2] * 3, ll = FEATURES[2][3] * 3;
+    // Soft lips stay in contact until they are really apart: below LIP_CONTACT_GAP there is no
+    // opening, which otherwise rendered as a jagged hairline slit (grief's stretched mouth).
+    const gap = Math.max(0, Ds[lu + 1] - Ds[ll + 1] - LIP_CONTACT_GAP);
+    f.mouth.up = (gap / 2) * 0.9;
+    f.mouth.down = (gap / 2) * 0.9;
+    f.mouth.midY = (Ds[lu + 1] + Ds[ll + 1]) / 2;
+    f.mouth.midZ = (Ds[lu + 2] + Ds[ll + 2]) / 2;
     f.jaw.dy = Ds[CHIN * 3 + 1];
     f.jaw.dz = Ds[CHIN * 3 + 2];
 
@@ -274,8 +358,9 @@ export class AvatarRig {
       this.Ds.fill(0);
       this.Qs.identity();
       f.eyeOpen = [0, 0];
+      f.lid = [0, 0];
       f.gaze = [[0, 0], [0, 0]];
-      f.mouth.up = f.mouth.down = f.jaw.dy = f.jaw.dz = 0;
+      f.mouth.up = f.mouth.down = f.mouth.midY = f.mouth.midZ = f.jaw.dy = f.jaw.dz = 0;
       this.#restore();
       this.relaxed = true;
       return status;
@@ -300,6 +385,8 @@ export class AvatarRig {
       ft.eyeOpen[i] = clamp01(1 - Math.max(0, blink - base) / Math.max(0.2, 0.55 - base));
       ft.wide[i] = get('eyeWide');
       ft.squint[i] = get('eyeSquint');
+      ft.cheek[i] = get('cheekSquint');
+      ft.lidTilt[i] = lidTiltFromBrows(bs.browInnerUp ?? 0, get('browOuterUp'));
       vert += (get('eyeLookUp') - get('eyeLookDown')) / 2;
     }
 
@@ -396,13 +483,14 @@ export class AvatarRig {
     };
   }
 
-  #bind(array, count, onUpdate, expr) {
+  #bind(array, count, onUpdate, expr, withActivation = false) {
     const rest = new Float32Array(array.subarray(0, count * 3));
     const idx = new Uint16Array(count * K);
     const wts = new Float32Array(count * K);
     const bins = new Uint8Array(count);
     const lidEye = new Int8Array(count).fill(-1);
     const lidW = new Float32Array(count);
+    const lidS = new Float32Array(count); // position along the lid: -1 outer corner .. +1 inner
     const cands = [];
     for (let i = 0; i < N_DRIVE; i++) if (this.valid[i] && !LID_LANDMARKS.has(i)) cands.push(i);
 
@@ -412,8 +500,12 @@ export class AvatarRig {
       half: (Math.abs(m.A.x - m.B.x) / 2) * 1.35,
       lineY: (this.A[FEATURES[2][2] * 3 + 1] + this.A[FEATURES[2][3] * 3 + 1]) / 2,
       z0: Math.min(m.A.z, m.B.z) - 0.6,
-      upper: new Set(UPPER_LIP),
-      lower: new Set(LOWER_LIP),
+      // The corners are shared by both lips, so they are never excluded. They sit in UPPER_LIP,
+      // and excluding them from the lower lip's skin made the lower lip lag at the corners: a
+      // smile lifted the corners of the upper lip only, the lip line stayed flat, and a face
+      // analyser saw no smile at all.
+      upper: new Set(UPPER_LIP.filter((i) => !CORNERS.has(i))),
+      lower: new Set(LOWER_LIP.filter((i) => !CORNERS.has(i))),
     };
     const A = this.A;
     const bd = new Float64Array(K);
@@ -459,13 +551,16 @@ export class AvatarRig {
         if (dy > 0.35 || dy < -0.25) continue;
         const lens = Math.sqrt(1 - seam.s * seam.s);
         lidEye[v] = e;
+        lidS[v] = seam.s;
+        // Almond profile (see FEATURE_CUT_GLSL in head.js): upper lid peaks toward the nose,
+        // lower lid dips toward the ear.
         lidW[v] = dy >= -0.003
-          ? Math.exp(-((Math.max(dy, 0) / 0.11) ** 2)) * lens
-          : -Math.exp(-((dy / 0.07) ** 2)) * lens;
+          ? Math.exp(-((Math.max(dy, 0) / 0.11) ** 2)) * lens * (1 + LID_SKEW_UP * seam.s)
+          : -Math.exp(-((dy / 0.07) ** 2)) * lens * (1 - LID_SKEW_DOWN * seam.s);
         break;
       }
     }
-    return { array, rest, expr, idx, wts, bins, lidEye, lidW, count, onUpdate };
+    return { array, rest, expr, idx, wts, bins, lidEye, lidW, lidS, act: withActivation ? new Float32Array(count) : null, count, onUpdate };
   }
 
   #apply() {
@@ -478,15 +573,21 @@ export class AvatarRig {
     }
     const up = [0, 0];
     const dn = [0, 0];
+    const tilt = this.lidTilt;
     for (let e = 0; e < 2; e++) {
       const o = this.face.eyeOpen[e];
-      up[e] = EYE_LIFT * o * (1 + 0.25 * this.faceTarget.wide[e]) * (1 - 0.35 * this.faceTarget.squint[e]);
-      dn[e] = EYE_DROP * o;
+      const ft = this.faceTarget;
+      // Lower-lid tension: AU7 directly, AU6 through the orbital ring.
+      const sq = Math.max(ft.squint[e], 0.6 * ft.cheek[e]);
+      const follow = Math.min(1.2, Math.max(0.55, 1 - LID_FOLLOW * this.face.gaze[e][1]));
+      up[e] = EYE_LIFT * o * follow * (1 + 0.25 * ft.wide[e]) * (1 - 0.35 * ft.squint[e]);
+      this.face.lid[e] = up[e] / EYE_LIFT;
+      dn[e] = EYE_DROP * o * (1 - 0.8 * sq) - SQUINT_RAISE * sq * o;
     }
 
     const Ds = this.Ds;
     for (const T of this.targets) {
-      const { array, rest, expr, idx, wts, bins, lidEye, lidW, count } = T;
+      const { array, rest, expr, idx, wts, bins, lidEye, lidW, lidS, act, count } = T;
       for (let v = 0; v < count; v++) {
         let ox = 0, oy = 0, oz = 0;
         const o = v * K;
@@ -498,6 +599,7 @@ export class AvatarRig {
           oy += w * Ds[a + 1];
           oz += w * Ds[a + 2];
         }
+        if (act) act[v] = Math.sqrt(ox * ox + oy * oy + oz * oz);
         const x = rest[v * 3] + ox;
         let y = rest[v * 3 + 1] + oy;
         let z = rest[v * 3 + 2] + oz;
@@ -505,8 +607,12 @@ export class AvatarRig {
         if (le >= 0) {
           const w = lidW[v];
           if (w > 0) {
-            y += up[le] * w;
-            z -= up[le] * w * 0.3;
+            // Oblique lid (tilt > 0): the OUTER part droops and the inner end rises only a little.
+            // Raising the inner end fully opened the lid past the eyeball: a black socket showed.
+            const sv = lidS[v];
+            const lift = up[le] * Math.max(0, 1 + tilt[le] * (sv < 0 ? sv : 0.25 * sv));
+            y += lift * w;
+            z -= lift * w * 0.3;
           } else {
             y += dn[le] * w;
           }
@@ -536,7 +642,13 @@ export class AvatarRig {
         if (i < 2) {
           bow.z = up[i] * 0.94;
           bow.w = dn[i] * 0.9;
+          if (F.uFShape) F.uFShape.value[i].set(tilt[i], 0);
         } else {
+          // The seam bows between the corners; shift its middle by how far the lip centre moved
+          // relative to the corners, so it stays ON the lips when the corners turn down or up.
+          const off = F.uFOff.value[i];
+          bow.x = g.bowY + (this.face.mouth.midY - off.y);
+          bow.y = g.bowZ + (this.face.mouth.midZ - off.z);
           bow.z = this.face.mouth.up;
           bow.w = this.face.mouth.down;
         }
@@ -550,11 +662,13 @@ export class AvatarRig {
       if (T.expr) T.expr.set(T.rest);
       T.onUpdate();
     }
+    this.activation.fill(0);
+    this.lidTilt = [0, 0];
     if (this.features) {
       for (let i = 0; i < FEATURES.length; i++) {
+        this.features.uFShape?.value[i].set(0, 0);
         this.features.uFOff.value[i].set(0, 0, 0);
-        this.features.uFBow.value[i].z = 0;
-        this.features.uFBow.value[i].w = 0;
+        this.features.uFBow.value[i].set(this.featureGeo[i].bowY, this.featureGeo[i].bowZ, 0, 0);
       }
     }
     for (const m of this.mats) m.identity();

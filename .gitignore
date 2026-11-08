@@ -6,3 +6,7 @@ dist
 vault/.obsidian/workspace*.json
 vault/.obsidian/cache
 vault/.trash/
+
+# Python bytecode
+__pycache__/
+*.pyc

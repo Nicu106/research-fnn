@@ -119,6 +119,9 @@ export function createHud() {
     if (key !== lastKey) {
       lastKey = key;
       for (const [f, v] of Object.entries(info.fields)) $(`[data-f="${f}"]`, inspector).textContent = v;
+      // Brain structures come with an explanation; other nodes have none.
+      if (!('info' in info.fields)) $('[data-f="info"]', inspector).textContent = '';
+      inspector.classList.toggle('wide', !!info.fields.info);
       inspector.style.setProperty('--c', info.color);
       inspector.classList.toggle('pinned', pinned);
       inspector.hidden = false;
@@ -126,7 +129,7 @@ export function createHud() {
     }
     const w = window.innerWidth;
     const h = window.innerHeight;
-    const cardW = 188;
+    const cardW = inspector.offsetWidth || 188;
     const cardH = inspector.offsetHeight || 150;
     const side = sx + 70 + cardW < w - 330 || w <= 900 ? 1 : -1;
     let x = side > 0 ? sx + 70 : sx - 70 - cardW;

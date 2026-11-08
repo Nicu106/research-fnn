@@ -7,8 +7,20 @@ import { createHud } from './hud.js';
 import { FaceTracker, describeCameraError } from './live/faceTracker.js';
 import { AvatarRig } from './live/avatarRig.js';
 import { FaceParts } from './live/faceParts.js';
+import { buildBasis } from './emotion/faceBasis.js';
+import { toRigFrame, makeRigFrame } from './emotion/driver.js';
+import { EmotionStudio } from './emotion/studio.js';
+import { recognise, EMOTIONS } from './emotion/emotions.js';
+import { EmotionMap } from './taxonomy/mapView.js';
+import { recipeToExpression } from './taxonomy/facs.js';
+import { buildNeuromotor } from './neuro/neuromotor.js';
+import { NeuromotorView } from './neuro/neuromotorView.js';
+import { BrainLabels } from './neuro/brainLabels.js';
+import { MuscleView } from './muscle/muscleView.js';
+import { muscleActivity } from './muscle/muscles.js';
 
-const PRESETS = { skin: 1, hybrid: 0.35, network: 0 };
+// `muscles`: translucent skin, network hidden, the muscle atlas on (muscle/muscleView.js).
+const PRESETS = { skin: 1, hybrid: 0.35, network: 0, muscles: 0.28 };
 const clamp01 = (v) => Math.min(1, Math.max(0, v));
 const ease = (t) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);
 
@@ -33,13 +45,36 @@ const state = {
   autoRotate: true,
   source: 'scan',
   mirror: true,
+  tab: 'network',
+  activation: true,
+  neuro: true,
+  brainLabels: true,
+  muscleMode: false,
 };
 stage.controls.autoRotate = true;
 
 const tracker = new FaceTracker(document.getElementById('camVideo'));
 let rig = null;
 let parts = null;
+let basis = null;
+let anchorPositions = null;
+let nm = null;       // neuromotor network (data + activations)
+let nmView = null;
+let brainLabels = null; // names of the brain structures, floating in 3D
+let labelHover = -1;    // neuromotor node id hovered through its label
+let muscleView = null;  // the facial muscles, drawn as an anatomy atlas
+let muscleLabels = null;
+let layersBeforeMuscles = null; // network layer visibility to restore when leaving muscle mode
+let recog = [];
+let recogAt = 0;
+const NM_BASE = 100000; // picking ids >= NM_BASE are neuromotor nodes
 let lastBlendshapes = [];
+let lastExpression = null;
+const rigFrame = makeRigFrame();
+// Wrinkle strengths, eased so creases fade in and out with the muscles in every mode.
+const wrinkleW = {};
+const wrinkleTarget = {};
+let skinResponse = { flush: 0, wet: 0 };
 
 // Exposed for quick experiments from the browser console.
 window.neuralFace = { net, view, stage, head, tracker, get rig() { return rig; }, get parts() { return parts; } };
@@ -48,8 +83,23 @@ window.neuralFace = { net, view, stage, head, tracker, get rig() { return rig; }
 hud.on('preset', (name) => {
   state.skin = PRESETS[name];
   hud.setSkin(state.skin);
+  setMuscleMode(name === 'muscles');
 });
-hud.on('skin', (v) => { state.skin = v; });
+
+// Muscle mode: the network steps aside (its layers are restored on leaving) so the muscles read.
+function setMuscleMode(on) {
+  if (on === state.muscleMode) return;
+  state.muscleMode = on;
+  document.body.classList.toggle('musclemode', on);
+  if (on) {
+    layersBeforeMuscles = [0, 1, 2].map((i) => view.isLayerVisible(i));
+    [0, 1, 2].forEach((i) => { view.setLayerVisible(i, false); hud.setToggle('layer', false, i); });
+  } else if (layersBeforeMuscles) {
+    layersBeforeMuscles.forEach((v, i) => { view.setLayerVisible(i, v); hud.setToggle('layer', v, i); });
+    layersBeforeMuscles = null;
+  }
+}
+hud.on('skin', (v) => { state.skin = v; if (v > 0.6) setMuscleMode(false); });
 hud.on('layer', (on, i) => view.setLayerVisible(i, on));
 hud.on('color', (mode) => view.setColorMode(mode));
 hud.on('pulse', (on) => view.setPulses(on));
@@ -82,10 +132,34 @@ hud.on('export', () => {
       ]),
     };
   }
+  if (state.tab === 'emotion' && lastExpression) {
+    const r4 = (v) => Math.round(v * 1e4) / 1e4;
+    const t = studio.performer;
+    data.expression = {
+      name: studio.baseLabel,
+      capturedAt: new Date().toISOString(),
+      blendshapes: Object.fromEntries(Object.entries(t.target).filter(([, v]) => v > 0.001).map(([k, v]) => [k, r4(v)])),
+      head: { ...t.headT },
+      gaze: [...t.gazeT],
+      positions: Array.from({ length: net.count }, (_, i) => [
+        r4(net.positions[i * 3]), r4(net.positions[i * 3 + 1]), r4(net.positions[i * 3 + 2]),
+      ]),
+      activation: rig ? Array.from(rig.activation, (v) => r4(v / basis.unitsPerMM)) : undefined,
+    };
+  }
+  if (nm) {
+    const r3 = (v) => Math.round(v * 1000) / 1000;
+    data.neuromotor = {
+      levels: nm.levels.map((l) => l.key),
+      nodes: nm.nodes.map((n) => ({ id: n.id, key: n.key, name: n.name, level: nm.levels[n.level].key, activation: r3(nm.act[n.id]) })),
+      edges: nm.edges.map((e, k) => [e.a, e.b, r3(nm.edgeAct[k])]),
+      skin: nm.skin.map((k) => [k.muscle, k.net]),
+    };
+  }
   const blob = new Blob([JSON.stringify(data, null, 1)], { type: 'application/json' });
   const a = document.createElement('a');
   a.href = URL.createObjectURL(blob);
-  a.download = data.live ? `neural-face-live-${Date.now()}.json` : `neural-face-topology-seed${net.seed}.json`;
+  a.download = data.expression ? `neural-face-emotie-${Date.now()}.json` : data.live ? `neural-face-live-${Date.now()}.json` : `neural-face-topology-seed${net.seed}.json`;
   a.click();
   setTimeout(() => URL.revokeObjectURL(a.href), 2000);
 });
@@ -97,13 +171,182 @@ function setAutoRotate(on) {
 }
 stage.controls.addEventListener('start', () => { if (state.autoRotate) setAutoRotate(false); });
 
+// ---------- rig: shared by the webcam and the emotion studio ----------
+let rigLoading = null;
+function ensureRig() {
+  if (rig) return Promise.resolve(rig);
+  if (!rigLoading) {
+    rigLoading = (async () => {
+      const anchors = await fetch('./assets/head/anchors.json').then((r) => r.json());
+      anchorPositions = anchors.positions;
+      rig = new AvatarRig({ anchors: anchors.positions, mesh: head.mesh, net, view, features: head.features });
+      parts = new FaceParts(anchors.positions);
+      head.group.add(parts.group);
+      basis = buildBasis({ anchors: anchors.positions });
+      head.setFaceFrame(basis.frame);
+      nm = buildNeuromotor({ anchors: anchors.positions, frame: basis.frame, net });
+      nmView = new NeuromotorView(nm, net, { pixelRatio: stage.pixelRatio });
+      head.group.add(nmView.group);
+      nmView.bindTo(rig);
+      const labelEvents = {
+        onPick: (id) => { selected = NM_BASE + id; },
+        onHover: (id) => { labelHover = id; },
+      };
+      brainLabels = new BrainLabels(
+        nm.nodes.filter((n) => n.label).map((n) => ({ at: n.id, pick: n.id, label: n.label, name: n.name, color: n.color, side: n.side })),
+        nmView.nodePos, labelEvents);
+      brainLabels.setEnabled(state.brainLabels);
+      muscleView = new MuscleView({ anchors: anchors.positions, frame: basis.frame });
+      head.group.add(muscleView.group);
+      muscleView.bindTo(rig);
+      // One label per muscle, alternating sides so both columns fill; the pick is the muscle's
+      // node in the neuromotor network, which carries its explanation.
+      const nmId = Object.fromEntries(nm.nodes.map((n) => [n.key, n.id]));
+      const perMuscle = [...new Set(muscleView.ranges.map((r) => r.muscle))];
+      muscleLabels = new BrainLabels(
+        muscleView.ranges.map((r, at) => ({ r, at })).filter(({ r }) => r.side === (perMuscle.indexOf(r.muscle) % 2 ? 'L' : 'R'))
+          .map(({ r, at }) => ({ at, pick: nmId[r.key], label: r.label, name: nm.nodes[nmId[r.key]].name, color: '#ff7a6b' })),
+        muscleView.centroids, labelEvents);
+      document.querySelectorAll('[data-nm-count]').forEach((el) => { el.textContent = `${nm.counts.levels} niveluri · ${nm.counts.nodes} neuroni`; });
+      Object.assign(window.neuralFace, { basis, anchors: anchors.positions, THREE, nm, nmView, muscleView });
+      return rig;
+    })();
+  }
+  return rigLoading;
+}
+
+// ---------- tabs ----------
+const toastEl = document.getElementById('toast');
+let toastTimer = 0;
+function notify(msg, kind = 'ok') {
+  clearTimeout(toastTimer);
+  toastEl.textContent = msg;
+  toastEl.className = 'toast' + (kind === 'err' ? ' err' : '');
+  toastEl.hidden = false;
+  toastTimer = setTimeout(() => { toastEl.hidden = true; }, kind === 'err' ? 5000 : 2600);
+}
+
+const studio = new EmotionStudio({ snapshot: () => captureThumb(), notify });
+window.neuralFace.studio = studio;
+let studioVisited = false;
+
+// Emotion map: "Arată pe față" hands a node to the studio — its tuned preset when there is one,
+// otherwise the expression composed from its FACS recipe.
+const emotionMap = new EmotionMap({
+  notify,
+  onShow: async (node) => {
+    await setTab('emotion');
+    if (node.preset) studio.select(node.preset);
+    else studio.showExpression({ ...recipeToExpression(node.facs), life: EMOTIONS.neutral.life }, node.ro, 'emotion');
+    notify(`${node.ro}${node.preset ? '' : ` · compusă din rețeta FACS ${node.facs}`}`);
+  },
+});
+window.neuralFace.emotionMap = emotionMap;
+
+// "Creierul emoțional" is the text article (blog/index.html, generated from js/brain/atlas.js by
+// tools/build-blog.mjs), shown as a page of its own. Loaded the first time the tab opens.
+const blogView = document.getElementById('blogView');
+const blogFrame = document.getElementById('blogFrame');
+
+async function setTab(name) {
+  if (name === state.tab) return;
+  for (const b of document.querySelectorAll('#tabs button')) b.classList.toggle('on', b.dataset.tab === name);
+  document.getElementById('panelNetwork').hidden = name !== 'network';
+  document.getElementById('panelEmotion').hidden = name !== 'emotion';
+  document.getElementById('panelMap').hidden = name !== 'map';
+  document.getElementById('mapView').hidden = name !== 'map';
+  blogView.hidden = name !== 'brain';
+  document.body.classList.toggle('studio', name === 'emotion');
+  document.body.classList.toggle('mapmode', name === 'map');
+  document.body.classList.toggle('brainmode', name === 'brain');
+  const from = state.tab;
+  state.tab = name;
+  if (name === 'brain') {
+    // A page to read: no camera, no face, and no 3D rendering behind it (see renderFrame).
+    if (state.source === 'camera') stopCamera();
+    studio.setActive(false);
+    if (from === 'emotion') { rig?.release(); stage.setMood('stage'); }
+    selected = -1;
+    hovered = -1;
+    if (!blogFrame.getAttribute('src')) blogFrame.src = 'blog/index.html';
+    return;
+  }
+  if (name === 'map') {
+    if (state.source === 'camera') stopCamera();
+    studio.setActive(false);
+    if (from === 'emotion') { rig?.release(); stage.setMood('stage'); }
+    selected = -1;
+    hovered = -1;
+    await emotionMap.open();
+    return;
+  }
+  if (name === 'emotion') {
+    if (state.source === 'camera') stopCamera();
+    selected = -1;
+    setAutoRotate(false);
+    stage.flyTo('portrait');
+    stage.setMood('portrait');
+    // The studio is about the face: show the skin the first time (the network stays one click away).
+    if (!studioVisited && state.skin < 0.9) { state.skin = PRESETS.hybrid; hud.setSegment('preset', 'hybrid'); hud.setSkin(state.skin); }
+    studioVisited = true;
+    studio.setActive(true);
+    await ensureRig();
+    if (state.tab !== 'emotion') return;
+  } else {
+    studio.setActive(false);
+    rig?.release();
+    stage.flyTo('front');
+    stage.setMood('stage');
+  }
+}
+document.getElementById('tabs').addEventListener('click', (e) => {
+  const b = e.target.closest('button[data-tab]');
+  if (b) setTab(b.dataset.tab);
+});
+hud.on('activation', (on) => { state.activation = on; });
+hud.on('brainLabels', (on) => {
+  state.brainLabels = on;
+  document.querySelectorAll('[data-toggle="brainLabels"]').forEach((b) => b.setAttribute('aria-pressed', String(on)));
+  brainLabels?.setEnabled(on);
+});
+// The neuromotor toggle exists in both panels; keep them in step. It lives inside the head, so
+// turning it on over opaque skin switches to the hybrid view, where it can be seen.
+hud.on('neuro', (on) => {
+  state.neuro = on;
+  document.querySelectorAll('[data-toggle="neuro"]').forEach((b) => b.setAttribute('aria-pressed', String(on)));
+  if (on && state.skin > 0.9) { state.skin = PRESETS.hybrid; hud.setSegment('preset', 'hybrid'); hud.setSkin(state.skin); }
+});
+
+/**
+ * Square JPEG of the face as currently rendered, for the expression library.
+ * Rendered and read back in the same task, so no preserveDrawingBuffer is needed.
+ */
+function captureThumb(size = 112) {
+  if (!anchorPositions) return null;
+  stage.render();
+  const c = stage.renderer.domElement;
+  const at = (i) => new THREE.Vector3().fromArray(anchorPositions, i * 3).applyMatrix4(head.group.matrixWorld).project(stage.camera);
+  const top = at(10), chin = at(152);
+  const px = (v) => [(v.x * 0.5 + 0.5) * c.width, (-v.y * 0.5 + 0.5) * c.height];
+  const [tx, ty] = px(top), [bx, by] = px(chin);
+  const side = Math.hypot(bx - tx, by - ty) * 1.55;
+  const cx = (tx + bx) / 2, cy = (ty + by) / 2 - side * 0.04;
+  const out = document.createElement('canvas');
+  out.width = out.height = size;
+  const g = out.getContext('2d');
+  g.fillStyle = '#020406';
+  g.fillRect(0, 0, size, size);
+  g.drawImage(c, cx - side / 2, cy - side / 2, side, side, 0, 0, size, size);
+  return out.toDataURL('image/jpeg', 0.85);
+}
+
 // ---------- live camera: the webcam drives the photoreal head ----------
 let cameraBusy = false;
 let pendingStop = false;
 let camStatus = '';
 
 async function startCamera() {
-  if (cameraBusy || state.source === 'camera') return;
+  if (cameraBusy || state.source === 'camera' || state.tab !== 'network') return;
   cameraBusy = true;
   pendingStop = false;
   hud.setLive(true);
@@ -112,10 +355,7 @@ async function startCamera() {
     await tracker.start((msg) => hud.setCamStatus('loading', msg));
     if (!rig) {
       hud.setCamStatus('loading', 'Pregătesc avatarul…');
-      const anchors = await fetch('./assets/head/anchors.json').then((r) => r.json());
-      rig = new AvatarRig({ anchors: anchors.positions, mesh: head.mesh, net, view, features: head.features });
-      parts = new FaceParts(anchors.positions);
-      head.group.add(parts.group);
+      await ensureRig();
     }
   } catch (err) {
     console.error('[camera]', err);
@@ -165,6 +405,21 @@ function updateCameraStatus(st) {
   camStatus = next;
 }
 
+// The route the strongest muscle's signal takes, spelled out under the face.
+const pathEl = document.getElementById('emoCapPath');
+let pathAt = 0;
+function updatePathCaption() {
+  const now = performance.now();
+  if (now - pathAt < 300) return;
+  pathAt = now;
+  const top = nm.topPaths(1)[0];
+  const emo = recog.find((r) => r.key !== 'neutral');
+  if (!top || !emo) { pathEl.textContent = ''; return; }
+  const short = (s) => s.replace(/ \(?(dreapta|stânga)\)?$/, '');
+  pathEl.innerHTML = [emo.name, 'amigdală', 'cortex motor', short(top.nucleus), short(top.branch), short(top.muscle), 'piele']
+    .map((x) => `<span>${x}</span>`).join('<i>→</i>');
+}
+
 // ---------- picking ----------
 const canvas = stage.renderer.domElement;
 const raycaster = new THREE.Raycaster();
@@ -188,7 +443,14 @@ function pick(x, y) {
     if (h.distance > occluder || !view.isLayerVisible(net.layers[h.index])) continue;
     if (!best || h.distanceToRay < best.distanceToRay) best = h;
   }
-  return best ? best.index : -1;
+  let pick = best ? best.index : -1;
+  if (nmView?.group.visible) {
+    for (const h of raycaster.intersectObject(nmView.points, false)) {
+      if (h.distance > occluder) continue;
+      if (!best || h.distanceToRay < best.distanceToRay * 1.4) { best = h; pick = NM_BASE + h.index; }
+    }
+  }
+  return pick;
 }
 
 // Listen on window so hovering the HUD (which overlays the canvas) clears the hover.
@@ -212,7 +474,7 @@ window.addEventListener('keydown', (e) => {
     view.setLayerVisible(i, on);
     hud.setToggle('layer', on, i);
   }
-  if (e.key === 'c' || e.key === 'C') {
+  if ((e.key === 'c' || e.key === 'C') && state.tab === 'network') {
     const next = state.source === 'camera' ? 'scan' : 'camera';
     hud.setSegment('source', next);
     next === 'camera' ? startCamera() : stopCamera();
@@ -222,7 +484,32 @@ window.addEventListener('keydown', (e) => {
 
 const tmp = new THREE.Vector3();
 function updateInspector() {
-  const active = selected >= 0 ? selected : hovered;
+  const active = selected >= 0 ? selected : labelHover >= 0 ? NM_BASE + labelHover : hovered;
+  if (active >= NM_BASE && nm) {
+    const id = active - NM_BASE;
+    const n = nm.nodes[id];
+    view.setActive(-1);
+    nmView.setHighlight(id);
+    document.body.classList.toggle('hovering', hovered >= 0);
+    tmp.fromArray(nmView.nodePos, id * 3).applyMatrix4(head.group.matrixWorld).project(stage.camera);
+    const links = nm.edges.filter((e) => e.a === id || e.b === id).length + nm.skin.filter((k) => k.muscle === id).length;
+    hud.showInspector({
+      id: NM_BASE + id,
+      color: n.color,
+      fields: {
+        id: `NM-${String(id).padStart(2, '0')}`,
+        layer: nm.levels[n.level].name,
+        region: n.name,
+        x: `${Math.round(nm.act[id] * 100)}% activ`,
+        y: n.pos[1].toFixed(3),
+        z: n.pos[2].toFixed(3),
+        degree: links,
+        info: n.info ?? '',
+      },
+    }, (tmp.x * 0.5 + 0.5) * window.innerWidth, (-tmp.y * 0.5 + 0.5) * window.innerHeight, selected >= 0);
+    return;
+  }
+  nmView?.setHighlight(-1);
   view.setActive(active);
   document.body.classList.toggle('hovering', hovered >= 0);
   if (active < 0) return hud.hideInspector();
@@ -248,6 +535,7 @@ function updateInspector() {
 }
 
 // ---------- loop ----------
+ensureRig().catch((err) => console.error('[rig]', err));
 hud.setProgress(1, 'Gata');
 await new Promise((r) => setTimeout(r, 350));
 hud.hideLoader();
@@ -268,6 +556,8 @@ window.neuralFace.step = (t) => {
 };
 
 function renderFrame(t, dt) {
+  // The map and the article are 2D pages over the scene: don't spend the GPU on a head nobody sees.
+  if (state.tab === 'map' || state.tab === 'brain') return;
   // Intro: network scans in top-down, then the skin materialises behind it.
   const reveal = 4.6 - 9.4 * ease(clamp01((t - 0.5) / 3.6));
   const cut = 4.6 - 9.4 * ease(clamp01((t - 2.8) / 2.8));
@@ -280,20 +570,61 @@ function renderFrame(t, dt) {
     hud.setCamStatus('err', describeCameraError({ name: 'TrackEnded' }));
   }
 
+  for (const k in wrinkleTarget) wrinkleTarget[k] = 0;
+  skinResponse = { flush: 0, wet: 0 };
+  if (rig && state.tab === 'emotion' && basis) {
+    const f = studio.update(dt);
+    toRigFrame(basis, f, rigFrame);
+    rig.drive(rigFrame);
+    Object.assign(wrinkleTarget, f.w);
+    skinResponse = f.skin;
+    lastExpression = f;
+  }
+
   if (rig) {
     const res = state.source === 'camera' ? tracker.detect(performance.now()) : undefined;
     const st = rig.update(res, dt);
     // Eyeballs and mouth interior only make sense behind visible skin.
     parts.update(rig.face, rig.headMatrix);
-    parts.group.visible = state.skinShown > 0.5;
+    // Eyes from low skin opacity (hidden below half, the hybrid view showed a face with its eyes
+    // shut); the mouth interior only when the skin is nearly opaque (see FaceParts.setSkin).
+    // ...and never during the intro, while the skin is still materialising top-down: the rig now
+    // exists from startup, and its eyeballs and teeth floated in front of an unfinished face.
+    parts.setSkin(cut < -0.6 ? state.skinShown : 0);
     if (state.source === 'camera') {
       updateCameraStatus(st);
       if (res) {
+        // Webcam wrinkles: the user's own muscles, on the avatar's side of the face.
+        const swap = (n) => (!state.mirror ? n : n.endsWith('Left') ? n.slice(0, -4) + 'Right' : n.endsWith('Right') ? n.slice(0, -5) + 'Left' : n);
+        for (const c of res.blendshapes) wrinkleTarget[swap(c.categoryName)] = c.score;
         lastBlendshapes = res.blendshapes;
         hud.setBlendshapes(res.blendshapes);
         hud.setPose(rig.pose);
       }
     }
+  }
+
+  if (rig) view.setActivation(state.activation && rig.active ? rig.activation : null, basis?.unitsPerMM ?? 1);
+  const kw = 1 - Math.exp(-dt * 10);
+  for (const k in wrinkleTarget) wrinkleW[k] = (wrinkleW[k] ?? 0) + (wrinkleTarget[k] - (wrinkleW[k] ?? 0)) * kw;
+  head.setExpression(wrinkleW, skinResponse);
+  head.syncScale();
+
+  if (nm) {
+    const now = performance.now();
+    if (now - recogAt > 120) { recog = recognise(wrinkleW); recogAt = now; }
+    nm.compute(wrinkleW, recog);
+    nmView.setVisible(state.neuro && state.skinShown < 0.92 && reveal < -2);
+    nmView.update(t, dt);
+    const a = selected >= 0 ? selected : labelHover >= 0 ? NM_BASE + labelHover : hovered;
+    const hot = a >= NM_BASE ? a - NM_BASE : -1;
+    const actOf = (id) => nm.act[id];
+    // In muscle mode the muscle labels take the place of the brain's.
+    if (state.brainLabels) brainLabels.update(stage.camera, head.group.matrixWorld, nmView.group.visible && !state.muscleMode ? nmView.uniforms.uVis.value : 0, hot, actOf);
+    muscleView.setVisible(state.muscleMode && state.skinShown < 0.92 && reveal < -2);
+    muscleView.update(t, dt, muscleActivity(nm.units));
+    if (state.brainLabels) muscleLabels.update(stage.camera, head.group.matrixWorld, muscleView.group.visible ? muscleView.uniforms.uVis.value : 0, hot, actOf);
+    if (state.tab === 'emotion') updatePathCaption();
   }
 
   if (pointer && t > 3) hovered = pick(pointer.x, pointer.y);

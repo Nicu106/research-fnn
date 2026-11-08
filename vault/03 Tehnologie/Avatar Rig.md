@@ -6,7 +6,7 @@ tags:
   - avatar
   - rig
 created: 2026-09-15
-updated: 2026-09-15
+updated: 2026-09-28
 related:
   - "[[MediaPipe Face Landmarker]]"
   - "[[Retargeting]]"
@@ -36,13 +36,20 @@ Deformarea singură nu poate deschide ochii unui scan cu pleoapele lipite, așa 
 - **Shader-ul pielii taie deschideri reale** între pleoape și între buze: o lentilă între colțuri, deasupra și dedesubtul cusăturii, cu margine întunecată (linia genelor, marginea interioară a buzei).
 - Părțile rigide (globi oculari, dinți, limbă) urmează rotația completă a capului; dinții de jos și limba urmează mandibula.
 
+## Adăugiri 2026-09-28
+- `drive()` — rig-ul poate fi condus sintetic (din [[Studio emoții]]), nu doar din cameră; `bindTarget()` îl leagă de alte ținte.
+- **Gura** se deschide doar după distanța reală dintre landmarks 13 și 14 (prag 1,3 mm) → [[INC-005 Încruntarea citită ca gură deschisă]]; colțurile sunt comune ambelor buze → [[INC-006 Zâmbet invizibil pentru MediaPipe]].
+- **Pleoape**: înclinare din sprâncene (căderea colțului exterior), ridicarea pleoapei inferioare la mijire, pleoapele urmează privirea; `EYE_LIFT` 0,127 → [[INC-007 Ochii păreau mijiți]].
+- **Piele**: riduri procedurale anti-aliasate în spațiul de repaus (frunte, glabelă, laba gâștii, nazolabial, bărbie), înroșire și ochi umezi.
+- Expune o **activare** pe regiuni, folosită de [[Rețeaua neuromotorie]].
+
 ## Performanță
 Legare inițială ≈ 400 ms; ≈ 5,75 ms pe cadru (mesh + rețea) — [[EXP-001 Test sintetic al rig-ului]].
 
 ## Limite cunoscute
 - Scanul are **ochii și gura închise**; rezolvat prin deschideri tăiate în piele plus geometrie proprie ([[Ochi deschiși pe scanul cu ochii închiși]], [[Ochi și gură (FaceParts)]]). Naturalețea marginilor e încă de evaluat pe fața reală.
 - Calitatea deschiderii gurii depinde de topologia buzelor scanului — de testat pe fața reală.
-- Transferul e geometric (fără mușchi); pentru fidelitate mare: [[Avatar cu 52 blendshapes ARKit]].
+- Transferul e geometric; din 2026-09-28 există și un spațiu muscular prin [[Baza de expresii (52 blendshapes)]] și [[Rețeaua neuromotorie]].
 
 ## Controale
 „Recalibrare față neutră” (tasta `N`), „Mod oglindă”, previzualizare opțională a camerei.
